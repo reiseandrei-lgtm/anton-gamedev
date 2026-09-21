@@ -33,7 +33,7 @@
 После того как репозиторий опубликован (например, на GitHub):
 
 ```
-/plugin marketplace add <github-user>/anton-gamedev
+/plugin marketplace add reiseandrei-lgtm/anton-gamedev
 /plugin install gd@anton-gamedev
 ```
 
@@ -49,7 +49,7 @@
 ## Установка в Cowork
 
 1. **Customize → Plugins → Add marketplace**.
-2. Вставь URL репозитория (`https://github.com/<github-user>/anton-gamedev`). Для приватного репозитория нужен доступ аккаунта Claude к GitHub.
+2. Вставь URL репозитория (`https://github.com/reiseandrei-lgtm/anton-gamedev`). Для приватного репозитория нужен доступ аккаунта Claude к GitHub.
 3. В списке плагинов маркетплейса включи **gd**.
 
 В Cowork работают скиллы, команды и агенты. Папка `design/` должна быть в той папке/репозитории, которую ты открыл в Cowork.
