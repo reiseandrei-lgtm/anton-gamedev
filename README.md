@@ -24,6 +24,8 @@
 
 **Скиллы** (срабатывают автоматически по описанию): `gd-router`, `gd-concept`, `gd-systems-map`, `gdd-author`, `gdd-review`, `game-feel`, `balance-check`, `scope-check`, `gd-handoff`, `narrative-structure`, `character-voice`, `ink-slice`.
 
+**Проектные скиллы**: `syncario-gamedesigner` — геймдизайн Syncario (канон, столпы, north star, якорь «Сифа», voice/social/метрики). Для своего проекта главнее общих скиллов.
+
 **Агенты**: `design-critic` (ревью без истории создания), `narrative-designer` (структура, не проза), `producer` (скоуп и вырезание для соло / 2–4 человек).
 
 ## Установка в Claude Code
@@ -78,7 +80,9 @@ cp -r ~/.claude/plugins/marketplaces/anton-gamedev/templates/design ./design
 
 ## Свои скиллы
 
-Положи их в `import/` (см. `import/README.md`) и попроси Claude Code: «встрой скиллы из import/». Проектные скиллы останутся отдельными, общие принципы уйдут в роутер.
+Положи их в `import/` (см. `import/README.md`) и попроси Claude Code: «встрой скиллы из import/». Проектные скиллы останутся отдельными, общие принципы уйдут в роутер (`gd-router/references/principles.md`).
+
+**Syncario:** после установки плагина отключи старую копию скилла `gamedesigner` в claude.ai (Настройки → Возможности → Скиллы), иначе в Cowork/claude.ai будут срабатывать два одинаковых скилла. Главная копия теперь — `plugins/gd/skills/syncario-gamedesigner/`, оригинал хранится в `import/gamedesigner/`.
 
 ## Unity и FMOD
 

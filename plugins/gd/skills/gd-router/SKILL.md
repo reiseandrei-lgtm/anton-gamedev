@@ -50,3 +50,4 @@ description: >-
 | 6 Скоуп | `scope-check`, агент `producer` · `/gd:scope` |
 | 7 Хендофф | `gd-handoff` |
 | Параллельно | `game-feel` (прототип/бумага), `ink-slice` · `/gd:ink`, `/gd:narrative` |
+| Проектные | `syncario-gamedesigner` — всё по Syncario (канон, столпы, north star, якорь «Сифа») |

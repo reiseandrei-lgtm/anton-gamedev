@@ -10,7 +10,7 @@ game_mode: Mobile | PC | Multiplayer | Narrative
 
 # Review: <doc> — <VERDICT: PASS / CONCERNS / FAIL>
 
-**Главная проблема:** <одно предложение>
+**Вердикт:** <один абзац: главная проблема; нарушение north star — здесь>
 
 ## Scores
 | Section | Score | Weight | Evidence (quote/section) |
@@ -28,8 +28,11 @@ game_mode: Mobile | PC | Multiplayer | Narrative
 - SDT: Autonomy … · Competence … · Relatedness … (system → need)
 - Flow: curve shape … · spikes/plateaus …
 
-## Findings (by severity)
-| # | Class | Section | Finding | Why it matters | Fix direction |
+## What works (mechanical reasons only)
+- …
+
+## Findings — what breaks (by severity)
+| # | Class | Section | Finding | Why it matters | Alternative |
 |---|---|---|---|---|---|
 | 1 | ESCALATE | | | | |
 | 2 | ASK | | | | |
@@ -41,9 +44,9 @@ game_mode: Mobile | PC | Multiplayer | Narrative
 ## Scope risks
 - <Ocean-признаки, недоказанная технология, контент без конца>
 
-## Questions to the author (max 5)
+## What to do next (2–3, by impact/cost)
 1. …
 
-## What works (mechanical reasons only)
-- …
+## Questions to the author (max 5)
+1. …
 ```

@@ -1,5 +1,7 @@
 # import/
 
+**Статус:** `gamedesigner` → встроен как `plugins/gd/skills/syncario-gamedesigner` (v0.2.0).
+
 Сюда кладутся твои собственные скиллы для интеграции в плагин `gd`.
 
 ## Как положить
