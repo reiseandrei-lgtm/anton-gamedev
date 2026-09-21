@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "anton-gamedev",
+  "owner": {
+    "name": "Anton"
+  },
+  "description": "Личный маркетплейс для геймдизайна и нарративного дизайна: пайплайн от искры до хендоффа.",
+  "plugins": [
+    {
+      "name": "gd",
+      "displayName": "GD — Game & Narrative Design",
+      "source": "./plugins/gd",
+      "description": "Пайплайн геймдизайна: triage, концепт, карта систем, GDD, независимое ревью, баланс, скоуп, нарратив, Ink, хендофф.",
+      "category": "design",
+      "tags": ["gamedev", "game-design", "narrative-design", "gdd", "ink"]
+    }
+  ]
+}

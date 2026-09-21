@@ -1,0 +1,10 @@
+# Временные исходники для анализа (см. ATTRIBUTION.md)
+vendor/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
