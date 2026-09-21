@@ -104,4 +104,4 @@ README.md CLAUDE.md ATTRIBUTION.md CHANGELOG.md
 
 ## Лицензии
 
-Часть методологии адаптирована из MIT-проектов — см. [ATTRIBUTION.md](ATTRIBUTION.md).
+Репозиторий и плагин — [MIT](LICENSE) © 2026 Anton. Часть методологии адаптирована из сторонних MIT-проектов; их copyright и тексты лицензий — в [ATTRIBUTION.md](ATTRIBUTION.md).

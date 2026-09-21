@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.1] — 2026-09-21
+
+### Added
+- Лицензия MIT: `LICENSE` в корне и в `plugins/gd/`, поле `license` в `plugin.json`.
+
 ## [0.2.0] — 2026-09-21
 
 ### Added

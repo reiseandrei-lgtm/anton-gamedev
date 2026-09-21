@@ -1,10 +1,11 @@
 {
   "name": "gd",
   "displayName": "GD — Game & Narrative Design",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Game & narrative design pipeline: spark → concept → systems → GDD → independent review → balance → scope → handoff. RU/EN.",
   "author": {
     "name": "Anton"
   },
+  "license": "MIT",
   "keywords": ["gamedev", "game-design", "narrative-design", "gdd", "balance", "scope", "ink", "ludonarrative"]
 }
