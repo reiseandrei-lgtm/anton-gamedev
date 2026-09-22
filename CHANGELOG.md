@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.0] — 2026-09-22
+
+### Added
+- Скилл `narrative-continuity` и команда `/gd:continuity`: реестр промисов (сетап → пэйофф), состояние знаний, канон мира; режимы register / check / impact; скрипт `scripts/check_continuity.py` (C1–C4 по графу diverts Ink).
+- `gd-router/references/prose-failures.md` — проверки прозы для режима текста.
+- `character-voice/references/voice-kit.md` — эталонные реплики, матрица отношений, правка в три прохода.
+- `ink-slice/references/localization-and-telemetry.md` — дизайн выборов, локализация RU/PL/EN, телеметрия.
+- Шаблоны `templates/design/narrative/continuity/` (promises, state, canon).
+
+### Changed
+- `gd-router`: блокер continuity, трек «Континуити» в пайплайне, критерий хендоффа; раздел «Дизайн выбора» в principles.
+- Команды `ink`, `narrative`, `start`: таблица выборов, локализация, voice kit, prose-failures, папка `continuity/`.
+- `character-voice`, `ink-slice` ссылаются на новые references; агент `narrative-designer` получил скилл `narrative-continuity`.
+- README: команда `/gd:continuity` и скилл `narrative-continuity`.
+
 ## [0.2.1] — 2026-09-21
 
 ### Added

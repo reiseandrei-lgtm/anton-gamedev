@@ -21,8 +21,9 @@
 | `/gd:balance <система>` | Проверка баланса и таблица чисел |
 | `/gd:scope` | Ревизия скоупа агентом producer |
 | `/gd:ink <слайс>` | План, замки/ключи и каркас Ink-слайса (`--text` — с репликами) |
+| `/gd:continuity [register\|check\|impact]` | Континуити: промисы (сетап → пэйофф), знание игрока, канон; проверка `.ink` скриптом |
 
-**Скиллы** (срабатывают автоматически по описанию): `gd-router`, `gd-concept`, `gd-systems-map`, `gdd-author`, `gdd-review`, `game-feel`, `balance-check`, `scope-check`, `gd-handoff`, `narrative-structure`, `character-voice`, `ink-slice`.
+**Скиллы** (срабатывают автоматически по описанию): `gd-router`, `gd-concept`, `gd-systems-map`, `gdd-author`, `gdd-review`, `game-feel`, `balance-check`, `scope-check`, `gd-handoff`, `narrative-structure`, `character-voice`, `ink-slice`, `narrative-continuity`.
 
 **Проектные скиллы**: `syncario-gamedesigner` — геймдизайн Syncario (канон, столпы, north star, якорь «Сифа», voice/social/метрики). Для своего проекта главнее общих скиллов.
 
