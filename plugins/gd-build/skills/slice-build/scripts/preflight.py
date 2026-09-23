@@ -35,25 +35,38 @@ def utf8_stdout():
             pass
 
 
-def editor_candidates(version):
+def hub_roots():
+    """Папки редакторов Unity Hub: «Installs location» из настроек Hub + стандартные."""
     home = Path.home()
-    roots = [
-        Path("C:/Program Files/Unity/Hub/Editor") / version / "Editor/Unity.exe",
-        Path("/Applications/Unity/Hub/Editor") / version / "Unity.app",
-        home / "Unity/Hub/Editor" / version / "Editor/Unity",
-    ]
+    roots = [Path("C:/Program Files/Unity/Hub/Editor"), Path("/Applications/Unity/Hub/Editor"),
+             home / "Unity/Hub/Editor"]
+    for cfg in (Path(os.environ.get("APPDATA", "")) / "UnityHub/secondaryInstallPath.json",
+                home / "Library/Application Support/UnityHub/secondaryInstallPath.json",
+                home / ".config/UnityHub/secondaryInstallPath.json"):
+        try:
+            custom = json.loads(cfg.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if isinstance(custom, str) and custom:
+            roots.insert(0, Path(custom))
+    return roots
+
+
+def editor_candidates(version):
+    cands = []
     env = os.environ.get("UNITY_EDITOR_PATH")
     if env:
-        roots.insert(0, Path(env))
-    return roots
+        cands.append(Path(env))
+    for root in hub_roots():
+        cands += [root / version / "Editor/Unity.exe", root / version / "Unity.app", root / version / "Editor/Unity"]
+    return cands
 
 
 def installed_editors():
     found = []
-    for root in (Path("C:/Program Files/Unity/Hub/Editor"), Path("/Applications/Unity/Hub/Editor"),
-                 Path.home() / "Unity/Hub/Editor"):
+    for root in hub_roots():
         if root.is_dir():
-            found += sorted(p.name for p in root.iterdir() if p.is_dir())
+            found += sorted(p.name for p in root.iterdir() if p.is_dir() and re.match(r"\d+\.", p.name))
     return found
 
 
@@ -95,7 +108,7 @@ def main():
             ok = False
             others = installed_editors()
             missing.append(f"редактор Unity {version} (установлены: {', '.join(others) or 'нет'}) — поставь через Unity Hub")
-            lines.append(f"Редактор {version}: не найден в стандартных путях Hub")
+            lines.append(f"Редактор {version}: не найден (стандартные пути Hub и Installs location)")
         if (proj / "Temp/UnityLockfile").exists():
             lines.append("Temp/UnityLockfile есть — редактор, вероятно, открыт (для MCP это нужно; для headless-тестов — закрыть)")
 
