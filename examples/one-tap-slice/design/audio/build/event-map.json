@@ -1,0 +1,136 @@
+[
+  {
+    "path": "event:/SFX/Player/Charge",
+    "kind": "event",
+    "type": "loop",
+    "source": "hop#FB1",
+    "space": "2D",
+    "bus": "bus:/SFX",
+    "priority": "3",
+    "params": [
+      {
+        "name": "charge",
+        "global": false,
+        "min": 0.0,
+        "max": 1.0,
+        "labels": null
+      }
+    ],
+    "status": "todo"
+  },
+  {
+    "path": "event:/SFX/Player/Jump",
+    "kind": "event",
+    "type": "oneshot",
+    "source": "hop#FB2",
+    "space": "2D",
+    "bus": "bus:/SFX",
+    "priority": "1",
+    "params": [
+      {
+        "name": "charge",
+        "global": false,
+        "min": 0.0,
+        "max": 1.0,
+        "labels": null
+      }
+    ],
+    "status": "todo"
+  },
+  {
+    "path": "event:/SFX/Player/Land",
+    "kind": "event",
+    "type": "oneshot",
+    "source": "hop#FB3",
+    "space": "2D",
+    "bus": "bus:/SFX",
+    "priority": "1",
+    "params": [],
+    "status": "todo"
+  },
+  {
+    "path": "event:/SFX/Player/Fall",
+    "kind": "event",
+    "type": "oneshot",
+    "source": "hop#FB4",
+    "space": "2D",
+    "bus": "bus:/SFX",
+    "priority": "1",
+    "params": [],
+    "status": "todo"
+  },
+  {
+    "path": "event:/SFX/Pickup/Spark",
+    "kind": "event",
+    "type": "oneshot",
+    "source": "spark#FB1",
+    "space": "2D",
+    "bus": "bus:/SFX",
+    "priority": "2",
+    "params": [
+      {
+        "name": "tier",
+        "global": false,
+        "min": 0.0,
+        "max": 1.0,
+        "labels": [
+          "single",
+          "double"
+        ]
+      }
+    ],
+    "status": "todo"
+  },
+  {
+    "path": "event:/UI/Record/New",
+    "kind": "event",
+    "type": "stinger",
+    "source": "spark#FB2",
+    "space": "2D",
+    "bus": "bus:/UI",
+    "priority": "2",
+    "params": [],
+    "status": "todo"
+  },
+  {
+    "path": "event:/Music/Run/Main",
+    "kind": "event",
+    "type": "music",
+    "source": "music:run",
+    "space": "2D",
+    "bus": "bus:/Music",
+    "priority": "5",
+    "params": [
+      {
+        "name": "g_intensity",
+        "global": true,
+        "min": 0.0,
+        "max": 1.0,
+        "labels": null
+      }
+    ],
+    "status": "todo"
+  },
+  {
+    "path": "event:/Amb/Sky/Wind",
+    "kind": "event",
+    "type": "amb",
+    "source": "amb:sky",
+    "space": "2D",
+    "bus": "bus:/Amb",
+    "priority": "5",
+    "params": [],
+    "status": "todo"
+  },
+  {
+    "path": "snapshot:/Dead",
+    "kind": "snapshot",
+    "type": "snapshot",
+    "source": "state:dead",
+    "space": "—",
+    "bus": null,
+    "priority": "—",
+    "params": [],
+    "status": "todo"
+  }
+]

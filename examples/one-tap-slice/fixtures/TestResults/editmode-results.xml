@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="5" result="Failed" total="5" passed="4" failed="1" inconclusive="0" skipped="0" engine-version="3.5.0.0" start-time="2026-09-23 10:00:00Z" end-time="2026-09-23 10:00:02Z" duration="1.9">
+  <test-suite type="Assembly" name="Hop.Tests.dll" total="5" passed="4" failed="1">
+    <test-case id="1001" name="T_hop_01_ChargeIsLinear" fullname="LanternHop.Tests.HopLogicTests.T_hop_01_ChargeIsLinear" result="Passed" duration="0.01"/>
+    <test-case id="1002" name="ChargeClampsAtOne" fullname="LanternHop.Tests.HopLogicTests.ChargeClampsAtOne" result="Passed" duration="0.01">
+      <properties><property name="Category" value="T-hop-02"/></properties>
+    </test-case>
+    <test-case id="1003" name="T_hop_03_DistanceFormula" fullname="LanternHop.Tests.HopLogicTests.T_hop_03_DistanceFormula" result="Passed" duration="0.01"/>
+    <test-case id="1004" name="T_spark_02_FarSparkDoubles" fullname="LanternHop.Tests.SparkScoreTests.T_spark_02_FarSparkDoubles" result="Failed" duration="0.02">
+      <failure><message><![CDATA[  Expected: 2
+  But was:  1
+]]></message></failure>
+    </test-case>
+    <test-case id="1005" name="HelperSmoke" fullname="LanternHop.Tests.Misc.HelperSmoke" result="Passed" duration="0.01"/>
+  </test-suite>
+</test-run>

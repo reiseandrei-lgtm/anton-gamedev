@@ -4,15 +4,39 @@
   "owner": {
     "name": "Anton"
   },
-  "description": "Личный маркетплейс для геймдизайна и нарративного дизайна: пайплайн от искры до хендоффа.",
+  "description": "Личный маркетплейс геймдева: дизайн и нарратив (gd) и сборка, тесты, FMOD в Unity (gd-build). Полный цикл от искры до плейтеста, только бесплатные инструменты.",
   "plugins": [
     {
       "name": "gd",
       "displayName": "GD — Game & Narrative Design",
       "source": "./plugins/gd",
-      "description": "Пайплайн геймдизайна: triage, концепт, карта систем, GDD, независимое ревью, баланс, скоуп, нарратив, Ink, хендофф.",
+      "description": "Пайплайн геймдизайна: triage, концепт, карта систем, GDD, ревью, баланс, скоуп, нарратив, Ink, хендофф; арт- и аудио-дирекция, UX, тех-дизайн, тест-план, плейтест, метрики.",
       "category": "design",
-      "tags": ["gamedev", "game-design", "narrative-design", "gdd", "ink"]
+      "tags": [
+        "gamedev",
+        "game-design",
+        "narrative-design",
+        "gdd",
+        "ink",
+        "art-direction",
+        "audio",
+        "playtest",
+        "qa"
+      ]
+    },
+    {
+      "name": "gd-build",
+      "displayName": "GD Build — Unity slice, tests, FMOD",
+      "source": "./plugins/gd-build",
+      "description": "Только Claude Code: сборка Unity-слайса из хендоффа через бесплатный Unity MCP с verify loop, прогон тестов и smoke, синхронизация карты событий FMOD. Без MCP — план и чеклист.",
+      "category": "development",
+      "tags": [
+        "gamedev",
+        "unity",
+        "fmod",
+        "testing",
+        "mcp"
+      ]
     }
   ]
 }

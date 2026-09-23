@@ -1,0 +1,33 @@
+---
+name: fmod-sync
+description: >-
+  Перенос карты событий из design/audio/event-map.md в FMOD Studio и Unity: генерация JS-скрипта для FMOD Studio (папки, события, параметры, шины, снапшоты — идемпотентно), C#-класса констант путей событий, чеклиста интеграции FMOD for Unity; сверка «карта ↔ проект FMOD» по экспорту GUIDs. Опционально — напрямую через бесплатный FMOD Studio MCP, если подключён.
+  Триггеры RU: «перенеси события в FMOD», «создай события FMOD», «синхронизируй FMOD», «подключи FMOD к Unity», «константы событий FMOD».
+  Triggers EN: "sync FMOD events", "create FMOD events", "FMOD Unity integration", "generate FMOD event constants".
+  Не для решения, какие звуки нужны (gd:audio-direction), не для Unity AudioMixer (официальный Unity Plugin).
+---
+
+# fmod-sync
+
+Ты переносишь решённое в `design/audio/event-map.md` в FMOD Studio и код, не меняя самих решений. Звук не создаёшь и не оцениваешь: события появляются пустыми, звук кладёт человек или плейсхолдер.
+
+## Вход
+`design/audio/event-map.md` (формат — `gd: audio-direction/references/fmod-conventions.md`), путь к проекту FMOD Studio (`.fspro`), путь к Unity-проекту. Нет карты → стоп, предложи `/gd:audio events <slice>`.
+
+## Алгоритм (детали и чеклист — `references/fmod-integration.md`)
+1. `python3 scripts/event_map_to_fmod.py design/audio/event-map.md --out design/audio/build` (на Windows `python`) → `event-map.json`, `gd_sync_event_map.js`, `FmodEvents.cs`. FAIL в выводе → сначала `/gd:audio check`.
+2. **FMOD Studio**:
+   - есть бесплатный FMOD Studio MCP → выполни те же операции через него (создать папки, события, шины, снапшоты, параметры; существующее не трогать);
+   - нет MCP → положи `gd_sync_event_map.js` в папку `Scripts` рядом с `.fspro`, пользователь делает Scripts → Reload → Scripts → gd → Sync event map и сохраняет проект. Строки «ВРУЧНУЮ» в консоли FMOD — в чеклист.
+3. **Сверка**: пользователь делает File → Export GUIDs → `python3 scripts/diff_fmod.py design/audio/build/event-map.json <fmod>/GUIDs.txt`. D1 (нет в FMOD) — повторить шаг 2; D2 (лишнее в FMOD) — решение пользователя.
+4. **Unity**: `FmodEvents.cs` → `Assets/_Project/Scripts/Audio/`; чеклист FMOD for Unity (пакет, путь к банкам, listener, загрузка банков, вызовы по константам). С Unity MCP — проверить компиляцию verify loop'ом (`../slice-build/references/verify-loop.md`).
+5. Плейсхолдеры: для событий со Status `todo` — `../slice-build/scripts/gen_sfx.py` (stdlib), файлы с префиксом `ph_`.
+
+## Выход
+Сгенерированные файлы в `design/audio/build/`, `FmodEvents.cs` в Unity-проекте, отчёт в ответе: сколько создано, что вручную, результат diff. Status в event-map меняет только пользователь.
+
+## Done
+`diff_fmod.py` без D1; `FmodEvents.cs` компилируется (или помечено «не проверено в редакторе»); ручные шаги перечислены.
+
+## Правила
+Язык ответа = язык запроса. FMOD Studio бесплатен по Indie-лицензии в её пределах (условия — fmod.com); платные сервисы генерации звука не предлагать. Сгенерированный JS проверен по документации Scripting API, но на этой машине не запускался — первый запуск делать на копии проекта или под git.

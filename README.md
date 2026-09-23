@@ -1,11 +1,16 @@
 # anton-gamedev
 
-Личный маркетплейс плагинов для геймдизайна и нарративного дизайна. Один плагин — **`gd`**: пайплайн от искры до хендоффа, который говорит на языке MDA / SDT / Flow / столпов и не пишет художественный текст без запроса.
+Личный маркетплейс плагинов для полного цикла инди-игры на Unity 6 + FMOD — от искры до плейтеста. Говорит на языке MDA / SDT / Flow / столпов, не пишет художественный текст без запроса и использует **только бесплатные инструменты**.
 
-Работает в **Claude Code** и **Claude Cowork**.
+| Плагин | Где работает | Что делает |
+|---|---|---|
+| **`gd`** | Claude Code и Claude Cowork | Геймдизайн, нарратив и направляющие документы: арт, звук, UX, тех-дизайн, тест-план, плейтест, метрики |
+| **`gd-build`** | Только Claude Code | Сборка Unity-слайса из хендоффа через бесплатный Unity MCP, тесты и smoke, синхронизация карты событий FMOD. Без MCP — план и чеклист |
 
 ```
-искра → концепт → структура систем → GDD → независимое ревью → баланс → скоуп → хендофф
+искра → концепт → системы → GDD → ревью → баланс → скоуп → хендофф
+  → подготовка сборки (тех-дизайн, тест-план) → сборка [gd-build] → QA [gd-build] → плейтест → решение ↺
+параллельно: нарратив · континуити · арт · звук (→ FMOD [gd-build]) · UX · метрики · game feel
 ```
 
 ## Что внутри
@@ -22,12 +27,31 @@
 | `/gd:scope` | Ревизия скоупа агентом producer |
 | `/gd:ink <слайс>` | План, замки/ключи и каркас Ink-слайса (`--text` — с репликами) |
 | `/gd:continuity [register\|check\|impact]` | Континуити: промисы (сетап → пэйофф), знание игрока, канон; проверка `.ink` скриптом |
+| `/gd:art [bible\|assets\|check\|review]` | Арт-библия, список ассетов, проверка палитры (контраст, grayscale, дальтонизм); ревью агентом art-director |
+| `/gd:audio [bible\|events\|check\|review]` | Аудио-библия, карта событий FMOD, покрытие Feedback из GDD; ревью агентом audio-director |
+| `/gd:ux [ftue\|hud\|a11y]` | FTUE и туториал, HUD, чеклист доступности |
+| `/gd:tech [<slice>\|adr\|check]` | Тех-дизайн Unity: модули, config map (knob → поле), сохранения, бюджеты, ADR |
+| `/gd:qa-plan <slice> [--review]` | Тест-план из GDD и хендоффа с трассировкой покрытия; ревью агентом qa-lead |
+| `/gd:playtest [plan\|analyze] <slice>` | Протокол плейтеста с порогом; независимый анализ заметок агентом playtest-analyst |
+| `/gd:metrics [<slice>\|check]` | Вопросы → KPI → события → воронки |
 
-**Скиллы** (срабатывают автоматически по описанию): `gd-router`, `gd-concept`, `gd-systems-map`, `gdd-author`, `gdd-review`, `game-feel`, `balance-check`, `scope-check`, `gd-handoff`, `narrative-structure`, `character-voice`, `ink-slice`, `narrative-continuity`.
+**Команды `gd-build`** (`/gd-build:<имя>`, только Claude Code)
+
+| Команда | Что делает |
+|---|---|
+| `/gd-build:slice <slice>` | Играбельный Unity-слайс из хендоффа: тест первым, verify loop, лог доказательств по ED |
+| `/gd-build:test [suite\|smoke\|input\|bug]` | EditMode / PlayMode через MCP или headless, smoke, баг-репорты; 0 тестов = FAIL |
+| `/gd-build:fmod [sync\|diff\|unity]` | Карта событий → скрипт FMOD Studio + `FmodEvents.cs`, сверка по экспорту GUIDs |
+
+**Скиллы `gd`** (срабатывают автоматически по описанию): `gd-router`, `gd-concept`, `gd-systems-map`, `gdd-author`, `gdd-review`, `game-feel`, `balance-check`, `scope-check`, `gd-handoff`, `narrative-structure`, `character-voice`, `ink-slice`, `narrative-continuity`, `art-direction`, `audio-direction`, `ux-onboarding`, `tech-design`, `qa-plan`, `playtest`, `metrics-plan`.
+
+**Скиллы `gd-build`**: `slice-build`, `qa-run`, `fmod-sync`.
+
+У каждого нового скилла есть детерминированная проверка в `scripts/` (Python stdlib): палитра, ассеты, карта событий, knobs → конфиги, покрытие тестами, события аналитики, коды плейтеста, результаты NUnit, сверка с FMOD.
 
 **Проектные скиллы**: `syncario-gamedesigner` — геймдизайн Syncario (канон, столпы, north star, якорь «Сифа», voice/social/метрики). Для своего проекта главнее общих скиллов.
 
-**Агенты**: `design-critic` (ревью без истории создания), `narrative-designer` (структура, не проза), `producer` (скоуп и вырезание для соло / 2–4 человек).
+**Агенты**: `design-critic` (ревью без истории создания), `narrative-designer` (структура, не проза), `producer` (скоуп и вырезание для соло / 2–4 человек). Ревьюеры, видящие только артефакт: `art-director`, `audio-director`, `qa-lead`, `playtest-analyst` (последний не видит даже GDD — чтобы не подгонять наблюдения под замысел).
 
 ## Установка в Claude Code
 
@@ -36,6 +60,7 @@
 ```
 /plugin marketplace add reiseandrei-lgtm/anton-gamedev
 /plugin install gd@anton-gamedev
+/plugin install gd-build@anton-gamedev
 ```
 
 Локально, до публикации:
@@ -43,6 +68,7 @@
 ```
 /plugin marketplace add "D:/Claude Projects/MASTER GDD"
 /plugin install gd@anton-gamedev
+/plugin install gd-build@anton-gamedev
 ```
 
 Перезапусти сессию или выполни `/reload-plugins`. Проверка: `/gd:start`.
@@ -51,14 +77,14 @@
 
 1. **Customize → Plugins → Add marketplace**.
 2. Вставь URL репозитория (`https://github.com/reiseandrei-lgtm/anton-gamedev`). Для приватного репозитория нужен доступ аккаунта Claude к GitHub.
-3. В списке плагинов маркетплейса включи **gd**.
+3. В списке плагинов маркетплейса включи **gd**. `gd-build` в Cowork не ставь: ему нужен Unity-проект и Unity MCP.
 
-В Cowork работают скиллы, команды и агенты. Папка `design/` должна быть в той папке/репозитории, которую ты открыл в Cowork.
+В Cowork работают скиллы, команды и агенты `gd`. Шаги сборки и тестов роутер там отдаёт чеклистом. Папка `design/` должна быть в той папке/репозитории, которую ты открыл в Cowork.
 
 ## Обновление
 
-1. Внеси изменения, **подними `version` в `plugins/gd/.claude-plugin/plugin.json`** (без этого клиенты не увидят обновление), допиши `CHANGELOG.md`, сделай коммит и тег, запушь.
-2. Claude Code: `/plugin marketplace update anton-gamedev`, затем `/plugin update gd@anton-gamedev` (или через `/plugin` → Installed).
+1. Внеси изменения, **подними `version` в `plugins/<plugin>/.claude-plugin/plugin.json`** изменённого плагина (без этого клиенты не увидят обновление), допиши `CHANGELOG.md`, прогони проверки (см. CLAUDE.md), сделай PR, после мержа — тег.
+2. Claude Code: `/plugin marketplace update anton-gamedev`, затем `/plugin update gd@anton-gamedev` и `/plugin update gd-build@anton-gamedev` (или через `/plugin` → Installed).
 3. Cowork: обнови маркетплейс в Customize → Plugins. **Если версия «залипла»** (старое поведение после обновления) — удали плагин `gd` и установи заново.
 
 Локальный маркетплейс из папки версию не пинит: изменения подхватываются после `/reload-plugins`.
@@ -85,9 +111,20 @@ cp -r ~/.claude/plugins/marketplaces/anton-gamedev/templates/design ./design
 
 **Syncario:** после установки плагина отключи старую копию скилла `gamedesigner` в claude.ai (Настройки → Возможности → Скиллы), иначе в Cowork/claude.ai будут срабатывать два одинаковых скилла. Главная копия теперь — `plugins/gd/skills/syncario-gamedesigner/`, оригинал хранится в `import/gamedesigner/`.
 
-## Unity и FMOD
+## Unity и FMOD (`gd-build`)
 
-В этот плагин **не входят**. Для реализации в Unity поставь официальный **Unity Plugin for Claude Code** (работает только в Claude Code). Плагин `gd` заканчивается на хендоффе (`design/handoff/<slice>.md`) — это вход для реализации. FMOD упоминается только как соглашение по тегам/событиям в дизайн-документах.
+Только бесплатное:
+
+| Что | Зачем | Цена |
+|---|---|---|
+| Unity 6 Personal | движок | бесплатно в пределах Personal |
+| [CoplayDev/unity-mcp](https://github.com/CoplayDev/unity-mcp) (MIT) | управление редактором: скрипты, сцены, тесты, консоль, скриншоты | бесплатно; инструменты генерации (`generate_*`) платные — скиллы их не вызывают |
+| FMOD Studio + FMOD for Unity | звук | бесплатно по Indie-лицензии в её пределах (условия — fmod.com) |
+| Официальный Unity Plugin (`/plugin marketplace add Unity-Technologies/unity-agent-plugin`, затем `/plugin install unity@unity-agent-plugin`) | справочник how-to по API Unity | бесплатно; его MCP через Unity AI требует подписки — не используется |
+
+Без Unity MCP `gd-build` работает в режиме **plan**: план задач, чеклист, headless-прогон тестов при закрытом редакторе (`run-tests-headless.ps1/.sh`). Всё, что не проверено в редакторе, так и помечается.
+
+`gd` Unity-действий не делает: он пишет соглашения (нейминг событий FMOD, модули, config map, бюджеты), которые `gd-build` исполняет.
 
 ## Структура репозитория
 
@@ -95,14 +132,18 @@ cp -r ~/.claude/plugins/marketplaces/anton-gamedev/templates/design ./design
 .claude-plugin/marketplace.json
 plugins/gd/
   .claude-plugin/plugin.json
-  skills/<name>/SKILL.md (+ references/)
+  skills/<name>/SKILL.md (+ references/, scripts/)
   commands/*.md
   agents/*.md
+plugins/gd-build/        то же для сборки и тестов
 templates/design/        шаблон design/ для игр
+examples/one-tap-slice/  тестовый мини-проект и результаты прогона скиллов
+tools/                   проверки репозитория и тесты скриптов
+research/                ресерч и архитектура
 import/                  твои скиллы для интеграции
 README.md CLAUDE.md ATTRIBUTION.md CHANGELOG.md
 ```
 
 ## Лицензии
 
-Репозиторий и плагин — [MIT](LICENSE) © 2026 Anton. Часть методологии адаптирована из сторонних MIT-проектов; их copyright и тексты лицензий — в [ATTRIBUTION.md](ATTRIBUTION.md).
+Репозиторий и плагины — [MIT](LICENSE) © 2026 Anton. Часть методологии адаптирована из сторонних MIT-проектов; их copyright и тексты лицензий — в [ATTRIBUTION.md](ATTRIBUTION.md).

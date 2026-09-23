@@ -43,16 +43,18 @@ failure_looks_like:
 ## 4. Systems
 | System | Role in slice | Exists? | Notes |
 |---|---|---|---|
-## 5. Assets
+## 5. Assets and audio
 | Asset | Real / Placeholder | Spec |
 |---|---|---|
+Полный список — `design/art/asset-list.md` (priority `slice`); звук — `design/audio/event-map.md`.
 ## 6. Acceptance
-### Engineering Done
-- [ ] builds, target framerate, all §3 interactions work
+### Engineering Done  (stable IDs: tests and build log reference them)
+- [ ] ED1 builds, target framerate, all §3 interactions work
+- [ ] ED2 …
 ### Design Done  ← the important part
-- [ ] player can feel <X> (observable)
-- [ ] player understands <Y> after <Z> encounters
-- [ ] the "soul" is present: <one thing>
+- [ ] DD1 player can feel <X> (observable)
+- [ ] DD2 player understands <Y> after <Z> encounters
+- [ ] DD3 the "soul" is present: <one thing>
 ### Not done until
 - [ ] someone other than the developer played it
 ## 7. Tempting shortcuts that kill the experience
@@ -64,4 +66,4 @@ failure_looks_like:
 ```
 
 ## Common mistakes
-All items same priority · no experiential criteria · "standard" anything · assets without real/placeholder tag · no "soul" named.
+All items same priority · criteria without ED/DD IDs · no experiential criteria · "standard" anything · assets without real/placeholder tag · no "soul" named.

@@ -1,11 +1,26 @@
 {
   "name": "gd",
   "displayName": "GD — Game & Narrative Design",
-  "version": "0.3.0",
-  "description": "Game & narrative design pipeline: spark → concept → systems → GDD → independent review → balance → scope → handoff. RU/EN.",
+  "version": "0.4.0",
+  "description": "Game & narrative design pipeline: spark → concept → systems → GDD → review → balance → scope → handoff → test plan → playtest → decision; art & audio direction (FMOD event map), UX/FTUE, tech design, metrics. RU/EN. Free tools only.",
   "author": {
     "name": "Anton"
   },
   "license": "MIT",
-  "keywords": ["gamedev", "game-design", "narrative-design", "gdd", "balance", "scope", "ink", "ludonarrative"]
+  "keywords": [
+    "gamedev",
+    "game-design",
+    "narrative-design",
+    "gdd",
+    "balance",
+    "scope",
+    "ink",
+    "ludonarrative",
+    "art-direction",
+    "audio",
+    "fmod",
+    "playtest",
+    "qa",
+    "analytics"
+  ]
 }

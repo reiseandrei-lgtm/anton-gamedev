@@ -3,7 +3,7 @@ name: narrative-structure
 description: >-
   Структура нарратива игры: ветвление и консеквенс-деревья, критический путь, фазы, состояние мира, лор и правила мира, каноничность, проверка ludonarrative-гармонии. Пишет design/narrative/world.md и design/narrative/branches/<branch>.md. Только структура и заметки — без прозы.
   Триггеры RU: «ветвление», «дерево последствий», «структура сюжета», «развилка», «лор», «правила мира», «проверь каноничность», «лудонарративный диссонанс».
-  Triggers EN: "branching structure", "consequence tree", "story structure", "world rules", "lore bible", "continuity check", "ludonarrative".
+  Triggers EN: "branching structure", "consequence tree", "story structure", "world rules", "lore bible", "ludonarrative".
   Не для голосов и персонажей (character-voice) и не для Ink-кода (ink-slice).
 ---
 

@@ -1,0 +1,15 @@
+{0f0e1a2b-3c4d-5e6f-7081-92a3b4c5d6e7} bus:/
+{1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f801} bus:/SFX
+{2b3c4d5e-6f70-8192-a3b4-c5d6e7f80112} bus:/UI
+{3c4d5e6f-7081-92a3-b4c5-d6e7f8011223} bus:/Music
+{4d5e6f70-8192-a3b4-c5d6-e7f801122334} bus:/Amb
+{5e6f7081-92a3-b4c5-d6e7-f80112233445} event:/SFX/Player/Charge
+{6f708192-a3b4-c5d6-e7f8-011223344556} event:/SFX/Player/Jump
+{70819203-b4c5-d6e7-f801-122334455667} event:/SFX/Player/Jump2
+{8192a3b4-c5d6-e7f8-0112-233445566778} event:/SFX/Player/Land
+{92a3b4c5-d6e7-f801-1223-344556677889} event:/SFX/Player/Fall
+{a3b4c5d6-e7f8-0112-2334-45566778899a} event:/SFX/Pickup/Spark
+{b4c5d6e7-f801-1223-3445-566778899aab} event:/UI/Record/New
+{c5d6e7f8-0112-2334-4556-6778899aabbc} event:/Music/Run/Main
+{d6e7f801-1223-3445-5667-78899aabbccd} snapshot:/Dead
+{e7f80112-2334-4556-6778-899aabbccdde} bank:/Master
