@@ -9,7 +9,8 @@
 - **Windows**: `Unity.exe` — GUI-бинарник, `&` возвращается сразу; скрипт ждёт процесс через `WaitForExit()`.
 - **`-nographics`**: для EditMode безопасно; PlayMode с рендером — без флага.
 - **Первый прогон** на чистом клоне импортирует `Library` — минуты, не секунды. Не ставь короткий таймаут.
-- **Лицензия** Unity должна быть активирована на машине (Hub с входом — достаточно). Unity Personal бесплатна.
+- **Лицензия** Unity должна быть активирована на машине: Hub запущен, выполнен вход, лицензия Personal активна (бесплатно). Устаревший `UnityEntitlementLicense.xml` на диске не помогает: batchmode падает с кодом 198 и строкой `No valid Unity Editor license found` в логе — это шаг пользователя, не чинится скриптом.
+- **Нестандартная папка редакторов** (Hub → Settings → Installs location) читается из `%APPDATA%/UnityHub/secondaryInstallPath.json` — `preflight.py` и `run-tests-headless.ps1` её учитывают.
 
 ## 2. Через MCP (CoplayDev)
 1. `manage_tools` → activate group `testing` (один раз за сессию).

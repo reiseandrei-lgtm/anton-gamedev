@@ -1,5 +1,12 @@
 # Changelog
 
+## [gd-build 0.1.1] — 2026-09-23
+
+### Fixed
+- `preflight.py` и `run-tests-headless.ps1` находят редактор в нестандартной папке Unity Hub (Settings → Installs location, `secondaryInstallPath.json`). Раньше редактор на D: считался «не найден».
+- `run-tests-headless.ps1` прямо сообщает об отсутствии лицензии Unity (exit 198, `No valid Unity Editor license found`) вместо «прогон не завершился».
+- `qa-run/references/qa-run-method.md`: как распознать устаревшую лицензию и нестандартную папку редакторов.
+
 ## [0.4.0] — 2026-09-23 · gd 0.4.0, gd-build 0.1.0
 
 Полный цикл: после хендоффа — подготовка сборки, сборка, QA, плейтест, решение; параллельные треки арта, звука, UX и метрик. Только бесплатные инструменты. Ресерч и архитектура — `research/2026-09-full-cycle*.md`.

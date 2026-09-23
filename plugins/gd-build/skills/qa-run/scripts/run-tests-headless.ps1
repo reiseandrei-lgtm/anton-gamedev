@@ -1,4 +1,6 @@
-﻿# Copied from unity-kit scripts/run-tests-headless.ps1 (MIT (c) 2026 Benjamin Curlier) - see ATTRIBUTION.md. Unchanged except this header.
+﻿# Copied from unity-kit scripts/run-tests-headless.ps1 (MIT (c) 2026 Benjamin Curlier) - see ATTRIBUTION.md.
+# Changed by gd-build: also looks in Unity Hub's custom "Installs location" (secondaryInstallPath.json);
+# reports a missing license (exit 198 / "No valid Unity Editor license") explicitly.
 # unity-kit: run Unity Test Framework tests headless (no editor GUI).
 # Usage: .\run-tests-headless.ps1 [-ProjectPath .] [-Platform EditMode|PlayMode|Both] [-TestFilter <regex>] [-NoGraphics] [-AcceptApiUpdate]
 # Exit code: 0 all green, 2 tests failed, 3 run did not complete (compile error, license, lock, crash).
@@ -55,6 +57,16 @@ if (Test-Path $lock) {
 
 # Locate the editor: default Hub path first, then find-unity.ps1 (lists all editors as JSON).
 $unity = "C:\Program Files\Unity\Hub\Editor\$version\Editor\Unity.exe"
+if (-not (Test-Path $unity)) {
+    # gd-build: Unity Hub may install editors to a custom folder ("Installs location" in Hub settings).
+    $secondary = Join-Path $env:APPDATA "UnityHub\secondaryInstallPath.json"
+    if (Test-Path $secondary) {
+        try {
+            $custom = Get-Content $secondary -Raw | ConvertFrom-Json
+            if ($custom) { $candidate = Join-Path $custom "$version\Editor\Unity.exe"; if (Test-Path $candidate) { $unity = $candidate } }
+        } catch { }
+    }
+}
 if (-not (Test-Path $unity)) {
     $finder = Join-Path $PSScriptRoot "find-unity.ps1"
     if (Test-Path $finder) {
@@ -122,6 +134,9 @@ foreach ($p in $platforms) {
             }
         }
     } else {
+        if (Select-String -Path $log -Pattern "No valid Unity Editor license" -Quiet -ErrorAction SilentlyContinue) {
+            Write-Host "[$p] NO VALID UNITY LICENSE: open Unity Hub, sign in and activate a (free Personal) license, then retry."
+        }
         Write-Host "[$p] no results XML written (exit $code) - run did not complete; last log lines:"
         Get-Content $log -Tail 25 -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $_" }
         $code = 3
