@@ -17,7 +17,9 @@ depends_on: []
 Что игрок должен чувствовать (MDA-эстетика). SDT: какая потребность — Autonomy / Competence / Relatedness.
 
 ## Core Rules
-Нумерованные однозначные правила. Программист реализует без вопросов.
+Однозначные правила со стабильными ID (не перенумеровывать при правке; удалённый ID не переиспользовать). Программист реализует без вопросов.
+R1. …
+R2. …
 
 ## States & Transitions
 | State | Entry | Exit | Behavior |
@@ -28,15 +30,16 @@ depends_on: []
 |---|---|---|---|
 
 ## Formulas
-### <Formula>
+### F1 — <Formula>
 `result = ...`
 | Variable | Type | Range | Source | Meaning |
 |---|---|---|---|---|
 Ожидаемый диапазон выхода: … · Клампы: …
 
 ## Edge Cases
-| Scenario | Behavior | Why |
-|---|---|---|
+| ID | Scenario | Behavior | Why |
+|---|---|---|---|
+| E1 | … | … | … |
 Проверить: нулевое состояние, переполнение, несоответствие уровня, обрыв (сеть/сейв), неповиновение игрока.
 
 ## Dependencies
@@ -44,12 +47,14 @@ depends_on: []
 |---|---|---|
 
 ## Tuning Knobs
-| Parameter | Current | Safe range | ↑ effect | ↓ effect |
-|---|---|---|---|---|
+| ID | Parameter | Current | Safe range | ↑ effect | ↓ effect |
+|---|---|---|---|---|---|
+| K1 | … | … | … | … | … |
 
 ## Feedback (Visual / Audio)
-| Event | Visual | Audio (FMOD event) | Priority |
-|---|---|---|---|
+| ID | Event | Visual | Audio (FMOD event) | Priority |
+|---|---|---|---|---|
+| FB1 | … | … | `event:/SFX/<Category>/<Name>` или — | … |
 
 ## Game Feel
 - Reference / anti-reference: <конкретная механика конкретной игры>
@@ -73,3 +78,4 @@ depends_on: []
 - [ ] Минимум 5 edge cases
 - [ ] Tuning knobs с безопасными диапазонами
 - [ ] Game feel: цель и «душа» названы
+- [ ] У правил, формул, edge cases, knobs и feedback есть ID (R/F/E/K/FB) — на них ссылаются qa-plan, tech-design, audio-direction

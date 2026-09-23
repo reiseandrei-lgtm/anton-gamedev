@@ -1,5 +1,11 @@
 # Пайплайн: стадии, входы, выходы, критерии перехода
 
+```
+искра → концепт → системы → GDD → ревью → баланс → скоуп → хендофф
+  → подготовка сборки → сборка [gd-build] → QA [gd-build] → плейтест → решение (↺ по адресатам)
+параллельно: нарратив · континуити · арт · звук (→ FMOD [gd-build]) · UX · метрики · game feel
+```
+
 Все пути — относительно корня игрового репозитория. `design/` — общий мост между Claude Code и Cowork.
 
 Статусы во frontmatter каждого документа: `template` (пусто) → `draft` → `review` → `approved`.
@@ -13,9 +19,17 @@
 | 4 | Независимое ревью | агент `design-critic` + `gdd-review` (`/gd:review`) | `gdd/*.md` в `draft`/`review` | `reviews/YYYY-MM-DD-<doc>.md` | Вердикт не FAIL; нет открытых ESCALATE; принятые решения внесены в `decisions-log.md`; документ → `review`/`approved` |
 | 5 | Баланс | `balance-check` (`/gd:balance`) | GDD систем с числами (прошли ревью) | `balance/<system>.md` | Таблица чисел для каждой числовой системы; faucet/sink 0.9–1.1 или отклонение обосновано; нет доминантной стратегии без решения; проекция D1/D7/D30 (где применимо) |
 | 6 | Скоуп | `scope-check`, агент `producer` (`/gd:scope`) | Все MVP GDD + balance | `scope.md` | Конечный список контента (Lake, без «и т.д.»); оценка ≤ ресурсы команды с буфером 20%; cut-list и порядок вырезания |
-| 7 | Хендофф | `gd-handoff` | `scope.md`, approved GDD | `handoff/<slice>.md` | Выбран слайс с гипотезой; критерии Engineering Done и Design Done; список фейков/плейсхолдеров; для нарративного слайса — continuity-отчёт без FAIL и без C4 без решения. Дальше — реализация (Unity-плагин, вне этого пайплайна) |
+| 7 | Хендофф | `gd-handoff` | `scope.md`, approved GDD | `handoff/<slice>.md` | Выбран слайс с гипотезой; критерии Engineering Done и Design Done со стабильными ID (`ED1…`, `DD1…`); список фейков/плейсхолдеров; для нарративного слайса — continuity-отчёт без FAIL и без C4 без решения |
+| 8 | Подготовка сборки | `tech-design` (`/gd:tech`), `qa-plan` (`/gd:qa-plan`) | handoff, GDD слайса | `tech/architecture.md`, `tech/budgets.md`, `qa/test-plan-<slice>.md` | `check_knobs.py` без FAIL (каждый Tuning Knob слайса → поле конфига); `check_coverage.py` без FAIL (каждое R / F / E и ED → ≥ 1 тест); перф-бюджет для целевой платформы |
+| 9 | Сборка слайса | `slice-build` (`/gd-build:slice`, плагин `gd-build`, только Claude Code) | 7 + 8 | `build/<slice>.log.md` + Unity-проект | Каждый MUST `ED*` — ✅ с доказательством или ⛔ с причиной; компиляция доказана; режим `live` (в режиме `plan` стадия только подготовлена, не закрыта) |
+| 10 | QA | `qa-run` (`/gd-build:test`) | билд, test-plan | `qa/runs/YYYY-MM-DD-<slice>.md`, `qa/bugs/BUG-NNN.md` | Вердикт PASS: smoke пройден, 0 тестов ≠ зелёный, нет открытых S1 / S2 |
+| 11 | Плейтест | `playtest` (`/gd:playtest plan` → сессии → `analyze` агентом `playtest-analyst`) | билд без S1 / S2, гипотеза хендоффа | `playtest/YYYY-MM-DD-<slice>.plan.md`, `.report.md` | Порог записан до сессий; вердикт `confirmed / refuted / inconclusive` по порогу; у каждой находки P0 / P1 есть адресат |
+| 12 | Решение | `gd-router` | report плейтеста, `qa/runs`, `game-feel` (build) | `decisions-log.md` | Записано одно из: `iterate` (→ адресаты находок) · `pivot` (→ 1) · `kill` (→ 7, другой слайс) · `advance` (следующий слайс / вертикаль), с причиной |
 
 ## Параллельные треки
+
+Трекам арта и звука не нужен весь пайплайн: bible стартует от столпов. Перед стадией 9 для слайса с артом и звуком (а не только примитивами): asset-list с источником у каждого ассета (`check_assets.py` без FAIL) и event-map с покрытием Feedback (`check_event_map.py` без FAIL).
+
 
 | Трек | Скилл | Когда | Файлы |
 |---|---|---|---|
@@ -23,7 +37,11 @@
 | Голоса и персонажи | `character-voice` | После `world.md` | `narrative/voice-pillars.md`, `narrative/characters/*.md` |
 | Ink-слайсы | `ink-slice` (`/gd:ink`) | После branches + voice для нужной сцены | `narrative/ink/<slice>.plan.md` (+ `.ink` в репо игры) |
 | Континуити | `narrative-continuity` (`/gd:continuity`) | `register` — после первых branches; `check` — после каждого Ink-слайса и перед хендоффом; `impact` — при правке канона | `narrative/continuity/{promises,state,canon}.md`, `reviews/YYYY-MM-DD-continuity.md` |
-| Game feel / playability | `game-feel` | На бумаге — после GDD системы; по билду — после прототипа | `reviews/YYYY-MM-DD-feel-<mechanic>.md` |
+| Game feel / playability | `game-feel` | На бумаге — после GDD системы; по билду — после стадии 10 | `reviews/YYYY-MM-DD-feel-<mechanic>.md` |
+| Арт-дирекция | `art-direction` (`/gd:art`), агент `art-director` | `bible` — после `pillars.md` в `draft`+; `assets` — после GDD слайса | `art/art-bible.md`, `art/asset-list.md` |
+| Звук | `audio-direction` (`/gd:audio`), агент `audio-director`; перенос — `fmod-sync` (`/gd-build:fmod`) | `bible` — после `pillars.md`; `events` — после GDD слайса | `audio/audio-bible.md`, `audio/event-map.md`, `audio/build/` |
+| UX и онбординг | `ux-onboarding` (`/gd:ux`) | После GDD core loop; до хендоффа onboarding-слайса | `ux/ftue.md`, `ux/hud.md`, `ux/accessibility.md` |
+| Метрики | `metrics-plan` (`/gd:metrics`) | После хендоффа (есть гипотеза) и `ux/ftue.md` | `analytics/events.md`, `analytics/funnels.md` |
 | Решения | любой скилл | При каждом принятом решении | `decisions-log.md` (дата, решение, почему, альтернативы) |
 
 ## Возвраты назад
@@ -32,6 +50,11 @@
 - Баланс требует новой системы (новый sink) → стадия 2 (обновить `systems-map.md`), затем 3.
 - Скоуп FAIL → `producer` предлагает вырезание → обновить `systems-map.md` (приоритеты) и `scope.md`.
 - Continuity FAIL → правка ветки (`/gd:narrative`) или слайса (`/gd:ink`), затем повторный `/gd:continuity check`.
+- Плейтест `refuted` → решение в `decisions-log.md` → `iterate` или `pivot`.
+- Находка плейтеста: о понимании → `ux-onboarding`; об ощущении → `game-feel`; о числах → `balance-check`; о правилах → `gdd-author --quick`; о читаемости → `art-direction`; о звуке → `audio-direction`.
+- Баг оказался дырой дизайна (edge case не описан) → `gdd-author --quick` → `qa-plan` пересчитывает покрытие.
+- `slice-build` уткнулся в неоднозначность хендоффа → стоп, вопрос в `handoff/<slice>.md` → Open Questions; решает дизайнер (`gd-handoff`).
+- Сборка вышла за перф-бюджет → `tech-design` (ADR: что режем) или `scope-check`.
 
 ## Эвристики определения стадии
 
@@ -39,3 +62,10 @@
 - В `reviews/` нет файла новее последнего изменения GDD → стадия 4 для этого GDD.
 - Есть `narrative/ink/*.plan.md`, но нет `narrative/continuity/promises.md` → предложить `/gd:continuity register` параллельно.
 - Для малых правок существующей системы — не гнать весь пайплайн: `gdd-author` в лёгком режиме, затем `/gd:review`.
+- `handoff/*.md` в `review`+, но нет `qa/test-plan-<slice>.md` или `tech/architecture.md` в `template` → стадия 8.
+- Есть 8, нет `build/<slice>.log.md` → стадия 9 (`/gd-build:slice`; в Cowork — сказать, что шаг делается в Claude Code с `gd-build`, и дать чеклист).
+- `build/<slice>.log.md` новее последнего `qa/runs/*-<slice>.md` → стадия 10.
+- Последний `qa/runs` PASS, нет `playtest/*-<slice>.plan.md` → стадия 11 (`plan`); plan есть, report нет → стадия 11 (`analyze`, после сессий).
+- Есть `playtest/*.report.md` без строки в `decisions-log.md` новее отчёта → стадия 12.
+- `pillars.md` в `review`+, а `art/art-bible.md` и `audio/audio-bible.md` в `template` → предложить треки параллельно (блокер только перед стадией 9, если в слайсе есть арт или звук).
+- Нет ID в GDD (`R1`, `K1`, `FB1`) на стадии 8 → сначала `gdd-author` для простановки ID.

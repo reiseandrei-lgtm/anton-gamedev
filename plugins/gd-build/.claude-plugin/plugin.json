@@ -1,0 +1,11 @@
+{
+  "name": "gd-build",
+  "displayName": "GD Build — Unity slice, tests, FMOD",
+  "version": "0.1.0",
+  "description": "Continues the gd pipeline after handoff in Claude Code: build a playable Unity 6 slice via a free Unity MCP with a verify loop, run EditMode/PlayMode/smoke tests, sync the FMOD event map. Degrades to plan + checklist without MCP. Free tools only.",
+  "author": {
+    "name": "Anton"
+  },
+  "license": "MIT",
+  "keywords": ["gamedev", "unity", "fmod", "testing", "prototype", "mcp"]
+}

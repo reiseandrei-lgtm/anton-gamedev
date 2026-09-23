@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.4.0] — 2026-09-23 · gd 0.4.0, gd-build 0.1.0
+
+Полный цикл: после хендоффа — подготовка сборки, сборка, QA, плейтест, решение; параллельные треки арта, звука, UX и метрик. Только бесплатные инструменты. Ресерч и архитектура — `research/2026-09-full-cycle*.md`.
+
+### Added — плагин gd
+- Скиллы `art-direction` (арт-библия, палитра по ролям, читаемость, asset-list; `check_palette.py` — WCAG, grayscale, дальтонизм; `check_assets.py`), `audio-direction` (аудио-библия, карта событий FMOD с соглашением по неймингу; `check_event_map.py` — покрытие Feedback GDD), `ux-onboarding` (FTUE, HUD, чеклист доступности), `tech-design` (модули, config map knob → поле, сохранения, бюджеты, ADR; `check_knobs.py`), `qa-plan` (тест-план из GDD и хендоффа; `check_coverage.py` — трассировка R/F/E/ED → тесты), `playtest` (plan / analyze, коды наблюдения; `aggregate_codes.py`), `metrics-plan` (вопросы → KPI → события → воронки; `check_events.py`).
+- Агенты-ревьюеры `art-director`, `audio-director`, `qa-lead`, `playtest-analyst` — видят только артефакт (аналитик плейтеста не видит GDD).
+- Команды `/gd:art`, `/gd:audio`, `/gd:ux`, `/gd:tech`, `/gd:qa-plan`, `/gd:playtest`, `/gd:metrics`.
+- Общий парсер `gd-router/scripts/gdd_ids.py`: стабильные ID GDD, ссылки `<system>#<ID>`, ID хендоффа.
+- Шаблоны `templates/design/`: `art/`, `audio/`, `ux/`, `tech/` (+ `adr/`), `qa/` (+ `runs/`, `bugs/`), `build/`, `playtest/`, `analytics/`.
+
+### Added — плагин gd-build (новый, только Claude Code)
+- `slice-build`: хендофф → играбельный Unity-слайс через бесплатный Unity MCP; preflight, тест первым, verify loop (компиляция по mtime DLL, консоль, тесты, smoke, скриншот), максимум 3 fix-цикла, лог доказательств по ED; без MCP — режим plan. Скрипты `preflight.py`, `gen_sfx.py`.
+- `qa-run`: EditMode / PlayMode через MCP или headless (`run-tests-headless.ps1/.sh`, `find-unity.*` — из unity-kit), `parse_nunit.py` с сопоставлением T-ID, 0 тестов = FAIL, smoke, баг-репорты.
+- `fmod-sync`: `event_map_to_fmod.py` → идемпотентный JS для FMOD Studio + `FmodEvents.cs`; `diff_fmod.py` сверяет с экспортом GUIDs.
+- Команды `/gd-build:slice`, `/gd-build:test`, `/gd-build:fmod`.
+
+### Changed
+- `gd-router`: стадии 8–12, треки арта / звука / UX / метрик, эвристики и возвраты; шаги `[gd-build]` в Cowork отдаются чеклистом. `principles.md`: «только бесплатные инструменты», «честная проверка».
+- Шаблон GDD: стабильные ID `R1` / `F1` / `E1` / `K1` / `FB1`; хендофф: `ED1…`, `DD1…`. Старые GDD без ID читаются с предупреждением (нумерация по порядку).
+- `game-feel`: убран триггер «плейтест-разбор» (теперь `playtest`); `narrative-structure`: убран "continuity check" (пересекался с `narrative-continuity`).
+- `/gd:start` создаёт новые папки `design/`.
+- CLAUDE.md: два плагина, правило бесплатности, проверки перед выпуском.
+
+### Tooling
+- `tools/check_plugins.py` (frontmatter, ссылки, пересечение триггеров, компиляция скриптов), `tools/test_scripts.py` (23 теста, позитивные и негативные).
+- `examples/one-tap-slice/` — мини-игра по готовому хендоффу, прогон всех новых скиллов и агентов, `RESULTS.md`.
+
+### Not verified
+- `gd-build` против реальных Unity 6 + CoplayDev/unity-mcp и FMOD Studio: на машине разработки их нет; проверено в режиме деградации и на фикстурах.
+
 ## [0.3.0] — 2026-09-22
 
 ### Added

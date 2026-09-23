@@ -2,9 +2,9 @@
 name: game-feel
 description: >-
   Game feel и playability одной механики или билда: отзывчивость, feedback-цепочки (anticipation → action → impact → resolution), мёртвое время, ритм, замыкание петли, удержание сессии, прохождение от лица игрока-персоны. Работает по билду/видео или «на бумаге» по GDD.
-  Триггеры RU: «как ощущается механика», «game feel», «сочность», «отзывчивость управления», «мёртвое время», «играбельно ли», «прогони как игрок», «плейтест-разбор».
+  Триггеры RU: «как ощущается механика», «game feel», «сочность», «отзывчивость управления», «мёртвое время», «играбельно ли», «прогони как игрок».
   Triggers EN: "game feel", "does it feel good", "juice", "responsiveness", "dead time", "is this playable", "playability review", "walk through as a player".
-  Не для ревью всего GDD (gdd-review) и не для чисел баланса (balance-check).
+  Не для ревью всего GDD (gdd-review), не для чисел баланса (balance-check) и не для плейтеста с живыми людьми (playtest).
 ---
 
 # game-feel
