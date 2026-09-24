@@ -199,7 +199,7 @@ class GdBuild(unittest.TestCase):
                         "--plan", D / "qa/test-plan-first-hop.md")
         self.assertEqual(code, 2)
         self.assertIn("T-spark-02", out)
-        self.assertNotIn("WARN T-hop-02", out)  # T-ID из [Category] распознан
+        self.assertNotIn("WARN T-hop-02", out)  # T-ID из [Property("TID", …)] распознан
         self.assertNotIn("WARN T-hop-01", out)  # T-ID из имени метода распознан
         self.assertIn("WARN T-hop-04", out)     # тест плана, которого нет в прогоне
 
@@ -221,6 +221,38 @@ class GdBuild(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertIn("D1 event:/Amb/Sky/Wind", log)
             self.assertIn("D2 event:/SFX/Player/Jump2", log)
+
+    def test_nunit_live_unity_results(self):
+        """Настоящий вывод Unity 6000.3.24f1: все автоматизируемые тесты плана найдены в прогоне."""
+        live = EX / "fixtures/live/TestResults"
+        code, out = run(GB / "qa-run/scripts/parse_nunit.py", live / "editmode-results.xml",
+                        live / "playmode-results.xml", "--plan", D / "qa/test-plan-first-hop.md")
+        self.assertEqual(code, 0, out)
+        self.assertIn("План: автоматизируемых 15 · в прогоне 15", out)
+        self.assertNotIn("WARN", out)
+
+    def test_fmod_cli_variant_and_live_guids(self):
+        with tempfile.TemporaryDirectory() as out:
+            self.assertEqual(run(GB / "fmod-sync/scripts/event_map_to_fmod.py", D / "audio/event-map.md", "--out", out)[0], 0)
+            js = Path(out, "gd_sync_event_map.js").read_text(encoding="utf-8")
+            cli = Path(out, "gd_sync_event_map.cli.js").read_text(encoding="utf-8")
+            self.assertNotIn("studio.menu.addMenuItem", cli)
+            self.assertIn("gdSync();\nstudio.project.save();\nstudio.project.exportGUIDs();", cli)
+            for api in ("getParameterPresets", "relationships.banks.add", "presetOwner", "isGlobal = true"):
+                self.assertIn(api, js)
+            code, log = run(GB / "fmod-sync/scripts/diff_fmod.py", Path(out, "event-map.json"),
+                            EX / "fixtures/live/fmod/GUIDs.txt")
+            self.assertEqual(code, 0, log)
+            self.assertIn("Итог: PASS", log)
+
+    def test_fmod_diff_missing_parameter(self):
+        with tempfile.TemporaryDirectory() as out:
+            run(GB / "fmod-sync/scripts/event_map_to_fmod.py", D / "audio/event-map.md", "--out", out)
+            guids = (EX / "fixtures/live/fmod/GUIDs.txt").read_text(encoding="utf-8")
+            g = tmp("\n".join(l for l in guids.splitlines() if "parameter:/tier" not in l), suffix=".txt")
+            code, log = run(GB / "fmod-sync/scripts/diff_fmod.py", Path(out, "event-map.json"), g)
+            self.assertEqual(code, 1)
+            self.assertIn("D1 parameter:/tier", log)
 
     def test_fmod_bad_path(self):
         p = tmp("""
@@ -256,6 +288,20 @@ class GdBuild(unittest.TestCase):
             self.assertIn("версия 6000.0.99f1", out)
             self.assertIn("MCP: CoplayDev/unity-mcp", out)
             self.assertIn("Test Framework", out)  # не хватает пакета
+            self.assertIn('"testables": ["com.unity.inputsystem"]', out)  # без него нет InputTestFixture
+
+    def test_preflight_old_input_handler(self):
+        with tempfile.TemporaryDirectory() as proj:
+            Path(proj, "ProjectSettings").mkdir()
+            Path(proj, "ProjectSettings/ProjectVersion.txt").write_text("m_EditorVersion: 6000.0.99f1\n", encoding="utf-8")
+            Path(proj, "ProjectSettings/ProjectSettings.asset").write_text("PlayerSettings:\n  activeInputHandler: 0\n", encoding="utf-8")
+            Path(proj, "Packages").mkdir()
+            Path(proj, "Packages/manifest.json").write_text(json.dumps(
+                {"dependencies": {"com.unity.inputsystem": "1.20.0", "com.unity.test-framework": "1.6.0"},
+                 "testables": ["com.unity.inputsystem"]}), encoding="utf-8")
+            code, out = run(GB / "slice-build/scripts/preflight.py", proj, "--design", D)
+            self.assertIn("Active Input Handling", out)
+            self.assertNotIn('"testables"', out)
 
 
 class Repo(unittest.TestCase):

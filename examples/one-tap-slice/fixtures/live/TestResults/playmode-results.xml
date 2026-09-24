@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="9" result="Skipped:Ignored" total="9" passed="7" failed="0" inconclusive="0" skipped="2" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-24 08:19:33Z" end-time="2026-09-24 08:19:35Z" duration="2,2068343">
+  <test-suite type="TestSuite" id="1019" name="one-tap-slice" fullname="one-tap-slice" runstate="Runnable" testcasecount="9" result="Skipped" label="Ignored" start-time="2026-09-24 08:19:33Z" end-time="2026-09-24 08:19:35Z" duration="2.206834" total="9" passed="7" failed="0" inconclusive="0" skipped="2" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <reason>
+      <message><![CDATA[One or more child tests were ignored]]></message>
+    </reason>
+    <test-suite type="Assembly" id="1007" name="Game.Tests.PlayMode.dll" fullname="D:/Unity/Projects/one-tap-slice/Library/ScriptAssemblies/Game.Tests.PlayMode.dll" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-24 08:19:33Z" end-time="2026-09-24 08:19:35Z" duration="1.949569" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="19012" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1008" name="Game" fullname="Game" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-24 08:19:33Z" end-time="2026-09-24 08:19:35Z" duration="1.949156" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1009" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-24 08:19:33Z" end-time="2026-09-24 08:19:35Z" duration="1.948933" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1010" name="PlayMode" fullname="Game.Tests.PlayMode" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-24 08:19:33Z" end-time="2026-09-24 08:19:35Z" duration="1.948730" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="PlayerHopInputTests" fullname="Game.Tests.PlayMode.PlayerHopInputTests" classname="Game.Tests.PlayMode.PlayerHopInputTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-24 08:19:33Z" end-time="2026-09-24 08:19:35Z" duration="1.947804" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1002" name="T_hop_06_touch_charges_release_jumps" fullname="Game.Tests.PlayMode.PlayerHopInputTests.T_hop_06_touch_charges_release_jumps" methodname="T_hop_06_touch_charges_release_jumps" classname="Game.Tests.PlayMode.PlayerHopInputTests" runstate="Runnable" seed="1952197794" result="Passed" start-time="2026-09-24 08:19:33Z" end-time="2026-09-24 08:19:34Z" duration="0.518832" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="TID" value="T-hop-06" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1003" name="T_hop_07_input_ignored_while_airborne" fullname="Game.Tests.PlayMode.PlayerHopInputTests.T_hop_07_input_ignored_while_airborne" methodname="T_hop_07_input_ignored_while_airborne" classname="Game.Tests.PlayMode.PlayerHopInputTests" runstate="Runnable" seed="493065659" result="Passed" start-time="2026-09-24 08:19:34Z" end-time="2026-09-24 08:19:34Z" duration="0.204659" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="TID" value="T-hop-07" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1004" name="T_hop_08_pause_resets_charge" fullname="Game.Tests.PlayMode.PlayerHopInputTests.T_hop_08_pause_resets_charge" methodname="T_hop_08_pause_resets_charge" classname="Game.Tests.PlayMode.PlayerHopInputTests" runstate="Runnable" seed="1187278969" result="Passed" start-time="2026-09-24 08:19:34Z" end-time="2026-09-24 08:19:34Z" duration="0.203832" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="TID" value="T-hop-08" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1005" name="T_hop_09_second_finger_ignored" fullname="Game.Tests.PlayMode.PlayerHopInputTests.T_hop_09_second_finger_ignored" methodname="T_hop_09_second_finger_ignored" classname="Game.Tests.PlayMode.PlayerHopInputTests" runstate="Runnable" seed="370608801" result="Passed" start-time="2026-09-24 08:19:34Z" end-time="2026-09-24 08:19:34Z" duration="0.004459" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="TID" value="T-hop-09" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1006" name="T_hop_10_restart_not_before_delay" fullname="Game.Tests.PlayMode.PlayerHopInputTests.T_hop_10_restart_not_before_delay" methodname="T_hop_10_restart_not_before_delay" classname="Game.Tests.PlayMode.PlayerHopInputTests" runstate="Runnable" seed="539436818" result="Passed" start-time="2026-09-24 08:19:34Z" end-time="2026-09-24 08:19:35Z" duration="1.005573" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="TID" value="T-hop-10" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1016" name="Unity.InputSystem.IntegrationTests.dll" fullname="D:/Unity/Projects/one-tap-slice/Library/ScriptAssemblies/Unity.InputSystem.IntegrationTests.dll" runstate="Runnable" testcasecount="4" result="Skipped" label="Ignored" start-time="2026-09-24 08:19:35Z" end-time="2026-09-24 08:19:35Z" duration="0.048326" total="4" passed="2" failed="0" inconclusive="0" skipped="2" asserts="0">
+      <properties>
+        <property name="_PID" value="19012" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <reason>
+        <message><![CDATA[One or more child tests were ignored]]></message>
+      </reason>
+      <test-suite type="TestFixture" id="1011" name="IntegrationTests" fullname="IntegrationTests" classname="IntegrationTests" runstate="Runnable" testcasecount="4" result="Skipped" label="Ignored" start-time="2026-09-24 08:19:35Z" end-time="2026-09-24 08:19:35Z" duration="0.048052" total="4" passed="2" failed="0" inconclusive="0" skipped="2" asserts="0">
+        <properties />
+        <reason>
+          <message><![CDATA[One or more child tests were ignored]]></message>
+        </reason>
+        <test-case id="1013" name="Integration_CanChangeInputBackendPlayerSettingInEditor" fullname="IntegrationTests.Integration_CanChangeInputBackendPlayerSettingInEditor" methodname="Integration_CanChangeInputBackendPlayerSettingInEditor" classname="IntegrationTests" runstate="Runnable" seed="1668058219" result="Passed" start-time="2026-09-24 08:19:35Z" end-time="2026-09-24 08:19:35Z" duration="0.005181" asserts="0">
+          <properties>
+            <property name="Category" value="Integration" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1012" name="Integration_CanSendAndReceiveEvents" fullname="IntegrationTests.Integration_CanSendAndReceiveEvents" methodname="Integration_CanSendAndReceiveEvents" classname="IntegrationTests" runstate="Runnable" seed="951063513" result="Passed" start-time="2026-09-24 08:19:35Z" end-time="2026-09-24 08:19:35Z" duration="0.041617" asserts="0">
+          <properties>
+            <property name="Category" value="Integration" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1015" name="WindowsInput_MouseMovements_AreDetected" fullname="IntegrationTests.WindowsInput_MouseMovements_AreDetected" methodname="WindowsInput_MouseMovements_AreDetected" classname="IntegrationTests" runstate="Ignored" seed="1448323064" result="Skipped" label="Ignored" start-time="2026-09-24 08:19:35Z" end-time="2026-09-24 08:19:35Z" duration="0.000161" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="Category" value="Integration" />
+            <property name="_SKIPREASON" value="Unstable due to 1252825" />
+          </properties>
+          <reason>
+            <message><![CDATA[Unstable due to 1252825]]></message>
+          </reason>
+        </test-case>
+        <test-case id="1014" name="WindowsInput_RemoteDesktopMouseMovements_AreDetected" fullname="IntegrationTests.WindowsInput_RemoteDesktopMouseMovements_AreDetected" methodname="WindowsInput_RemoteDesktopMouseMovements_AreDetected" classname="IntegrationTests" runstate="Ignored" seed="1713857807" result="Skipped" label="Ignored" start-time="2026-09-24 08:19:35Z" end-time="2026-09-24 08:19:35Z" duration="0.000001" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="Category" value="Integration" />
+            <property name="_SKIPREASON" value="Unstable due to 1252825" />
+          </properties>
+          <reason>
+            <message><![CDATA[Unstable due to 1252825]]></message>
+          </reason>
+          <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: D:\Unity\Projects\one-tap-slice\TestResults\playmode-results.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

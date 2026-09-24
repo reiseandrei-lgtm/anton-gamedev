@@ -1,8 +1,8 @@
-# Прогон скиллов волны 1 на примере «Lantern Hop» (2026-09-23)
+# Прогон скиллов на примере «Lantern Hop» (2026-09-23; живой gd-build — 2026-09-24)
 
 Мини-игра: мобайл, портрет, одна кнопка. Фонарщик прыгает по фонарям, дальность задаётся удержанием, искры на дальних фонарях дороже. Вход — готовые стадии 0–7: `design/pillars.md`, `concept.md`, `systems-map.md`, `gdd/hop.md`, `gdd/spark.md` (со стабильными ID), `handoff/first-hop.md` (ED1–5, DD1–3).
 
-**Условия.** Скиллы `gd` выполнялись в сессии Claude Code по их SKILL.md. Агенты-ревьюеры запускались как изолированные субагенты: им передавались только пути, перечисленные в определении агента. Unity и FMOD Studio на машине не установлены, поэтому `gd-build` проверен только в режиме деградации, на синтетических фикстурах (`fixtures/`).
+**Условия.** Скиллы `gd` выполнялись в сессии Claude Code по их SKILL.md. Агенты-ревьюеры запускались как изолированные субагенты: им передавались только пути, перечисленные в определении агента. На 2026-09-23 Unity и FMOD Studio на машине не было, и `gd-build` проверялся только в режиме деградации, на синтетических фикстурах (`fixtures/`). Живой прогон — в разделе «Живой прогон gd-build (2026-09-24)».
 
 ## Скиллы gd
 
@@ -27,7 +27,7 @@
 
 Изоляция соблюдена: `playtest-analyst` не открывал GDD и хендофф, ревьюеры не читали историю создания. Находки независимы: например, «фонарь дальше максимальной дальности» из заметок совпал с вопросом из лога сборки и тех-дизайна, хотя агент их не видел.
 
-## Скиллы gd-build (режим деградации)
+## Скиллы gd-build (режим деградации, 2026-09-23)
 
 | Скилл | Что проверено | Результат |
 |---|---|---|
@@ -43,5 +43,36 @@
 - `commands/tech.md`: YAML-frontmatter не парсился (двоеточие в description) — найдено `claude plugin validate`.
 - Триггеры: `slice-build` «реализуй хендофф» пересекался с `gd-handoff`; старый `narrative-structure` "continuity check" пересекался с `narrative-continuity`.
 
-## Не проверено (нужна машина с Unity 6 + CoplayDev/unity-mcp + FMOD Studio)
-Реальная сборка слайса и verify loop через MCP, PlayMode и InputTestFixture, headless-прогон в Unity, запуск JS в FMOD Studio, компиляция `FmodEvents.cs` с FMOD for Unity.
+## Живой прогон gd-build (2026-09-24)
+
+**Условия.** Unity 6000.3.24f1 (лицензия Personal), CoplayDev/unity-mcp 10.2.0 (пакет по тегу, сервер `uvx mcpforunityserver==10.2.0`, HTTP, телеметрия выключена `DISABLE_TELEMETRY=true`), FMOD Studio 2.03.14. Unity-проект `D:/Unity/Projects/one-tap-slice` и проект FMOD `D:/FMOD/Projects/one-tap-slice` лежат вне репозитория, под своим git. MCP-сервер добавили посреди сессии Claude Code, поэтому его инструменты вызывались через CLI того же сервера (`unity-mcp raw <tool>`), а не как инструменты сессии. Пустой проект FMOD получен очисткой официального примера `Examples.fspackage` скриптом (новый проект `fmodstudiocl` не создаёт), `-diagnostic` — без ошибок.
+
+| Скилл | Что сделано вживую | Результат |
+|---|---|---|
+| `slice-build` | preflight → тесты первым (красный прогон 0/10 на заглушках) → реализация → verify loop после каждой задачи (mtime DLL, консоль, тесты) → сцена и конфиги через MCP → play-mode smoke с пробами и скриншотами | ED2–ED4 ✅, ED5 ⚠️ (в редакторе), ED1 ⛔ (нет Android). Лог: `design/build/first-hop.log.md`, скриншоты: `design/build/first-hop/screenshots/` |
+| `qa-run` suite | MCP `run_tests` и headless `run-tests-headless.ps1` → `parse_nunit.py --plan` | EditMode 11/11, PlayMode 5/5 своих; план: 15 из 15 в прогоне. Отчёт: `design/qa/runs/2026-09-24-first-hop.md` (INCOMPLETE: нет устройства) |
+| `qa-run` smoke | 6 шагов smoke-набора: пробы состояния, скриншоты, 67 с забега | 4 ✅, 2 ⚠️ частично (редактор вместо устройства) |
+| `fmod-sync` | `event_map_to_fmod.py` → `fmodstudiocl -script …cli.js` ×2 → `Build/GUIDs.txt` → `diff_fmod.py` → `fmodstudiocl -build` | +9 папок, +8 событий, +4 шины, +1 снапшот, +3 параметра, 4 подключения, 8 событий в мастер-банке; повторный запуск +0; diff PASS 16/16; `Master.bank` собран; `FmodEvents.cs` компилируется в Unity |
+
+### Дефекты gd-build, найденные вживую (исправлены в 0.1.2)
+| # | Где | Что было | Как нашли |
+|---|---|---|---|
+| 1 | `run-tests-headless.ps1` | **ложный зелёный**: упавший тест → exit 0 (в PowerShell 5.1 пустой `ExitCode` без `Handle`; падения из XML в код выхода не шли) | временный `Assert.Fail` |
+| 2 | `parse_nunit.py`, `qa-run`, `gd: qa-plan` | советовали `[Category("T-hop-01")]`, а NUnit запрещает «-» в категориях: все 10 тестов упали, не начавшись | первый красный прогон |
+| 3 | JS `fmod-sync` | параметры дублировались при повторном запуске (`charge (2)`); второе событие с тем же параметром получало другое имя, и `setParameterByName` на нём не сработал бы | второй запуск на FMOD 2.03.14 |
+| 4 | JS `fmod-sync` | события не назначались в банк: их нет ни в сборке, ни в `GUIDs.txt` (`diff_fmod` давал 8 × D1) | экспорт GUIDs |
+| 5 | `verify-loop.md`, `mcp-actions.md` | `Logs/Editor.log` проекта — такого файла нет; лог редактора общий, в `%LOCALAPPDATA%` | первая проверка компиляции |
+| 6 | `verify-loop.md` | не было: тесты при ошибке компиляции гоняют старую DLL; refresh без `force` в редакторе без фокуса не компилирует; мост отключается на domain reload; `queueEventOnly` для InputTestFixture; `testables`; ориентация Game view; активная сцена после перезапуска | verify loop |
+| 7 | `preflight.py` | не проверял `testables` (без них нет InputTestFixture) и Active Input Handling | настройка проекта |
+| 8 | `mcp-actions.md` | не было: старт сессии моста, телеметрия по умолчанию, CLI `unity-mcp` для текущей сессии, параметры скриншота, закрытие редактора через `File/Exit` | установка MCP |
+| 9 | `run-tests-headless.*` | предупреждение «working tree modified» на каждый новый `.meta` | headless-прогон |
+| 10 | `fmod-sync` | не было headless-пути: добавлены `gd_sync_event_map.cli.js` (синхронизация, сохранение, экспорт GUIDs) и сверка параметров в `diff_fmod.py` | — |
+
+Каждое исправление проверено на том, что раньше ломалось: 1 — временный падающий тест даёт exit 2; 3 и 4 — повторный запуск даёт +0, diff PASS; 2 — `parse_nunit` на живом XML находит все 15 T-ID плана. Живые выводы сохранены в `fixtures/live/` и покрыты тестами `tools/test_scripts.py` (27 тестов).
+
+## Не проверено
+- Сборка игрока на Android и перф на устройстве (ED1, T-slice-01, T-slice-03): нет Android Build Support и устройства.
+- FMOD for Unity и вызовы `RuntimeManager.*`: пакет скачивается только после входа на fmod.com.
+- Запуск `gd_sync_event_map.js` из меню FMOD Studio GUI (проверен тот же код через `fmodstudiocl`).
+- Звучание плейсхолдеров и отличимость двойной искры — оценивает человек.
+- MCP как инструменты сессии Claude Code (работали через CLI того же сервера); IvanMurzak/Unity-MCP.

@@ -1,6 +1,7 @@
 ﻿# Copied from unity-kit scripts/run-tests-headless.ps1 (MIT (c) 2026 Benjamin Curlier) - see ATTRIBUTION.md.
 # Changed by gd-build: also looks in Unity Hub's custom "Installs location" (secondaryInstallPath.json);
-# reports a missing license (exit 198 / "No valid Unity Editor license") explicitly.
+# reports a missing license (exit 198 / "No valid Unity Editor license") explicitly;
+# failed tests in the XML always give exit 2 (PS 5.1 returned an empty ExitCode -> false green).
 # unity-kit: run Unity Test Framework tests headless (no editor GUI).
 # Usage: .\run-tests-headless.ps1 [-ProjectPath .] [-Platform EditMode|PlayMode|Both] [-TestFilter <regex>] [-NoGraphics] [-AcceptApiUpdate]
 # Exit code: 0 all green, 2 tests failed, 3 run did not complete (compile error, license, lock, crash).
@@ -87,7 +88,8 @@ $worst = 0
 # Snapshot tracked-file state so we can warn if the run itself rewrites source
 # (API updater, importers). $null when not a git repo. TestResults/ is this script's
 # own output — excluded, or every first run would cry wolf.
-function Get-GitSnapshot { @(git -C $ProjectPath status --porcelain 2>$null) | Where-Object { $_ -notmatch 'TestResults/' } }
+# gd-build: new untracked .meta files are Unity's import of new assets, not a source rewrite.
+function Get-GitSnapshot { @(git -C $ProjectPath status --porcelain 2>$null) | Where-Object { $_ -notmatch 'TestResults/' -and $_ -notmatch '^\?\? .*\.meta$' } }
 $gitBefore = Get-GitSnapshot
 
 foreach ($p in $platforms) {
@@ -114,8 +116,11 @@ foreach ($p in $platforms) {
     # client and can hang after tests finish).
     Write-Host "[$p] Unity $version -> $xml"
     $proc = Start-Process -FilePath $unity -ArgumentList $unityArgs -PassThru -NoNewWindow
+    # gd-build: touching Handle before exit makes PS 5.1 keep ExitCode; without it ExitCode is $null.
+    $null = $proc.Handle
     $proc.WaitForExit()
     $code = $proc.ExitCode
+    if ($null -eq $code) { $code = 0 }
 
     if (Test-Path $xml) {
         $r = ([xml](Get-Content $xml)).'test-run'
@@ -127,6 +132,8 @@ foreach ($p in $platforms) {
             $code = 3
         }
         if ([int]$r.failed -gt 0) {
+            # gd-build: the XML is the source of truth - failures are exit 2 whatever Unity returned.
+            if ($code -ne 3) { $code = 2 }
             Select-Xml -Path $xml -XPath "//test-case[@result='Failed']" | ForEach-Object {
                 $msg = $_.Node.failure.message
                 if ($msg -is [System.Xml.XmlElement]) { $msg = $msg.InnerText }

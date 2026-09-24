@@ -13,7 +13,7 @@ description: >-
 
 ## 0. Preflight (всегда первым)
 `python3 scripts/preflight.py <путь к Unity-проекту> --design design` (на Windows `python`): Unity-проект, версия редактора и установлен ли он, пакеты (Input System, Test Framework, FMOD), тестовые asmdef, наличие хендоффа, тех-дизайна и тест-плана. Затем проба MCP одним безопасным вызовом (чтение консоли или состояния редактора) — `references/mcp-actions.md`.
-- MCP отвечает → режим **live**.
+- MCP отвечает → режим **live**. Инструментов MCP в сессии нет, но сервер и мост запущены → тот же MCP через CLI `unity-mcp` (`references/mcp-actions.md`, «Установка», п. 4) — это тоже live.
 - MCP нет → режим **plan**: полный план задач + чеклист ручных действий; C# можно писать на диск, но всё помечается **«не проверено в редакторе»**. Никогда не пиши «проверено» без проверки.
 - Платные инструменты MCP (`generate_image`, `generate_audio`, `generate_model` у Coplay; Unity AI) не вызывать.
 

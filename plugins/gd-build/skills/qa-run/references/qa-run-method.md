@@ -3,17 +3,19 @@
 > Адаптировано из unity-kit `unity-ci`, `unity-verify`, `unity-playtest` (MIT © 2026 Benjamin Curlier). См. ATTRIBUTION.md. Скрипты `run-tests-headless.*` и `find-unity.*` — копии из unity-kit с шапкой источника. Сопоставление с T-ID и формат отчёта — свои.
 
 ## 1. Headless: что ломается
-- **Открытый редактор = мгновенный отказ** (один редактор на проект, `Temp/UnityLockfile`). Закрой его или используй MCP.
+- **Открытый редактор = мгновенный отказ** (один редактор на проект, `Temp/UnityLockfile`). Закрой его или используй MCP. Закрыть через MCP: `manage_scene save`, затем `execute_menu_item` `File/Exit` (`EditorApplication.Exit` в `execute_code` заблокирован защитой — и правильно).
 - **Не передавай `-quit` вместе с `-runTests`**: раннер завершится сам, `-quit` может убить его посреди прогона.
 - **0 тестов с exit 0** — не успех: тестовая asmdef без `UnityEngine.TestRunner` / `UnityEditor.TestRunner`, ссылка на несуществующую сборку или фильтр ничего не нашёл. Скрипт возвращает 3.
 - **Windows**: `Unity.exe` — GUI-бинарник, `&` возвращается сразу; скрипт ждёт процесс через `WaitForExit()`.
 - **`-nographics`**: для EditMode безопасно; PlayMode с рендером — без флага.
 - **Первый прогон** на чистом клоне импортирует `Library` — минуты, не секунды. Не ставь короткий таймаут.
 - **Лицензия** Unity должна быть активирована на машине: Hub запущен, выполнен вход, лицензия Personal активна (бесплатно). Устаревший `UnityEntitlementLicense.xml` на диске не помогает: batchmode падает с кодом 198 и строкой `No valid Unity Editor license found` в логе — это шаг пользователя, не чинится скриптом.
+- **Код выхода берётся из XML, не только от Unity**: в PowerShell 5.1 `ExitCode` процесса без заранее взятого `Handle` пустой, и до gd-build 0.1.2 упавший тест давал exit 0. Теперь любой `failed > 0` в XML = exit 2.
+- **Предупреждение «run modified the working tree»** срабатывает на изменение отслеживаемых файлов. Новые `.meta` для новых ассетов — это импорт, их скрипт не считает.
 - **Нестандартная папка редакторов** (Hub → Settings → Installs location) читается из `%APPDATA%/UnityHub/secondaryInstallPath.json` — `preflight.py` и `run-tests-headless.ps1` её учитывают.
 
 ## 2. Через MCP (CoplayDev)
-1. `manage_tools` → activate group `testing` (один раз за сессию).
+1. В v10 группа `testing` активна по умолчанию; в старых версиях — `manage_tools` → activate group `testing`. Перед прогоном — доказанная компиляция (`slice-build/references/verify-loop.md` §1): при ошибках компиляции `run_tests` прогонит старую DLL.
 2. `run_tests` `mode: EditMode` → `job_id` → `get_test_job` с ожиданием 30–60 с. Потом `PlayMode`.
 3. Зависание с `completed=0` и `InitTestScene` в редакторе — упал Test Framework: вернуть рабочую сцену, повторить, при повторе — перезапуск редактора.
 

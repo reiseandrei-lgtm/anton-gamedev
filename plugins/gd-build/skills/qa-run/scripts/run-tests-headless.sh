@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Copied from unity-kit scripts/run-tests-headless.sh (MIT (c) 2026 Benjamin Curlier) - see ATTRIBUTION.md. Unchanged except this header.
+# Copied from unity-kit scripts/run-tests-headless.sh (MIT (c) 2026 Benjamin Curlier) - see ATTRIBUTION.md.
+# Changed by gd-build: new untracked .meta files do not trigger the "working tree modified" warning.
 # unity-kit: run Unity Test Framework tests headless (no editor GUI). macOS/Linux port of run-tests-headless.ps1.
 # Usage: ./run-tests-headless.sh [--project-path .] [--platform EditMode|PlayMode|Both] [--test-filter <regex>] [--no-graphics] [--accept-apiupdate]
 # Exit code: 0 all green, 2 tests failed, 3 run did not complete (compile error, license, lock, crash).
@@ -78,7 +79,8 @@ esac
 # Snapshot tracked-file state so we can warn if the run itself rewrites source
 # (API updater, importers). Empty when not a git repo. TestResults/ is this script's
 # own output — excluded, or every first run would cry wolf.
-git_snapshot() { git -C "$PROJECT_PATH" status --porcelain 2>/dev/null | grep -v 'TestResults/' || true; }
+# gd-build: new untracked .meta files are Unity's import of new assets, not a source rewrite.
+git_snapshot() { git -C "$PROJECT_PATH" status --porcelain 2>/dev/null | grep -v 'TestResults/' | grep -Ev '^\?\? .*\.meta$' || true; }
 GIT_BEFORE="$(git_snapshot)"
 
 WORST=0

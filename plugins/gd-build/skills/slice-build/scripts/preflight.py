@@ -70,6 +70,14 @@ def installed_editors():
     return found
 
 
+def read_setting(path, key):
+    try:
+        m = re.search(rf"^\s*{key}:\s*(\S+)", path.read_text(encoding="utf-8", errors="replace"), re.M)
+        return m.group(1) if m else None
+    except OSError:
+        return None
+
+
 def status(path):
     try:
         m = re.search(r"^status:\s*(\w+)", path.read_text(encoding="utf-8"), re.M)
@@ -113,10 +121,11 @@ def main():
             lines.append("Temp/UnityLockfile есть — редактор, вероятно, открыт (для MCP это нужно; для headless-тестов — закрыть)")
 
     manifest = proj / "Packages/manifest.json"
-    deps = {}
+    deps, testables = {}, []
     if manifest.is_file():
         try:
-            deps = json.loads(manifest.read_text(encoding="utf-8")).get("dependencies", {})
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+            deps, testables = data.get("dependencies", {}), data.get("testables", [])
         except (ValueError, OSError):
             lines.append("Packages/manifest.json не читается как JSON")
     for pkg, name in PACKAGES.items():
@@ -130,6 +139,17 @@ def main():
         for pkg in ("com.unity.inputsystem", "com.unity.test-framework"):
             if pkg not in deps:
                 missing.append(f"пакет {PACKAGES[pkg]} ({pkg})")
+        if "com.unity.inputsystem" in deps:
+            if "com.unity.inputsystem" not in testables:
+                missing.append('InputTestFixture: в Packages/manifest.json нужно "testables": ["com.unity.inputsystem"] '
+                               "(иначе нет сборки Unity.InputSystem.TestFramework)")
+            handler = read_setting(proj / "ProjectSettings/ProjectSettings.asset", "activeInputHandler")
+            if handler == "0":
+                missing.append("Active Input Handling = Input Manager (Old): Input System не получает ввод — "
+                               "Player Settings → Active Input Handling → Input System Package или Both, затем перезапуск редактора")
+    if has_mcp:
+        lines.append("MCP: после установки пакета мост стартует не сам — Window → MCP for Unity → Start Session "
+                     "(или авто-старт в настройках); проба — чтение консоли")
 
     assets = proj / "Assets"
     if assets.is_dir():

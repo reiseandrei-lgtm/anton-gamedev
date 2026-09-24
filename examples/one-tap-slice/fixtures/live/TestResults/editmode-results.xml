@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="11" result="Passed" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0,0371167">
+  <test-suite type="TestSuite" id="1000" name="one-tap-slice" fullname="one-tap-slice" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.037117" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1016" name="Game.Tests.EditMode.dll" fullname="D:/Unity/Projects/one-tap-slice/Library/ScriptAssemblies/Game.Tests.EditMode.dll" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.029902" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="3820" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1017" name="Game" fullname="Game" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.029700" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1018" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.029628" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1019" name="EditMode" fullname="Game.Tests.EditMode" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.029531" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1002" name="FmodEventsTests" fullname="Game.Tests.EditMode.FmodEventsTests" classname="Game.Tests.EditMode.FmodEventsTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.020272" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1003" name="Constants_match_event_map" fullname="Game.Tests.EditMode.FmodEventsTests.Constants_match_event_map" methodname="Constants_match_event_map" classname="Game.Tests.EditMode.FmodEventsTests" runstate="Runnable" seed="1567473714" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.009270" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1004" name="HopTests" fullname="Game.Tests.EditMode.HopTests" classname="Game.Tests.EditMode.HopTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.004346" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1005" name="T_hop_01_charge_grows_linearly" fullname="Game.Tests.EditMode.HopTests.T_hop_01_charge_grows_linearly" methodname="T_hop_01_charge_grows_linearly" classname="Game.Tests.EditMode.HopTests" runstate="Runnable" seed="1357583460" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.001407" asserts="0">
+                <properties>
+                  <property name="TID" value="T-hop-01" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1006" name="T_hop_02_charge_clamped_to_one" fullname="Game.Tests.EditMode.HopTests.T_hop_02_charge_clamped_to_one" methodname="T_hop_02_charge_clamped_to_one" classname="Game.Tests.EditMode.HopTests" runstate="Runnable" seed="1064796662" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.000169" asserts="0">
+                <properties>
+                  <property name="TID" value="T-hop-02" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1007" name="T_hop_03_distance_formula" fullname="Game.Tests.EditMode.HopTests.T_hop_03_distance_formula" methodname="T_hop_03_distance_formula" classname="Game.Tests.EditMode.HopTests" runstate="Runnable" seed="1976862210" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.000169" asserts="0">
+                <properties>
+                  <property name="TID" value="T-hop-03" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1008" name="T_hop_04_landing_tolerance_both_sides" fullname="Game.Tests.EditMode.HopTests.T_hop_04_landing_tolerance_both_sides" methodname="T_hop_04_landing_tolerance_both_sides" classname="Game.Tests.EditMode.HopTests" runstate="Runnable" seed="1398127437" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.000700" asserts="0">
+                <properties>
+                  <property name="TID" value="T-hop-04" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1009" name="T_hop_05_release_below_min_charge_is_not_a_jump" fullname="Game.Tests.EditMode.HopTests.T_hop_05_release_below_min_charge_is_not_a_jump" methodname="T_hop_05_release_below_min_charge_is_not_a_jump" classname="Game.Tests.EditMode.HopTests" runstate="Runnable" seed="662592902" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.001152" asserts="0">
+                <properties>
+                  <property name="TID" value="T-hop-05" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1010" name="SparkTests" fullname="Game.Tests.EditMode.SparkTests" classname="Game.Tests.EditMode.SparkTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.004128" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1011" name="T_spark_01_spawn_rate_matches_chance" fullname="Game.Tests.EditMode.SparkTests.T_spark_01_spawn_rate_matches_chance" methodname="T_spark_01_spawn_rate_matches_chance" classname="Game.Tests.EditMode.SparkTests" runstate="Runnable" seed="1487926866" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.000651" asserts="0">
+                <properties>
+                  <property name="TID" value="T-spark-01" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1012" name="T_spark_02_far_spark_counts_double" fullname="Game.Tests.EditMode.SparkTests.T_spark_02_far_spark_counts_double" methodname="T_spark_02_far_spark_counts_double" classname="Game.Tests.EditMode.SparkTests" runstate="Runnable" seed="1495875316" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.000424" asserts="0">
+                <properties>
+                  <property name="TID" value="T-spark-02" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1013" name="T_spark_03_miss_gives_nothing" fullname="Game.Tests.EditMode.SparkTests.T_spark_03_miss_gives_nothing" methodname="T_spark_03_miss_gives_nothing" classname="Game.Tests.EditMode.SparkTests" runstate="Runnable" seed="843309785" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.000154" asserts="0">
+                <properties>
+                  <property name="TID" value="T-spark-03" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1014" name="T_spark_04_record_only_when_strictly_greater" fullname="Game.Tests.EditMode.SparkTests.T_spark_04_record_only_when_strictly_greater" methodname="T_spark_04_record_only_when_strictly_greater" classname="Game.Tests.EditMode.SparkTests" runstate="Runnable" seed="318926475" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.000352" asserts="0">
+                <properties>
+                  <property name="TID" value="T-spark-04" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1015" name="T_spark_05_failed_save_keeps_record_in_memory" fullname="Game.Tests.EditMode.SparkTests.T_spark_05_failed_save_keeps_record_in_memory" methodname="T_spark_05_failed_save_keeps_record_in_memory" classname="Game.Tests.EditMode.SparkTests" runstate="Runnable" seed="234741497" result="Passed" start-time="2026-09-24 08:25:37Z" end-time="2026-09-24 08:25:37Z" duration="0.001771" asserts="0">
+                <properties>
+                  <property name="TID" value="T-spark-05" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[spark#E3] рекорд не сохранён, держим в памяти: no space left
+<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: D:\Unity\Projects\one-tap-slice\TestResults\editmode-results.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

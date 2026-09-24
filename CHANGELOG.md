@@ -1,5 +1,27 @@
 # Changelog
 
+## [gd-build 0.1.2, gd 0.4.1] — 2026-09-24
+
+Первый живой прогон `gd-build`: Unity 6000.3.24f1 + CoplayDev/unity-mcp 10.2.0 + FMOD Studio 2.03.14 на `examples/one-tap-slice` (итоги и найденные дефекты — `examples/one-tap-slice/RESULTS.md`).
+
+### Fixed — gd-build
+- `run-tests-headless.ps1`: **ложный зелёный** — упавший тест давал exit 0 (PowerShell 5.1 не отдавал `ExitCode`). Теперь `failed > 0` в XML = exit 2. Новые `.meta` не вызывают предупреждение об изменённом дереве (и в `.sh`).
+- `fmod-sync`: параметры больше не дублируются при повторном запуске и не получают имена вида `charge (2)`: один `ParameterPreset` на имя подключается ко всем событиям; глобальные — `isGlobal`, без ручного шага. События назначаются в мастер-банк (без банка их нет ни в сборке, ни в `GUIDs.txt`).
+- `parse_nunit.py` читает T-ID из `[NUnit.Framework.Property("TID", …)]`: `[Category("T-…")]` NUnit не принимает («-» запрещён).
+- `verify-loop.md`, `mcp-actions.md`: верный путь к логу редактора; не гонять тесты при ошибках компиляции (MCP прогонит старую DLL); `refresh` с `force`; ожидание моста после domain reload; `queueEventOnly: true` в InputTestFixture; `testables`; ориентация Game view; активная сцена.
+
+### Added — gd-build
+- `gd_sync_event_map.cli.js` — headless-синхронизация через `fmodstudiocl -script` (сохранение и экспорт `Build/GUIDs.txt`); `diff_fmod.py` сверяет и параметры.
+- `preflight.py`: проверка `testables` для InputTestFixture и Active Input Handling.
+- `mcp-actions.md`: имена инструментов проверены вживую на v10.2.0; старт сессии моста, отключение телеметрии (`DISABLE_TELEMETRY`), CLI `unity-mcp` для текущей сессии Claude Code, закрытие редактора через `File/Exit`.
+- Живые фикстуры `examples/one-tap-slice/fixtures/live/` (NUnit XML Unity, `GUIDs.txt` FMOD) и 4 теста в `tools/test_scripts.py` (27 всего).
+
+### Fixed — gd
+- `qa-plan/references/qa-method.md`: T-ID в тестах — имя метода или `Property("TID", …)`, не `Category`.
+
+### Not verified
+- Android-билд и перф на устройстве; FMOD for Unity (`RuntimeManager.*`) — пакет требует входа на fmod.com; запуск JS из меню FMOD Studio GUI; MCP как инструменты сессии (использовался CLI того же сервера).
+
 ## [gd-build 0.1.1] — 2026-09-23
 
 ### Fixed

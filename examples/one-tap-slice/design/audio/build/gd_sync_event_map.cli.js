@@ -141,4 +141,8 @@ function gdSync() {
     gdLog("Готово. Сохраните проект и экспортируйте GUIDs (File → Export GUIDs) для diff_fmod.py.");
 }
 
-studio.menu.addMenuItem({ name: "gd\\Sync event map", execute: gdSync });
+// Headless: fmodstudiocl -script gd_sync_event_map.cli.js <project>.fspro
+gdSync();
+studio.project.save();
+studio.project.exportGUIDs();
+gdLog("Проект сохранён, GUIDs экспортированы: <project>/Build/GUIDs.txt.");
