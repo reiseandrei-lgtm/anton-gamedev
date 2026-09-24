@@ -47,3 +47,9 @@
 | процедурная анимация хвоста | anim-build |
 | настрой ik для ног | anim-build |
 | rig in blender | anim-build |
+| сделай звук для прыжка | sfx-design |
+| синтезируй sfx приземления | sfx-design |
+| design the sfx for landing | sfx-design |
+| сделай музыку для забега | music-build |
+| отрендери стемы | music-build |
+| compose music for the menu | music-build |

@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.6.0] — 2026-09-24 · gd 0.6.0, gd-build 0.3.0 — волна B: контент и выпуск
+
+Архитектура — `research/2026-09-production-cycle-architecture.md` §3, волна B (B1 — инструменты уже были, B2 — звук). Инструменты поставлены на машине разработки: ffmpeg 9.0.1, SoX 14.4.2, FluidSynth 2.6.1, FluidR3_GM, Blender MCP 2.0.4 (телеметрия выключена).
+
+### Added — gd-build
+- `perf-check` + `/gd-build:perf`: замер против `tech/budgets.md` через профайлер MCP; `compare_perf.py` (PF1–PF4: не замерено, p95 хуже бюджета, регрессия, редактор ≠ устройство).
+- `build-release` + `/gd-build:release`: `check_release.py` (RL1–RL6: версия ≠ тегу, .gitignore, бинарники без LFS, секреты CI по именам, development-флаг, SteamPipe VDF), шаблон GameCI, hotfix и откат.
+- `model-build` + `/gd-build:model`: `blender_blockout.py` (headless Blender: блокаут по габаритам, материалы по ролям, LOD, клип, GLB, турнтейбл 8×45°); `check_glb.py` на stdlib (GL1–GL9). Blender MCP — канал доводки формы; платные инструменты запрещены.
+- `anim-build` + `/gd-build:anim`: пружины, Animation Rigging, клипы из Blender; проверка через `check_glb.py` и `check_juice.py`.
+- `sfx-design` + `/gd-build:sfx`: `synth_sfx.py` (слои транзиент / тело / хвост, вариации и seed — побайтно повторяемо, нормализация по LUFS), `loudness.py` (BS.1770 на stdlib, совпадает с ffmpeg ebur128), `check_audio_files.py` (AF1–AF6: покрытие событий, вариации, формат, громкость и true peak через ffmpeg, лицензии, `ph_`).
+- `music-build` + `/gd-build:music`: `midi_write.py` (SMF type 1 на stdlib, стемы), `render_cue.py` (FluidSynth, длина петли кратна такту, хвост складывается в начало, общая нормализация стемов), `check_music.py` (MU1–MU6).
+- `slice-build/scripts/preflight.py`: `--for sfx|music|model|anim|fmod|release`, поиск Blender (Program Files, `<диск>:\Blender`, Steam), Blender MCP, ffmpeg, sox, FluidSynth, SoundFont, fmodstudiocl.
+
+### Changed — gd
+- Агент `art-director`: турнтейблы моделей и скриншоты билда, числа из `check_glb.py`.
+- Агент `audio-director`: видит `music-cues.md` и `files.md`.
+- Шаблон `templates/design/audio/music-cues.md` (общий формат).
+
+### Tooling
+- `tools/trigger_cases.md`: +18 пар (49 запросов).
+
+### Not verified
+- Тесты в `tools/test_scripts.py` для новых скриптов не добавлялись и не запускались (решение пользователя), в том числе после правки `preflight.py`.
+- Живой замер профайлера сериями, сборка игрока через `manage_build`, процедурная пружина в Unity, workflow GameCI (нет секретов), импорт стемов и SFX в FMOD, звучание (слушает человек).
+- Скрипты запускались по разу на данных `examples/one-tap-slice` во временной папке; в пример артефакты не добавлялись.
+
 ## [0.5.0] — 2026-09-24 · gd 0.5.0, gd-build 0.2.0 — волна A: из слайса в игру
 
 Стадии 13–16 (продакшн по майлстоунам, полировка, релиз, после релиза) и первые скиллы продакшна. Архитектура — `research/2026-09-production-cycle-architecture.md` (утверждена). Живой прогон на `examples/one-tap-slice` (Unity 6000.3.24f1 + unity-mcp 10.2.0 + FMOD 2.03.14) — `RESULTS.md`, раздел «Волна A».
