@@ -54,7 +54,7 @@ description: >-
 | 10 QA | `[gd-build]` `qa-run` · `/gd-build:test` |
 | 11 Плейтест | `playtest` · `/gd:playtest` (агент `playtest-analyst`) |
 | 12 Решение | роутер: запись в `decisions-log.md` → возврат по адресатам (`references/pipeline.md`, «Возвраты назад») |
-| 13 Продакшн | `gd-handoff` (milestone) → `[gd-build]` `/gd-build:feature`, `/gd-build:review` (агент `code-reviewer`), `/gd-build:test`; `/gd-build:juice`, `/gd-build:ui`, `/gd-build:assets` |
+| 13 Продакшн | `gd-handoff` (milestone) → `[gd-build]` `/gd-build:feature`, `/gd-build:review` (агент `code-reviewer`), `/gd-build:test`; `/gd-build:juice`, `/gd-build:ui`, `/gd-build:assets`; уровни — `level-design` · `/gd:level` |
 | 14–16 Полировка, релиз, после релиза | `[gd-build]` `qa-run visual/soak`, перф, сборка; `release-plan` (по мере выхода волн — `references/pipeline.md`) |
 | Параллельно | `game-feel` (прототип/бумага), `ink-slice` · `/gd:ink`, `/gd:narrative`, `narrative-continuity` · `/gd:continuity`, `art-direction` · `/gd:art`, `audio-direction` · `/gd:audio` → `[gd-build]` `/gd-build:fmod`, `ux-onboarding` · `/gd:ux`, `metrics-plan` · `/gd:metrics` |
 | Проектные | `syncario-gamedesigner` — всё по Syncario (канон, столпы, north star, якорь «Сифа») |
