@@ -63,3 +63,7 @@
 | steam page audit | release-plan |
 | что после релиза делаем | release-plan |
 | что вырезать до релиза | scope-check |
+| таблицы локализации | loc-build |
+| нужна псевдолокализация | loc-build |
+| set up unity localization | loc-build |
+| слайс на ink для пролога | ink-slice |
