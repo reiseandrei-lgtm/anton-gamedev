@@ -36,9 +36,20 @@
 ## 2. Без скрипта (полностью вручную)
 По `event-map.json`: создать папки и события по путям, параметры с диапазонами, шины под Master, снапшоты. Порядок тот же, что в таблице.
 
-## 3. Чеклист FMOD for Unity
-- [ ] Пакет FMOD for Unity установлен (бесплатно; скачивание с fmod.com или Asset Store требует входа в аккаунт — шаг человека).
-- [ ] FMOD → Edit Settings: путь к проекту Studio или к собранным банкам; платформы (Mobile / Desktop).
+## 3. FMOD for Unity: установка и настройка без редактора
+Проверено 2026-09-24 на Unity 6000.3.24f1 и FMOD for Unity 2.03.14 patch1: свежий клон проекта, PASS, 9 событий и снапшотов, 3 банка, около 30 с.
+1. **Скачать пакет** `.unitypackage` с fmod.com — шаг человека, нужен вход. Версия пакета должна совпадать с FMOD Studio.
+2. **Импорт** при закрытом редакторе: `Unity -batchmode -nographics -quit -projectPath <p> -importPackage <fmodstudio…unitypackage> -logFile <log>`. Результат: 0 `error CS`, сборки `FMODUnity*` скомпилированы.
+3. **Git.** Плагин весит около 300 МБ нативных библиотек под все платформы. Клади их в LFS: `Assets/Plugins/**/*.{a,so,dll,bc,jar}` и `*.bundle/Contents/MacOS/*`. Для `*.bundle/**` задай `-text`, иначе смена концов строк в `Info.plist` и `CodeResources` ломает подпись на macOS.
+4. **Настройка:** `python3 scripts/fmod_unity_setup.py <unity-project> --fspro <FMOD>/<project>.fspro --gitignore`. Скрипт запускает Unity два раза, в двух процессах:
+   - первый запуск вызывает `StagingSystem.Startup()` и переносит библиотеки из `Plugins/FMOD/staging`. Без этого `EventManager` не строит кэш событий, а `IsValid` выбрасывает NRE;
+   - второй запуск в новом процессе прописывает `sourceProjectPath` (относительный путь, как у Setup Wizard) и `sourceBankPath` (`<проект>/Build`), затем вызывает `EventManager.RefreshBanks()`.
+   `--gitignore` дописывает блок из Setup Wizard → Source Control. Код выхода 1 — кэш пуст: проверь, собраны ли банки и верен ли путь.
+5. **Редактор открыт:** FMOD → Setup Wizard вручную (Studio Project → выбрать `.fspro`), либо закрыть редактор и выполнить шаг 4.
+
+## 4. Чеклист FMOD for Unity
+- [ ] Пакет FMOD for Unity установлен и настроен (§3), `fmod_unity_setup.py` — PASS.
+- [ ] Платформы банков в проекте Studio = целевые платформы игры (для ПК — Desktop).
 - [ ] В сцене один `StudioListener` (обычно на камере) вместо `AudioListener`.
 - [ ] Банки `Master` и `Master.strings` грузятся при старте (`StudioBankLoader` или загрузка в boot-сцене).
 - [ ] Вызовы по константам: `RuntimeManager.PlayOneShot(FmodEvents.SFX_Player_Jump, pos)`; для loop — `RuntimeManager.CreateInstance(path)` + `start()` / `stop()` + `release()`.
@@ -47,7 +58,7 @@
 - [ ] Строки банков (strings bank) собраны — иначе поиск по пути не работает.
 - [ ] Никаких путей событий строкой вне `FmodEvents.cs`.
 
-## 4. Проверка
+## 5. Проверка
 - Структура: `diff_fmod.py` без D1 (события, снапшоты, шины, параметры; событие вне банка = D1).
-- Код: компиляция с `FmodEvents.cs` (verify loop). Вызовы FMOD for Unity (`RuntimeManager.*`) из чеклиста §3 вживую **не проверены**: пакет не ставился (нужен вход на fmod.com).
+- Код: компиляция с `FmodEvents.cs` (verify loop). Установка, настройка и кэш событий FMOD for Unity проверены вживую (§3). Вызовы `RuntimeManager.*` из чеклиста §4 и загрузка банков в play mode вживую **не проверены**.
 - Звучание: только человек. В отчёте — «звучание не проверялось».

@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.7.3] — 2026-09-24 · gd 0.7.3, gd-build 0.4.3 — fmod-sync: настройка FMOD for Unity без редактора
+
+В `gd` кода не меняли: версия поднята ради тега.
+
+### Added — gd-build
+- `fmod-sync/scripts/fmod_unity_setup.py`: то же, что Setup Wizard, без открытия редактора. Скрипт запускает Unity два раза, в двух процессах. Первый вызывает `StagingSystem.Startup()` и переносит нативные библиотеки из `Plugins/FMOD/staging`. Второй прописывает путь к `.fspro` (относительный, как у Wizard) и к `Build/`, затем вызывает `EventManager.RefreshBanks()`. `--gitignore` дописывает блок из Wizard → Source Control, `--dry-run` ничего не меняет. Временный editor-скрипт удаляется всегда. Коды выхода: 0 — PASS, 1 — кэш пуст или ошибка Unity, 2 — отказ (редактор открыт, нет пакета или `.fspro`).
+- `fmod-integration.md` §3: скачивание (шаг человека), headless-импорт `-importPackage`, нативные библиотеки в LFS, `-text` для mac-бандлов (смена концов строк ломает подпись), настройка. SKILL.md шаг 4 ссылается на скрипт.
+
+### Verified
+- Живой прогон на свежем клоне тестового проекта (Unity 6000.3.24f1, FMOD for Unity 2.03.14 patch1, коммит до настройки): PASS за 29 с, 9 событий и снапшотов, 3 банка; результат совпал с ручной настройкой (разница только в сгенерированных GUID).
+- Найдено вживую: если в одном процессе сразу выставить путь, `RefreshBanks()` оставляет кэш пустым, а `EventManager.IsValid` выбрасывает NRE, пока библиотеки лежат в staging. Отсюда два процесса.
+
+### Not verified
+- Вызовы `RuntimeManager.*`, `StudioListener` и загрузка банков в play mode (чеклист §4).
+
+### Tooling
+- `tools/test_scripts.py`: +3 теста (`FmodUnitySetup`: dry-run, отказы с кодом 2, шаблон C#). Всего 67.
+
 ## [0.7.2] — 2026-09-24 · gd 0.7.2, gd-build 0.4.2 — решения по «Открытому» укрепления B и C
 
 ### Changed — gd

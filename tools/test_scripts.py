@@ -912,6 +912,58 @@ class WaveB(unittest.TestCase):
             self.assertEqual(run(GB / "slice-build/scripts/preflight.py", "--for", "bogus")[0], 2)
 
 
+class FmodUnitySetup(unittest.TestCase):
+    """fmod_unity_setup.py без Unity: отказы с кодом 2 и dry-run. Живой прогон — CHANGELOG 0.7.3."""
+    S = GB / "fmod-sync/scripts/fmod_unity_setup.py"
+
+    def layout(self, d, fmod_plugin=True, build=False):
+        proj, studio = Path(d, "unity/proj"), Path(d, "fmod/p")
+        Path(proj, "ProjectSettings").mkdir(parents=True)
+        Path(proj, "ProjectSettings/ProjectVersion.txt").write_text("m_EditorVersion: 6000.0.99f1\n", encoding="utf-8")
+        if fmod_plugin:
+            Path(proj, "Assets/Plugins/FMOD/src").mkdir(parents=True)
+        studio.mkdir(parents=True)
+        Path(studio, "p.fspro").write_text("<objects/>", encoding="utf-8")
+        if build:
+            Path(studio, "Build").mkdir()
+        unity = Path(d, "Unity.exe")
+        unity.write_bytes(b"")
+        return proj, studio / "p.fspro", unity
+
+    def test_dry_run(self):
+        with tempfile.TemporaryDirectory() as d:
+            proj, fspro, unity = self.layout(d)
+            code, out = run(self.S, proj, "--fspro", fspro, "--unity", unity, "--dry-run")
+            self.assertEqual(code, 0, out)
+            self.assertIn("Проект Studio: ../../fmod/p/p.fspro · банки: ../../fmod/p/Build", out)
+            self.assertIn("WARN: в проекте Studio нет Build/", out)
+            self.assertFalse(Path(proj, "Assets/_GdFmodSetup").exists())
+
+    def test_refusals(self):
+        with tempfile.TemporaryDirectory() as d:
+            proj, fspro, unity = self.layout(d, fmod_plugin=False, build=True)
+            code, out = run(self.S, proj, "--fspro", fspro, "--unity", unity)
+            self.assertEqual(code, 2)
+            self.assertIn("FMOD for Unity не импортирован", out)
+            Path(proj, "Assets/Plugins/FMOD/src").mkdir(parents=True)
+            self.assertIn("нет файла проекта FMOD Studio", run(self.S, proj, "--fspro", Path(d, "x.fspro"), "--unity", unity)[1])
+            self.assertIn("не найден", run(self.S, proj, "--fspro", fspro, "--unity", Path(d, "nope.exe"))[1])
+            Path(proj, "Temp").mkdir()
+            Path(proj, "Temp/UnityLockfile").write_bytes(b"")
+            code, out = run(self.S, proj, "--fspro", fspro, "--unity", unity)
+            self.assertEqual(code, 2)
+            self.assertIn("редактор открыт", out)
+            self.assertEqual(run(self.S, d, "--fspro", fspro)[0], 2)   # не Unity-проект
+
+    def test_editor_script_template(self):
+        sys.path.insert(0, str(GB / "fmod-sync/scripts"))
+        import fmod_unity_setup as f
+        cs = f.render_cs("../../FMOD/P/p.fspro")
+        self.assertIn('const string Project = "../../FMOD/P/p.fspro";', cs)
+        self.assertIn('const string Banks = "../../FMOD/P/Build";', cs)
+        self.assertIn("StagingSystem.Startup()", cs)
+        self.assertIn("EventManager.RefreshBanks()", cs)
+
 class Repo(unittest.TestCase):
     def test_check_plugins(self):
         code, out = run(ROOT / "tools/check_plugins.py")

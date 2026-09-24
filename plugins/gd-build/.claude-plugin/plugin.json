@@ -1,7 +1,7 @@
 {
   "name": "gd-build",
   "displayName": "GD Build — Unity, Blender, audio, tests, release",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Continues the gd pipeline in Claude Code: build a playable Unity 6 slice and milestone systems via a free Unity MCP with a verify loop, independent code review, juice measured in frames, UI Toolkit screens, asset import, EditMode/PlayMode/smoke/visual-diff/soak tests, performance checks against budgets, release builds (GameCI, LFS, SteamPipe), 3D models and animation via headless Blender or a free Blender MCP, SFX synthesis and music loops (MIDI + FluidSynth) with BS.1770 loudness checks, FMOD sync, Unity Localization tables with pseudo-expansion checks, and analytics calls with a local JSONL log and consent flag. Degrades to plan + checklist without tools. Free tools only.",
   "author": {
     "name": "Anton"
