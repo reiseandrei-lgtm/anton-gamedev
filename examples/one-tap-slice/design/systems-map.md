@@ -1,6 +1,6 @@
 ---
 status: approved
-updated: 2026-09-23
+updated: 2026-09-24
 owner: example
 ---
 
@@ -10,5 +10,6 @@ owner: example
 |---|---|---|---|---|
 | hop | Core | MVP | P1, P3 | — |
 | spark | Feature | MVP | P2 | hop |
+| chain | Core | Alpha | P1 | hop |
 
-Порядок GDD: hop → spark.
+Порядок GDD: hop → spark → chain.

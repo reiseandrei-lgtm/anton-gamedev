@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-09-23
+updated: 2026-09-24
 owner: example
 engine: Unity 6000.0
 platform: mobile
@@ -15,7 +15,8 @@ slice: first-hop
 | Core | — | — | время, события, сохранения |
 | Hop | hop | Core | логика заряда и прыжка — чистые классы |
 | Spark | spark | Core, Hop | слушает событие приземления |
-| Presentation | — | Hop, Spark | камера, VFX, звук, HUD |
+| Chain | chain | Core, Hop | генерация цепочки по seed, достижимость (chain#R3) |
+| Presentation | — | Hop, Spark, Chain | камера, VFX, звук, HUD |
 
 ## Config map
 | Knob | Config asset | Field | Type | Range |
@@ -29,6 +30,10 @@ slice: first-hop
 | spark#K1 | SparkConfig | farThreshold | float | 2.5..3.5 |
 | spark#K2 | SparkConfig | farMultiplier | int | 2..3 |
 | spark#K3 | SparkConfig | sparkChance | float | 0.2..0.5 |
+| chain#K1 | ChainConfig | minGap | float | 0.5..1.5 |
+| chain#K2 | ChainConfig | maxGap | float | 2.5..3.65 |
+| chain#K3 | ChainConfig | lookahead | int | 4..12 |
+| chain#K4 | ChainConfig | seed | int | 0..2^31 |
 
 ## State & save
 | Что | Сохраняем? | Где | Когда пишем | Версия |
@@ -47,6 +52,8 @@ Boot → Run (одна сцена, рестарт без перезагрузк�
 | hop#R4 | EditMode: `HopLogic.IsLanding(distance, gap)` | — |
 | hop#R1, hop#R5 | PlayMode + InputTestFixture | `PlayerHop.State` (read-only) |
 | spark#F1, spark#R3 | EditMode: `SparkScore` | — |
+| chain#R2, chain#R3, chain#F1, chain#E1, chain#E2 | EditMode: `ChainGenerator` (чистый класс, System.Random по seed) | — |
+| chain#R5 | EditMode: две генерации с одним seed | — |
 | spark#R3 (сохранение) | EditMode: `RecordStore` с подменой файловой системы | интерфейс `IRecordStorage` |
 
 ## Audio integration

@@ -1,0 +1,456 @@
+diff --git a/Assets/_Project/Resources/Config/ChainConfig.asset b/Assets/_Project/Resources/Config/ChainConfig.asset
+new file mode 100644
+index 0000000..ff6b9b8
+--- /dev/null
++++ b/Assets/_Project/Resources/Config/ChainConfig.asset
+@@ -0,0 +1,18 @@
++%YAML 1.1
++%TAG !u! tag:unity3d.com,2011:
++--- !u!114 &11400000
++MonoBehaviour:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 0}
++  m_Enabled: 1
++  m_EditorHideFlags: 0
++  m_Script: {fileID: 11500000, guid: 3c38f4415b8c81044b03db4ec29e4309, type: 3}
++  m_Name: ChainConfig
++  m_EditorClassIdentifier: Game.Chain::Game.Chain.ChainConfig
++  minGap: 1
++  maxGap: 3.65
++  lookahead: 8
++  seed: 0
+diff --git a/Assets/_Project/Scripts/Chain/ChainConfig.cs b/Assets/_Project/Scripts/Chain/ChainConfig.cs
+new file mode 100644
+index 0000000..4056930
+--- /dev/null
++++ b/Assets/_Project/Scripts/Chain/ChainConfig.cs
+@@ -0,0 +1,14 @@
++using UnityEngine;
++
++namespace Game.Chain
++{
++    /// Tuning knobs системы chain (gdd/chain.md → Tuning Knobs, tech/architecture.md → Config map).
++    [CreateAssetMenu(menuName = "Game/Chain Config")]
++    public sealed class ChainConfig : ScriptableObject
++    {
++        [Tooltip("chain#K1")] public float minGap;
++        [Tooltip("chain#K2")] public float maxGap;
++        [Tooltip("chain#K3")] public int lookahead;
++        [Tooltip("chain#K4, 0 = новый seed на каждый забег")] public int seed;
++    }
++}
+diff --git a/Assets/_Project/Scripts/Chain/ChainGenerator.cs b/Assets/_Project/Scripts/Chain/ChainGenerator.cs
+new file mode 100644
+index 0000000..303b01e
+--- /dev/null
++++ b/Assets/_Project/Scripts/Chain/ChainGenerator.cs
+@@ -0,0 +1,74 @@
++using System;
++using System.Collections.Generic;
++using Game.Hop;
++using UnityEngine;
++
++namespace Game.Chain
++{
++    public readonly struct Lantern
++    {
++        public readonly float X;
++        public readonly bool HasSpark;
++        public Lantern(float x, bool hasSpark) { X = x; HasSpark = hasSpark; }
++    }
++
++    /// Цепочка фонарей (gdd/chain.md). Чистый класс: проверяется EditMode-тестами.
++    public sealed class ChainGenerator
++    {
++        private static readonly System.Random SeedSource = new System.Random();
++
++        private readonly List<Lantern> lanterns = new List<Lantern>();
++        private readonly System.Random rng;
++        private readonly Func<System.Random, bool> sparkRoll;
++        private readonly int lookahead;
++
++        public int Seed { get; }
++        public float MinGap { get; }
++        public float MaxGap { get; }
++        public IReadOnlyList<Lantern> Lanterns => lanterns;
++        public event Action<int> LanternAdded;
++
++        /// sparkRoll — бросок искры системы spark (spark#R1) на том же генераторе, чтобы seed воспроизводил и искры (chain#R5).
++        /// seed: явный (тесты, эталоны) → K4 из конфига → новый случайный при K4 = 0 (chain#E3).
++        public ChainGenerator(ChainConfig chain, HopConfig hop, Func<System.Random, bool> sparkRoll, int? seed = null)
++        {
++            this.sparkRoll = sparkRoll;
++            lookahead = chain.lookahead;
++            float reach = hop.maxDistance - hop.landingTolerance;
++            MaxGap = chain.maxGap;
++            if (MaxGap > reach)                                         // chain#R3, chain#E1
++            {
++                Debug.LogWarning($"[chain#E1] maxGap {chain.maxGap} > hop#K3 − hop#K4 = {reach}: беру {reach}");
++                MaxGap = reach;
++            }
++            MinGap = chain.minGap;
++            if (MinGap > MaxGap)                                        // chain#E2
++            {
++                Debug.LogWarning($"[chain#E2] minGap {chain.minGap} > maxGap {MaxGap}: беру {MaxGap}");
++                MinGap = MaxGap;
++            }
++            lock (SeedSource) Seed = seed ?? (chain.seed != 0 ? chain.seed : SeedSource.Next(1, int.MaxValue));
++            rng = new System.Random(Seed);
++            Add(0f, false);                                             // chain#R1
++            EnsureAhead(0);
++        }
++
++        /// chain#R4: впереди фонаря index не меньше lookahead фонарей.
++        public void EnsureAhead(int index)
++        {
++            while (lanterns.Count - 1 - index < lookahead)
++            {
++                float gap = MinGap + (float)rng.NextDouble() * (MaxGap - MinGap);   // chain#F1
++                Add(lanterns[lanterns.Count - 1].X + gap, sparkRoll(rng));
++            }
++        }
++
++        public float GapAfter(int index) => lanterns[index + 1].X - lanterns[index].X;
++
++        private void Add(float x, bool hasSpark)
++        {
++            lanterns.Add(new Lantern(x, hasSpark));
++            LanternAdded?.Invoke(lanterns.Count - 1);
++        }
++    }
++}
+diff --git a/Assets/_Project/Scripts/Chain/Game.Chain.asmdef b/Assets/_Project/Scripts/Chain/Game.Chain.asmdef
+new file mode 100644
+index 0000000..e06eaef
+--- /dev/null
++++ b/Assets/_Project/Scripts/Chain/Game.Chain.asmdef
+@@ -0,0 +1 @@
++{ "name": "Game.Chain", "rootNamespace": "Game.Chain", "references": ["Game.Core", "Game.Hop"], "autoReferenced": true }
+diff --git a/Assets/_Project/Scripts/Presentation/Game.Presentation.asmdef b/Assets/_Project/Scripts/Presentation/Game.Presentation.asmdef
+index e8f1fd8..4e146cf 100644
+--- a/Assets/_Project/Scripts/Presentation/Game.Presentation.asmdef
++++ b/Assets/_Project/Scripts/Presentation/Game.Presentation.asmdef
+@@ -1 +1 @@
+-{ "name": "Game.Presentation", "rootNamespace": "Game.Presentation", "references": ["Game.Core", "Game.Hop", "Game.Spark", "Unity.InputSystem"], "autoReferenced": true }
++{ "name": "Game.Presentation", "rootNamespace": "Game.Presentation", "references": ["Game.Core", "Game.Hop", "Game.Spark", "Game.Chain", "Unity.InputSystem"], "autoReferenced": true }
+diff --git a/Assets/_Project/Scripts/Presentation/GameBootstrap.cs b/Assets/_Project/Scripts/Presentation/GameBootstrap.cs
+index e4f9d39..eb4d66d 100644
+--- a/Assets/_Project/Scripts/Presentation/GameBootstrap.cs
++++ b/Assets/_Project/Scripts/Presentation/GameBootstrap.cs
+@@ -1,4 +1,5 @@
+ using System.Collections.Generic;
++using Game.Chain;
+ using Game.Core;
+ using Game.Hop;
+ using Game.Spark;
+@@ -16,16 +17,16 @@ namespace Game.Presentation
+         private static readonly Color Danger = Hex("#C8553D");
+         private static readonly Color UiText = Hex("#F4F1DE");
+         private static readonly Color Accent = Hex("#8EE3EF");
+-        private const int LanternsAhead = 8;
+-
+         [SerializeField] private HopConfig hopConfig;
+         [SerializeField] private SparkConfig sparkConfig;
++        [SerializeField] private ChainConfig chainConfig;
++        private int? seedOverride;
+ 
+-        private sealed class Lantern { public float X; public GameObject Body; public GameObject Spark; }
++        private sealed class LanternView { public GameObject Body; public GameObject Spark; }
+ 
+-        private readonly List<Lantern> lanterns = new List<Lantern>();
++        private readonly List<LanternView> views = new List<LanternView>();
+         private readonly SparkRun run = new SparkRun();
+-        private System.Random rng;
++        private ChainGenerator chain;
+         private RecordStore records;
+         private PlayerHop player;
+         private Camera cam;
+@@ -40,6 +41,14 @@ namespace Game.Presentation
+         public HopState State => player.State;
+         public int LanternIndex => current;
+         public PlayerHop Player => player;
++        public ChainGenerator Chain => chain;
++        public IReadOnlyList<Vector3> LanternPositions => views.ConvertAll(v => v.Body.transform.position);
++
++        /// Seam для тестов и визуальных эталонов: вызвать на неактивном объекте до Awake.
++        public void UseConfigs(HopConfig hop, SparkConfig spark, ChainConfig chainCfg, int? seed = null)
++        {
++            hopConfig = hop; sparkConfig = spark; chainConfig = chainCfg; seedOverride = seed;
++        }
+ 
+         private static Color Hex(string h) { ColorUtility.TryParseHtmlString(h, out var c); return c; }
+ 
+@@ -47,7 +56,7 @@ namespace Game.Presentation
+         {
+             if (hopConfig == null) hopConfig = Resources.Load<HopConfig>("Config/HopConfig");
+             if (sparkConfig == null) sparkConfig = Resources.Load<SparkConfig>("Config/SparkConfig");
+-            rng = new System.Random();
++            if (chainConfig == null) chainConfig = Resources.Load<ChainConfig>("Config/ChainConfig");
+             records = new RecordStore(new FileRecordStorage());
+             sfx = gameObject.AddComponent<AudioSource>();
+ 
+@@ -64,7 +73,7 @@ namespace Game.Presentation
+             Paint(body, Gameplay);
+             Destroy(body.GetComponent<Collider>());
+             player = body.AddComponent<PlayerHop>();
+-            player.Configure(hopConfig, () => lanterns[current + 1].X - lanterns[current].X);
++            player.Configure(hopConfig, () => chain.GapAfter(current));
+             player.Machine.Jumped += _ => Play("ph_jump");
+             player.Machine.Landed += OnLanded;
+             player.Machine.FallStarted += () => Play("ph_fail");
+@@ -75,54 +84,48 @@ namespace Game.Presentation
+ 
+         private void StartRun()
+         {
+-            foreach (var l in lanterns) { Destroy(l.Body); if (l.Spark) Destroy(l.Spark); }
+-            lanterns.Clear();
++            foreach (var v in views) { Destroy(v.Body); if (v.Spark) Destroy(v.Spark); }
++            views.Clear();
+             run.Reset();
+             newRecord = false;
+             current = 0;
+-            AddLantern(0f, false);
+-            while (lanterns.Count < LanternsAhead) AddNext();
++            chain = new ChainGenerator(chainConfig, hopConfig, r => SparkPlacer.Roll(r, sparkConfig), seedOverride);
++            for (int i = 0; i < chain.Lanterns.Count; i++) Spawn(i);
++            chain.LanternAdded += Spawn;
+             player.PlaceAt(new Vector3(0f, 0.75f, 0f));
+         }
+ 
+-        private void AddNext()
+-        {
+-            // Достижимость: расстояние ≤ maxDistance − допуск (tech/architecture.md → Open questions).
+-            float lo = hopConfig.minDistance, hi = hopConfig.maxDistance - hopConfig.landingTolerance;
+-            float gap = lo + (float)rng.NextDouble() * (hi - lo);
+-            AddLantern(lanterns[lanterns.Count - 1].X + gap, SparkPlacer.Roll(rng, sparkConfig));
+-        }
+-
+-        private void AddLantern(float x, bool withSpark)
++        private void Spawn(int index)
+         {
++            var l = chain.Lanterns[index];
+             var body = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+             body.name = "mdl_lantern_base_lit (placeholder)";
+-            body.transform.position = new Vector3(x, 0f, 0f);
++            body.transform.position = new Vector3(l.X, 0f, 0f);
+             body.transform.localScale = new Vector3(0.6f, 0.25f, 0.6f);
+             Paint(body, Interactive);
+             GameObject spark = null;
+-            if (withSpark)
++            if (l.HasSpark)
+             {
+                 spark = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                 spark.name = "mdl_spark_base_hanging (placeholder)";
+-                spark.transform.position = new Vector3(x, 1.8f, 0f);
++                spark.transform.position = new Vector3(l.X, 1.8f, 0f);
+                 spark.transform.rotation = Quaternion.Euler(0f, 0f, 45f);   // ромб = награда (art-bible, shape language)
+                 spark.transform.localScale = Vector3.one * 0.3f;
+                 Paint(spark, Accent);
+             }
+-            lanterns.Add(new Lantern { X = x, Body = body, Spark = spark });
++            views.Add(new LanternView { Body = body, Spark = spark });
+         }
+ 
+         private void OnLanded(float distance, bool success)
+         {
+             if (!success) return;
+             current++;
+-            var l = lanterns[current];
+-            player.PlaceAt(new Vector3(l.X, 0.75f, 0f));
+-            int gained = run.OnLanding(true, l.Spark != null, distance, sparkConfig);
+-            if (gained > 0) { Destroy(l.Spark); l.Spark = null; Play(gained > 1 ? "ph_coin" : "ph_confirm"); }
++            var v = views[current];
++            player.PlaceAt(new Vector3(chain.Lanterns[current].X, 0.75f, 0f));
++            int gained = run.OnLanding(true, v.Spark != null, distance, sparkConfig);
++            if (gained > 0) { Destroy(v.Spark); v.Spark = null; Play(gained > 1 ? "ph_coin" : "ph_confirm"); }
+             else Play("ph_land");
+-            while (lanterns.Count < current + LanternsAhead) AddNext();
++            chain.EnsureAhead(current);                                    // chain#R4
+         }
+ 
+         private void OnDied() => newRecord = records.Submit(run.Score);
+@@ -132,7 +135,7 @@ namespace Game.Presentation
+             var target = new Vector3(player.transform.position.x + 2f, 1.5f, -10f);
+             cam.transform.position = Vector3.Lerp(cam.transform.position, target, 1f - Mathf.Exp(-8f * Time.deltaTime));
+             // FB1: фонарь под ногами разгорается пропорционально заряду.
+-            if (current < lanterns.Count) Paint(lanterns[current].Body, Color.Lerp(Interactive, Color.white, player.Charge));
++            if (current < views.Count) Paint(views[current].Body, Color.Lerp(Interactive, Color.white, player.Charge));
+         }
+ 
+         private void OnGUI()
+diff --git a/Assets/_Project/Tests/EditMode/ChainTests.cs b/Assets/_Project/Tests/EditMode/ChainTests.cs
+new file mode 100644
+index 0000000..cd90ced
+--- /dev/null
++++ b/Assets/_Project/Tests/EditMode/ChainTests.cs
+@@ -0,0 +1,91 @@
++using System.Linq;
++using System.Text.RegularExpressions;
++using Game.Chain;
++using Game.Hop;
++using NUnit.Framework;
++using UnityEngine;
++using UnityEngine.TestTools;
++
++namespace Game.Tests.EditMode
++{
++    /// Кейсы T-chain-01…07 из design/qa/test-plan-alpha.md.
++    public class ChainTests
++    {
++        private static ChainConfig Chain(float k1 = 1f, float k2 = 3.65f, int k3 = 8, int k4 = 0)
++        {
++            var c = ScriptableObject.CreateInstance<ChainConfig>();
++            c.minGap = k1; c.maxGap = k2; c.lookahead = k3; c.seed = k4;
++            return c;
++        }
++
++        private static HopConfig Hop(float k3 = 4f, float k4 = 0.35f)
++        {
++            var h = ScriptableObject.CreateInstance<HopConfig>();
++            h.minDistance = 1f; h.maxDistance = k3; h.landingTolerance = k4;
++            return h;
++        }
++
++        private static bool Roll(System.Random r) => r.NextDouble() < 0.35;
++
++        [Test, NUnit.Framework.Property("TID", "T-chain-01")]
++        public void T_chain_01_first_lantern_at_zero_without_spark()
++        {
++            var g = new ChainGenerator(Chain(k4: 7), Hop(), _ => true);
++            Assert.AreEqual(0f, g.Lanterns[0].X);
++            Assert.IsFalse(g.Lanterns[0].HasSpark);
++            Assert.IsTrue(g.Lanterns[1].HasSpark, "роллер искры вызывается для остальных фонарей");
++        }
++
++        [Test, NUnit.Framework.Property("TID", "T-chain-02")]
++        public void T_chain_02_gaps_within_range_and_uniform()
++        {
++            var g = new ChainGenerator(Chain(k1: 1f, k2: 3.65f, k3: 10000, k4: 7), Hop(), Roll);
++            var gaps = Enumerable.Range(0, 10000).Select(g.GapAfter).ToArray();
++            Assert.That(gaps.Min(), Is.GreaterThanOrEqualTo(1f));
++            Assert.That(gaps.Max(), Is.LessThanOrEqualTo(3.65f));
++            Assert.AreEqual(2.325, gaps.Average(), 0.05);
++        }
++
++        [Test, NUnit.Framework.Property("TID", "T-chain-03")]
++        public void T_chain_03_max_gap_clamped_to_reach()
++        {
++            LogAssert.Expect(LogType.Warning, new Regex(@"chain#E1"));
++            var g = new ChainGenerator(Chain(k2: 5f, k3: 500, k4: 7), Hop(k3: 4f, k4: 0.35f), Roll);
++            Assert.AreEqual(3.65f, g.MaxGap, 1e-5f);
++            Assert.That(Enumerable.Range(0, 500).Max(g.GapAfter), Is.LessThanOrEqualTo(3.65f + 1e-5f));
++        }
++
++        [Test, NUnit.Framework.Property("TID", "T-chain-04")]
++        public void T_chain_04_min_above_max_collapses()
++        {
++            LogAssert.Expect(LogType.Warning, new Regex(@"chain#E2"));
++            var g = new ChainGenerator(Chain(k1: 3f, k2: 2f, k3: 20, k4: 7), Hop(), Roll);
++            Assert.That(Enumerable.Range(0, 20).Select(g.GapAfter), Is.All.EqualTo(2f).Within(1e-5f));
++        }
++
++        [Test, NUnit.Framework.Property("TID", "T-chain-05")]
++        public void T_chain_05_lookahead_after_landing()
++        {
++            var g = new ChainGenerator(Chain(k3: 8, k4: 7), Hop(), Roll);
++            g.EnsureAhead(5);
++            Assert.That(g.Lanterns.Count - 1 - 5, Is.GreaterThanOrEqualTo(8));
++        }
++
++        [Test, NUnit.Framework.Property("TID", "T-chain-06")]
++        public void T_chain_06_same_seed_same_chain()
++        {
++            var a = new ChainGenerator(Chain(k3: 50, k4: 42), Hop(), Roll);
++            var b = new ChainGenerator(Chain(k3: 50, k4: 42), Hop(), Roll);
++            Assert.AreEqual(a.Lanterns.Select(l => (l.X, l.HasSpark)).ToArray(), b.Lanterns.Select(l => (l.X, l.HasSpark)).ToArray());
++        }
++
++        [Test, NUnit.Framework.Property("TID", "T-chain-07")]
++        public void T_chain_07_seed_zero_differs()
++        {
++            var a = new ChainGenerator(Chain(k3: 20, k4: 0), Hop(), Roll, seed: null);
++            var b = new ChainGenerator(Chain(k3: 20, k4: 0), Hop(), Roll, seed: null);
++            Assert.AreNotEqual(a.Seed, b.Seed);
++            Assert.AreNotEqual(a.Lanterns.Select(l => l.X).ToArray(), b.Lanterns.Select(l => l.X).ToArray());
++        }
++    }
++}
+diff --git a/Assets/_Project/Tests/EditMode/Game.Tests.EditMode.asmdef b/Assets/_Project/Tests/EditMode/Game.Tests.EditMode.asmdef
+index 60b4610..c7048f0 100644
+--- a/Assets/_Project/Tests/EditMode/Game.Tests.EditMode.asmdef
++++ b/Assets/_Project/Tests/EditMode/Game.Tests.EditMode.asmdef
+@@ -1,6 +1,6 @@
+ {
+   "name": "Game.Tests.EditMode",
+-  "references": ["Game.Core", "Game.Hop", "Game.Spark", "Game.Audio", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
++  "references": ["Game.Core", "Game.Hop", "Game.Spark", "Game.Audio", "Game.Chain", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+   "includePlatforms": ["Editor"],
+   "overrideReferences": true,
+   "precompiledReferences": ["nunit.framework.dll"],
+diff --git a/Assets/_Project/Tests/PlayMode/ChainSceneTests.cs b/Assets/_Project/Tests/PlayMode/ChainSceneTests.cs
+new file mode 100644
+index 0000000..c59850f
+--- /dev/null
++++ b/Assets/_Project/Tests/PlayMode/ChainSceneTests.cs
+@@ -0,0 +1,46 @@
++using System.Collections;
++using System.Linq;
++using Game.Chain;
++using Game.Hop;
++using Game.Presentation;
++using Game.Spark;
++using NUnit.Framework;
++using UnityEngine;
++using UnityEngine.TestTools;
++
++namespace Game.Tests.PlayMode
++{
++    /// T-chain-08 (ED-chain-2): сцена строит цепочку только через ChainGenerator.
++    public class ChainSceneTests
++    {
++        private GameObject go;
++
++        [UnityTearDown]
++        public IEnumerator Cleanup()
++        {
++            if (go != null) Object.Destroy(go);
++            foreach (var cam in Object.FindObjectsByType<Camera>(FindObjectsSortMode.None)) Object.Destroy(cam.gameObject);
++            foreach (var p in Object.FindObjectsByType<PlayerHop>(FindObjectsSortMode.None)) Object.Destroy(p.gameObject);
++            yield return null;
++        }
++
++        [UnityTest, NUnit.Framework.Property("TID", "T-chain-08")]
++        public IEnumerator T_chain_08_scene_uses_generator()
++        {
++            var hop = Resources.Load<HopConfig>("Config/HopConfig");
++            var spark = Resources.Load<SparkConfig>("Config/SparkConfig");
++            var chain = Resources.Load<ChainConfig>("Config/ChainConfig");
++            go = new GameObject("Game");
++            go.SetActive(false);
++            var gb = go.AddComponent<GameBootstrap>();
++            gb.UseConfigs(hop, spark, chain, 42);
++            go.SetActive(true);
++            yield return null;
++
++            var expected = new ChainGenerator(chain, hop, r => SparkPlacer.Roll(r, spark), 42);
++            var xs = gb.LanternPositions.Select(p => p.x).ToArray();
++            Assert.AreEqual(expected.Lanterns.Count, xs.Length);
++            for (int i = 0; i < xs.Length; i++) Assert.AreEqual(expected.Lanterns[i].X, xs[i], 1e-4f, $"фонарь {i}");
++        }
++    }
++}
+diff --git a/Assets/_Project/Tests/PlayMode/Game.Tests.PlayMode.asmdef b/Assets/_Project/Tests/PlayMode/Game.Tests.PlayMode.asmdef
+index 39d53b3..2d41233 100644
+--- a/Assets/_Project/Tests/PlayMode/Game.Tests.PlayMode.asmdef
++++ b/Assets/_Project/Tests/PlayMode/Game.Tests.PlayMode.asmdef
+@@ -1,6 +1,6 @@
+ {
+   "name": "Game.Tests.PlayMode",
+-  "references": ["Game.Core", "Game.Hop", "Game.Spark", "Unity.InputSystem", "Unity.InputSystem.TestFramework", "UnityEngine.TestRunner"],
++  "references": ["Game.Core", "Game.Hop", "Game.Spark", "Game.Chain", "Game.Presentation", "Unity.InputSystem", "Unity.InputSystem.TestFramework", "UnityEngine.TestRunner"],
+   "includePlatforms": [],
+   "overrideReferences": true,
+   "precompiledReferences": ["nunit.framework.dll"],

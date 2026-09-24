@@ -1,16 +1,17 @@
 # anton-gamedev
 
-Личный маркетплейс плагинов для полного цикла инди-игры на Unity 6 + FMOD — от искры до плейтеста. Говорит на языке MDA / SDT / Flow / столпов, не пишет художественный текст без запроса и использует **только бесплатные инструменты**.
+Личный маркетплейс плагинов для полного цикла инди-игры на Unity 6 + FMOD — от искры до плейтеста и продакшна по майлстоунам. Говорит на языке MDA / SDT / Flow / столпов, не пишет художественный текст без запроса и использует **только бесплатные инструменты**.
 
 | Плагин | Где работает | Что делает |
 |---|---|---|
 | **`gd`** | Claude Code и Claude Cowork | Геймдизайн, нарратив и направляющие документы: арт, звук, UX, тех-дизайн, тест-план, плейтест, метрики |
-| **`gd-build`** | Только Claude Code | Сборка Unity-слайса из хендоффа через бесплатный Unity MCP, тесты и smoke, синхронизация карты событий FMOD. Без MCP — план и чеклист |
+| **`gd-build`** | Только Claude Code | Сборка Unity-слайса и систем майлстоуна через бесплатный Unity MCP, независимое ревью кода, отклик (juice), UI Toolkit, импорт ассетов, тесты, скриншоты против эталонов, soak, синхронизация FMOD. Без MCP — план и чеклист |
 
 ```
 искра → концепт → системы → GDD → ревью → баланс → скоуп → хендофф
   → подготовка сборки (тех-дизайн, тест-план) → сборка [gd-build] → QA [gd-build] → плейтест → решение ↺
-параллельно: нарратив · континуити · арт · звук (→ FMOD [gd-build]) · UX · метрики · game feel
+  ─advance→ продакшн: хендофф майлстоуна → система [gd-build] → ревью кода → QA → полировка и перф → релиз → после релиза ↺
+параллельно: нарратив · континуити · арт (→ импорт [gd-build]) · звук (→ FMOD [gd-build]) · UX (→ UI [gd-build]) · метрики · game feel (→ juice [gd-build])
 ```
 
 ## Что внутри
@@ -40,14 +41,19 @@
 | Команда | Что делает |
 |---|---|
 | `/gd-build:slice <slice>` | Играбельный Unity-слайс из хендоффа: тест первым, verify loop, лог доказательств по ED |
-| `/gd-build:test [suite\|smoke\|input\|bug]` | EditMode / PlayMode через MCP или headless, smoke, баг-репорты; 0 тестов = FAIL |
-| `/gd-build:fmod [sync\|diff\|unity]` | Карта событий → скрипт FMOD Studio + `FmodEvents.cs`, сверка по экспорту GUIDs |
+| `/gd-build:feature <system>` | Система майлстоуна из GDD: тест первым, verify loop, лог по каждому R / F / E |
+| `/gd-build:review <system>` | Независимое ревью кода агентом code-reviewer (видит только diff, GDD, архитектуру, тест-план) |
+| `/gd-build:juice <system>` | Отклик на события (частицы, камера, hitstop, squash) с замером в кадрах против Game Feel |
+| `/gd-build:ui [hud\|restart\|…]` | HUD и экраны на UI Toolkit по `ux/hud.md`: роли палитры, ключи локализации, скриншоты в 2–3 разрешениях |
+| `/gd-build:assets [check\|import\|replace]` | Импорт ассетов по asset-list, замена плейсхолдеров, бюджеты и лицензии |
+| `/gd-build:test [suite\|smoke\|input\|visual\|soak\|bug]` | EditMode / PlayMode через MCP или headless, smoke, сверка скриншотов с эталонами, долгий прогон на утечки, баг-репорты; 0 тестов = FAIL |
+| `/gd-build:fmod [sync\|diff\|unity\|hook]` | Карта событий → FMOD Studio (банки, файлы звука; headless через `fmodstudiocl`) + `FmodEvents.cs`, сверка по GUIDs, проверка вызовов в коде |
 
 **Скиллы `gd`** (срабатывают автоматически по описанию): `gd-router`, `gd-concept`, `gd-systems-map`, `gdd-author`, `gdd-review`, `game-feel`, `balance-check`, `scope-check`, `gd-handoff`, `narrative-structure`, `character-voice`, `ink-slice`, `narrative-continuity`, `art-direction`, `audio-direction`, `ux-onboarding`, `tech-design`, `qa-plan`, `playtest`, `metrics-plan`.
 
-**Скиллы `gd-build`**: `slice-build`, `qa-run`, `fmod-sync`.
+**Скиллы `gd-build`**: `slice-build`, `feature-build`, `juice-build`, `ui-build`, `asset-integrate`, `qa-run`, `fmod-sync`. **Агент `gd-build`**: `code-reviewer`.
 
-У каждого нового скилла есть детерминированная проверка в `scripts/` (Python stdlib): палитра, ассеты, карта событий, knobs → конфиги, покрытие тестами, события аналитики, коды плейтеста, результаты NUnit, сверка с FMOD.
+У каждого нового скилла есть детерминированная проверка в `scripts/` (Python stdlib): палитра, ассеты, карта событий, knobs → конфиги, покрытие тестами (в том числе visual и perf), события аналитики, коды плейтеста, результаты NUnit, сверка с FMOD, лог сборки, тайминги отклика, UI против hud.md, импорт ассетов, diff PNG, soak.
 
 **Проектные скиллы**: `syncario-gamedesigner` — геймдизайн Syncario (канон, столпы, north star, якорь «Сифа», voice/social/метрики). Для своего проекта главнее общих скиллов.
 
@@ -123,6 +129,9 @@ cp -r ~/.claude/plugins/marketplaces/anton-gamedev/templates/design ./design
 | Официальный Unity Plugin (`/plugin marketplace add Unity-Technologies/unity-agent-plugin`, затем `/plugin install unity@unity-agent-plugin`) | справочник how-to по API Unity | бесплатно; его MCP через Unity AI требует подписки — не используется |
 
 Проверено вживую 2026-09-24 на Unity 6000.3.24f1, CoplayDev/unity-mcp 10.2.0 и FMOD Studio 2.03.14 (`examples/one-tap-slice/RESULTS.md`). У MCP-сервера и пакета телеметрия включена по умолчанию: запускай их с `DISABLE_TELEMETRY=true`. Карта событий переносится в FMOD и без GUI: `fmodstudiocl -script gd_sync_event_map.cli.js <проект>.fspro`.
+
+### Шаги, которые остаются за тобой (🟨)
+Решения о столпах, вырезании, pivot / kill · логины и лицензии (Unity Hub, fmod.com, Steamworks, секреты CI) · пустой проект FMOD Studio · референсы · прослушивание и микс на устройстве · ощущение управления · живые плейтесты · hero-ассеты (главный персонаж, ключевой арт, главная тема) · утверждение статуса `made` и визуальных эталонов (`design/qa/visual/_pending/` → `design/qa/visual/`) · тексты для игроков · финальный Release.
 
 Без Unity MCP `gd-build` работает в режиме **plan**: план задач, чеклист, headless-прогон тестов при закрытом редакторе (`run-tests-headless.ps1/.sh`). Всё, что не проверено в редакторе, так и помечается.
 

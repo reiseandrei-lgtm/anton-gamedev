@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.5.0] — 2026-09-24 · gd 0.5.0, gd-build 0.2.0 — волна A: из слайса в игру
+
+Стадии 13–16 (продакшн по майлстоунам, полировка, релиз, после релиза) и первые скиллы продакшна. Архитектура — `research/2026-09-production-cycle-architecture.md` (утверждена). Живой прогон на `examples/one-tap-slice` (Unity 6000.3.24f1 + unity-mcp 10.2.0 + FMOD 2.03.14) — `RESULTS.md`, раздел «Волна A».
+
+### Added — gd-build
+- `feature-build` + `/gd-build:feature`: система майлстоуна из GDD, тест первым, лог по каждому R / F / E / ED; `check_build_log.py` (BL1–BL6, общий для логов слайса и систем).
+- Агент `code-reviewer` + `/gd-build:review`: видит только diff, GDD, архитектуру и тест-план; Pass 0 «намерение дизайна» (по gstack-game), вердикт PASS / CONCERNS / FAIL.
+- `juice-build` + `/gd-build:juice`: отклик на события с замером в кадрах; `check_juice.py` (JU1–JU4).
+- `ui-build` + `/gd-build:ui`: HUD и экраны на UI Toolkit по `ux/hud.md`; `check_ui.py` (UI1–UI5: элементы, роли палитры, ключи вместо текста, скриншоты, тач-цели).
+- `asset-integrate` + `/gd-build:assets`: импорт по asset-list; `check_import.py` (IM1–IM7, бюджеты PNG и GLB на stdlib).
+- `qa-run`: soak `--baseline` (наклон памяти простоя вычитается: в редакторе память растёт и без игры); режимы `visual` (`diff_png.py` — PNG на zlib/struct, маски, эталоны утверждает человек, кандидаты в `_pending/`) и `soak` (`check_soak.py`: утечка памяти, деградация кадра, исключения, рост объектов, «игра простаивала»).
+- `fmod-sync`: банки из колонки `Bank`, импорт файлов из `design/audio/files.md` (SingleSound / MultiSound, headless), режим `hook` — `check_fmod_calls.py` (FH1–FH4).
+
+### Added — gd
+- `gd-router` / `pipeline.md`: стадии 13–16, эвристики, новые возвраты, шаги человека (🟨).
+- `gd-handoff`: режим `milestone` (Alpha / Beta, критерии `ED-<system>-N`).
+- `qa-plan`: типы `visual` и `perf`; `check_coverage.py` Q9 (визуал не уходит в manual без причины) и Q10 (строка бюджета без perf-кейса), несколько планов и хендоффов за раз.
+- Общие форматы: колонка `Bank` в `event-map.md`, `Budget` в asset-list, `Name` / `Loc key` в `ux/hud.md`, ID `B1…` в `tech/budgets.md`, `audio/files.md`, `qa/visual/`, `qa/perf/`.
+
+### Fixed (найдено живым прогоном)
+- `check_ui.py`: селектор `#fade` принимался за цвет. `check_fmod_calls.py`, `check_import.py`: путь проекта с `/Temp/` отключал проверку. `check_juice.py`: несколько фаз одного FB. `check_coverage.py`: план майлстоуна дополняет план слайса.
+- Методика: ScriptableObject в файле с другим именем даёт ассет без скрипта; PlayMode-тесты без уборки ломают соседей; `render_ui` в play mode игнорирует размер; редактор без фокуса перестаёт тикать без `runInBackground`; кириллица в выводе CLI unity-mcp теряется.
+
+### Tooling
+- `tools/check_plugins.py`: P9 копии общего кода совпадают с оригиналом, P10 платные инструменты только в запретах, P11 `tools/trigger_cases.md` (31 запрос → ожидаемый скилл).
+- `tools/test_scripts.py`: 37 тестов (было 27).
+
+### Not verified
+- Android-билд и перф на устройстве; FMOD for Unity; эталоны `qa/visual/` не утверждены (ждут человека); плейтест DD-chain-1.
+
 ## [gd-build 0.1.2, gd 0.4.1] — 2026-09-24
 
 Первый живой прогон `gd-build`: Unity 6000.3.24f1 + CoplayDev/unity-mcp 10.2.0 + FMOD Studio 2.03.14 на `examples/one-tap-slice` (итоги и найденные дефекты — `examples/one-tap-slice/RESULTS.md`).

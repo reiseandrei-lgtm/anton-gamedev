@@ -76,3 +76,32 @@
 - Запуск `gd_sync_event_map.js` из меню FMOD Studio GUI (проверен тот же код через `fmodstudiocl`).
 - Звучание плейсхолдеров и отличимость двойной искры — оценивает человек.
 - MCP как инструменты сессии Claude Code (работали через CLI того же сервера); IvanMurzak/Unity-MCP.
+
+## Волна A (2026-09-24): из слайса в игру — gd 0.5.0, gd-build 0.2.0
+
+**Условия.** Те же: Unity 6000.3.24f1, unity-mcp 10.2.0 через CLI, FMOD Studio 2.03.14, headless `fmodstudiocl`. Пример переведён в продакшн: решение `advance` (помечено как пример), система `chain` (генерация цепочки — раньше жила в презентации без правил и seed), хендофф `handoff/alpha.md` в режиме milestone, тест-план `qa/test-plan-alpha.md`.
+
+### gd
+| Скилл | Что сделано | Проверка | Результат |
+|---|---|---|---|
+| `gd-handoff` (milestone) | `handoff/alpha.md`: 3 системы, 5 ED `ED-<system>-N`, DD-chain-1 | `check_coverage.py` | ED 10 (слайс + майлстоун) покрыты |
+| `gdd-author` | `gdd/chain.md` (R1–R5, F1, E1–E3, K1–K4) | `check_knobs.py` | PASS: 13 из 13 knobs в Config map, 5 модулей |
+| `qa-plan` (visual, perf) | 26 кейсов: 11 chain, visual для FB и HUD, perf для B1–B4 | `check_coverage.py` (два плана, два хендоффа, бюджеты) | PASS: R/F/E 29 из 29, Q9 и Q10 без замечаний |
+
+### gd-build
+| Скилл | Что сделано вживую | Результат |
+|---|---|---|
+| `feature-build` chain | тесты первым: красный 0/7 → зелёный 7/7; ChainGenerator (чистый класс), ChainConfig через MCP; GameBootstrap без своей генерации; T-chain-08 и T-chain-11 в сцене | `check_build_log.py` PASS: 12 из 12 ID (✅ 11, ⚠️ 1 — эталон ждёт человека). Лог `build/chain.log.md` |
+| агент `code-reviewer` | изолированный субагент, только diff + GDD + архитектура + тест-план | **CONCERNS**, 5 главных находок: R4 в сцене без теста (закрыто T-chain-11), фонари вне пула и утечка материалов (подтверждено soak, исправлено), нижняя граница зазора и «фонари в кадре» (вопросы дизайнеру в GDD). Отчёт `reviews/2026-09-24-code-chain.md` |
+| `juice-build` | FB2 squash/stretch по кадрам, FB3 пыль в кадр касания; замер PlayMode при captureFramerate 60 | T-hop-21: squash 1 / stretch 2 кадра (цель 1 / 2), T-hop-22: пыль +0 кадров, 12 частиц. `check_juice.py`: FAIL 0, WARN 4 (у FB1, FB4, FB5 нет целей в кадрах в GDD — честно) |
+| `ui-build` | UI Toolkit: Theme.uss (роли), HUD.uxml/uss, PanelSettings и UIDocument через MCP, IMGUI удалён | `check_ui.py` PASS; скриншоты 1080×1920 и 1440×3200; на картинке найден дефект вёрстки (рекорд уезжал за экран), исправлен |
+| `asset-integrate` | проверка проекта: арт — примитивы в коде, звук — 5 файлов из `files.md` | Alpha PASS; `--stage beta` FAIL 8 × IM8 — пример честно не готов к Beta |
+| `qa-run visual` | seed 42, камера → RenderTexture 1080×1920, UI → PanelSettings.targetTexture | два снимка одного seed совпали на 0.000 %; 4 кандидата в `qa/visual/_pending/` — утверждает человек |
+| `fmod-sync` банки, файлы, hook | headless: +2 банка (Music создан), 5 файлов звука, Spark — MultiSound из 2 вариаций; повторный запуск +0 | `diff_fmod` PASS 18/18, банки собраны; `check_fmod_calls.py`: FAIL 0, WARN 8 (события не вызываются — FMOD for Unity не подключён) |
+| `qa-run soak` | 6 мин × 2 с драйвером прыжков (прогресс подтверждает игра) + контроль простоя 3 мин | **до** пула: FAIL SK5 материалы 190 → 540 (58/мин), SK1 +1.76 МБ/мин; **после**: материалы 199 → 199, объекты ≤ 35, 42 прыжка; SK1 +2.81 МБ/мин при простое +3.03 МБ/мин — рост даёт редактор и MCP, не игра; `check_soak --baseline` PASS. Отчёты `qa/perf/2026-09-24-soak-*.md` |
+
+### Находки живого прогона волны A (исправлены)
+ScriptableObject в файле с другим именем → ассет без скрипта (NRE); PlayMode-тест без уборки роняет соседей; `render_ui` в play mode игнорирует размер (снимки — через RenderTexture / `PanelSettings.targetTexture`); редактор без фокуса перестаёт тикать (`runInBackground`); драйвер soak «играл» 3 минуты в замершую игру — отсюда SK6; в редакторе память растёт и в простое — отсюда `check_soak --baseline`; ложные срабатывания `check_ui` (#fade), `check_fmod_calls`/`check_import` (путь с `/Temp/`), `check_juice` (несколько фаз FB); Beta на плейсхолдерах проходила — добавлен IM8. Минимальный прыжок 1.15 > chain#K1 = 1.0: подтверждает вопрос ревью о нижней границе зазора (в Open Questions GDD).
+
+### Не проверено (волна A)
+Headless-прогон после волны A (редактор был открыт — тесты шли через MCP); эталоны `qa/visual/` (ждут человека); Android и FMOD for Unity.

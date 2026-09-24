@@ -1,18 +1,21 @@
 {
   "name": "gd-build",
   "displayName": "GD Build — Unity slice, tests, FMOD",
-  "version": "0.1.2",
-  "description": "Continues the gd pipeline after handoff in Claude Code: build a playable Unity 6 slice via a free Unity MCP with a verify loop, run EditMode/PlayMode/smoke tests, sync the FMOD event map. Degrades to plan + checklist without MCP. Free tools only.",
+  "version": "0.2.0",
+  "description": "Continues the gd pipeline in Claude Code: build a playable Unity 6 slice and milestone systems via a free Unity MCP with a verify loop, independent code review, juice measured in frames, UI Toolkit screens from the HUD spec, asset import against the asset list, EditMode/PlayMode/smoke/visual-diff/soak tests, and FMOD sync with banks and audio import (headless via fmodstudiocl). Degrades to plan + checklist without MCP. Free tools only.",
   "author": {
     "name": "Anton"
   },
   "license": "MIT",
   "keywords": [
-    "gamedev",
-    "unity",
+    "code-review",
     "fmod",
-    "testing",
+    "gamedev",
+    "juice",
+    "mcp",
     "prototype",
-    "mcp"
+    "testing",
+    "ui-toolkit",
+    "unity"
   ]
 }
