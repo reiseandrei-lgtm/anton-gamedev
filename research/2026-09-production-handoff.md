@@ -27,7 +27,9 @@ owner: Anton
 - Unity 6000.3.24f1 (`D:\Unity\Unity Hub`), лицензия Personal активна; проект `D:\Unity\Projects\one-tap-slice` (свой git, последний коммит `daf5e0b`). `PlayerSettings.runInBackground = 1`.
 - unity-mcp 10.2.0: сервер `DISABLE_TELEMETRY=true uvx --from mcpforunityserver==10.2.0 mcp-for-unity --transport http --http-host 127.0.0.1 --http-port 8080`; CLI `uvx -q --from mcpforunityserver==10.2.0 unity-mcp --format json raw <tool> '<json>'`. Мост стартует сам (`Assets/_Project/Editor/McpSessionBoot.cs`).
 - FMOD Studio 2.03.14 (`D:\FMOD\FMOD Studio 2.03.14`, `fmodstudiocl.exe`), проект `D:\FMOD\Projects\one-tap-slice` (свой git).
-- Blender 5.2.1 (Steam, `D:\SteamLibrary\steamapps\common\Blender\blender.exe`).
+- Blender 5.2.2 (winget, `D:\Blender\blender.exe`) и 5.2.1 (Steam). Android Build Support (SDK, NDK, OpenJDK) установлен.
+- Не установлено: Blender MCP, ffmpeg, sox, FluidSynth, SoundFont, FMOD for Unity; `git lfs install` не выполнен.
+- Промпт следующей сессии — `research/2026-09-next-session-prompt.md` (изменённый план: B1 / B2).
 
 ## Открытое после волны A
 - Эталоны `examples/one-tap-slice/design/qa/visual/_pending/` (4 снимка) ждут утверждения человеком.
