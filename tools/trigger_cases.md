@@ -35,3 +35,15 @@
 | прогони тесты | qa-run |
 | сравни скриншоты с эталоном | qa-run |
 | перф-бюджет | tech-design |
+| замерь производительность | perf-check |
+| влезаем ли в бюджет кадра | perf-check |
+| profile the build | perf-check |
+| собери билд игрока | build-release |
+| настрой ci для unity | build-release |
+| release build | build-release |
+| смоделируй фонарь | model-build |
+| блокаут в blender | model-build |
+| export to glb | model-build |
+| процедурная анимация хвоста | anim-build |
+| настрой ik для ног | anim-build |
+| rig in blender | anim-build |

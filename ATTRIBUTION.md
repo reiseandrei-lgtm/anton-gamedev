@@ -43,9 +43,13 @@ SKILL.md всех скиллов написаны заново (на русск�
 | `gd-build/skills/ui-build/references/ui-method.md` | CCGS агенты `ui-programmer`, `unity-ui-specialist`; Nice-Wolf-Studio/unity-claude-skills `unity-ui-patterns` | Идеи; текст свой |
 | `gd-build/skills/asset-integrate/references/import-method.md` | blender-skills `asset-optimization`; CoplayDev/unity-mcp `.claude/skills/blender-to-unity` | Адаптация чеклиста; шов «файл на диске» и выбор GLB |
 | `gd/skills/gd-handoff/references/milestone.md` | CCGS `gate-check` (идея гейта майлстоуна) | Идея; формат свой |
+| `gd-build/skills/perf-check/references/perf-method.md` | CCGS `perf-profile`; tjboudreaux/cc-plugin-unity-gamedev `tools-unity-profiling`, `eng-unity-mobile-optimization` (MIT) | Идеи (фазы, формат отчёта, FrameTimingManager); текст и `compare_perf.py` свои |
+| `gd-build/skills/build-release/references/release-method.md` | CCGS `release-checklist`, `day-one-patch`, `hotfix`; game-ci/unity-builder, unity-test-runner (MIT) — как GitHub Actions | Идеи путей патча и отката; шаблон workflow свой, Actions используются, код не копировался |
+| `gd-build/skills/model-build/references/model-method.md`, `scripts/blender_blockout.py` | blender-skills `blender-modeler`, `lod-pipeline`, `export-pipeline`, `qa-review`; CoplayDev/unity-mcp `.claude/skills/blender-to-unity` | Адаптация чеклистов; скрипты `blender_blockout.py`, `check_glb.py` свои |
+| `gd-build/skills/anim-build/references/anim-method.md` | blender-skills `rigging`, `animation`; Nice-Wolf-Studio `unity-animation`; tjboudreaux `tools-unity-animation` (MIT) | Идеи и чеклисты; текст свой |
 | `research/2026-09-production-cycle-architecture.md` | все источники из §9 документа | Ресерч; код не взят |
 
-Проверено по документации, код не взят: FMOD Studio Scripting API (локальная документация FMOD Studio 2.03.14), `fmodstudiocl` (Advanced Topics). В `vendor/` также изучены, но не использованы: sirruf/music-gen-skill, GarrettPetersen/indie-game-marketing-skills, tjboudreaux/cc-plugin-unity-gamedev (волны B–C).
+Проверено по документации, код не взят: FMOD Studio Scripting API (локальная документация FMOD Studio 2.03.14), `fmodstudiocl` (Advanced Topics). В `vendor/` также изучены, но пока не использованы: sirruf/music-gen-skill, GarrettPetersen/indie-game-marketing-skills (волны B2–C). ahujasid/mcp-for-blender (MIT + Terms of Use) — ставится как внешний инструмент (аддон + MCP-сервер), код не копировался; запрещённые инструменты перечислены в `model-build`.
 
 Справочник Ink в narrative-ink-skills пересказывает документацию inkle «Writing with ink» (https://github.com/inkle/ink, MIT © inkle Ltd).
 
