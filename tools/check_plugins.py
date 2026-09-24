@@ -13,6 +13,9 @@
   P6 пересечение триггеров между скиллами (одинаковая фраза — FAIL, вложенная — WARN)
   P7 Python-скрипты компилируются
   P8 version только в plugin.json, не в marketplace.json
+  P9 копии общего кода между плагинами совпадают с оригиналом побайтно (COPIES)
+  P10 имена платных инструментов (generate_*, create_rodin_job, Suno, ElevenLabs, Meshy, MusicGen…) — только в строке-запрете
+  P11 tools/trigger_cases.md: типовой запрос уходит в ожидаемый скилл (самый длинный совпавший триггер)
 Выход с кодом 1, если есть FAIL.
 """
 import json
@@ -23,6 +26,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LINK = re.compile(r"`((?:\.\./[a-z0-9\-]+/|[a-z0-9\-]+/)?(?:references|scripts)/[A-Za-z0-9_.\-/]+)`")
+COPIES = [
+    ("plugins/gd/skills/gd-router/scripts/gdd_ids.py", "plugins/gd-build/skills/slice-build/scripts/gdd_ids.py"),
+]
+PAID = re.compile(r"generate_(?:image|audio|model)|create_rodin_job|create_hunyuan_job|download_sketchfab_model|"
+                  r"\bsuno\b|elevenlabs|\bmeshy\b|musicgen|hyper3d", re.I)
+NEGATION = re.compile(r"запрещ|не вызыва|не использ|не предлаг|не включа|не подключа|не для|нельзя|исключен|"
+                      r"never|do not|don't|not use|forbidden|платн", re.I)
 QUOTED = re.compile(r"«([^»]+)»|\"([^\"]+)\"")
 
 
@@ -151,6 +161,38 @@ def main():
                     if ta != tb and len(min(ta, tb, key=len)) >= 6 and (
                             re.search(rf"(?<!\w){re.escape(ta)}(?!\w)", tb) or re.search(rf"(?<!\w){re.escape(tb)}(?!\w)", ta)):
                         warns.append(f"P6 вложенные триггеры: {a} «{ta}» ~ {b} «{tb}»")
+
+    for orig, copy in COPIES:
+        o, c = ROOT / orig, ROOT / copy
+        if not c.is_file() or o.read_bytes() != c.read_bytes():
+            fails.append(f"P9 {copy}: не совпадает с {orig} — скопируй оригинал")
+
+    for plugin in sorted((ROOT / "plugins").iterdir()):
+        for f in sorted(plugin.rglob("*.md")):
+            for n, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+                if PAID.search(line) and not NEGATION.search(line):
+                    fails.append(f"P10 {f.relative_to(ROOT)}:{n}: платный инструмент без запрета в строке")
+
+    cases = ROOT / "tools/trigger_cases.md"
+    if cases.is_file():
+        flat = {k: v for k, v in all_triggers.items()}
+        for line in cases.read_text(encoding="utf-8").splitlines():
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if len(cells) < 2 or not line.startswith("|") or cells[0].lower() in ("запрос", "request") or set(cells[0]) <= set("-: "):
+                continue
+            req, want = cells[0].strip("«»\"").lower(), cells[1].strip("` ")
+            best = {}
+            for skill, trig in flat.items():
+                hits = [tr for tr in trig if re.search(rf"(?<!\w){re.escape(tr)}(?!\w)", req)]
+                if hits:
+                    best[skill.split(":")[1]] = max(len(h) for h in hits)
+            if not best:
+                fails.append(f"P11 «{req}»: ни один триггер не совпал (ожидался {want})")
+                continue
+            top = max(best.values())
+            winners = sorted(s for s, v in best.items() if v == top)
+            if winners != [want]:
+                fails.append(f"P11 «{req}»: уходит в {', '.join(winners)}, ожидался {want}")
 
     mk = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text(encoding="utf-8"))
     for p in mk.get("plugins", []):
