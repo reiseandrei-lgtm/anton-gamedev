@@ -1,6 +1,6 @@
 # Attribution
 
-Плагины `gd` и `gd-build` частично основаны на материалах пяти репозиториев под лицензией MIT. Ниже — что откуда взято и полные тексты лицензий, как требует MIT.
+Плагины `gd` и `gd-build` частично основаны на материалах восьми репозиториев под лицензией MIT и одного под Apache-2.0. Ниже — что откуда взято и тексты лицензий (MIT — полностью здесь; Apache-2.0 — `licenses/Apache-2.0.txt` и `licenses/NOTICE-awesome-gamedev-agent-skills.txt`).
 
 SKILL.md всех скиллов написаны заново (на русском, под пайплайн и структуру `design/` этого плагина). Методология в `references/` адаптирована (сокращена, переведена частично, отвязана от инфраструктуры исходников). Файлы, скопированные почти без изменений, помечены в шапке «Copied from …».
 
@@ -37,7 +37,15 @@ SKILL.md всех скиллов написаны заново (на русск�
 | `gd-build/skills/slice-build/references/verify-loop.md` | unity-kit `unity-verify`, `unity-playtest` | Адаптация |
 | `gd-build/skills/slice-build/scripts/gen_sfx.py` | unity-kit `scripts/gen-sfx.py` | Адаптация (рецепты по имени, новые звуки, префикс) |
 | `gd-build/skills/qa-run/references/qa-run-method.md` | unity-kit `unity-ci`, `unity-verify`, `unity-playtest` | Адаптация |
-| `gd-build/skills/qa-run/scripts/run-tests-headless.ps1`, `.sh`, `find-unity.ps1`, `.sh` | unity-kit `scripts/*` | **Копия** (изменена только шапка) |
+| `gd-build/skills/qa-run/scripts/run-tests-headless.ps1`, `.sh`, `find-unity.ps1`, `.sh` | unity-kit `scripts/*` | **Копия** (изменены шапка, код выхода при падениях, фильтр `.meta`, поиск редактора) |
+| `gd-build/skills/feature-build/references/code-review-checklist.md`, `gd-build/agents/code-reviewer.md` | gstack-game `gameplay-implementation-review` (Pass 0 «Design Intent Survival», `pass1-critical.md`, `pass2-informational.md`) | Адаптация (без преамбулы, телеметрии, авто-исправлений; привязка к ID GDD и Config map — своя) |
+| `gd-build/skills/juice-build/references/juice-method.md` | awesome-gamedev-agent-skills `disciplines/game-feel` (Apache-2.0) | Сверка чеклиста техник; текст свой |
+| `gd-build/skills/ui-build/references/ui-method.md` | CCGS агенты `ui-programmer`, `unity-ui-specialist`; Nice-Wolf-Studio/unity-claude-skills `unity-ui-patterns` | Идеи; текст свой |
+| `gd-build/skills/asset-integrate/references/import-method.md` | blender-skills `asset-optimization`; CoplayDev/unity-mcp `.claude/skills/blender-to-unity` | Адаптация чеклиста; шов «файл на диске» и выбор GLB |
+| `gd/skills/gd-handoff/references/milestone.md` | CCGS `gate-check` (идея гейта майлстоуна) | Идея; формат свой |
+| `research/2026-09-production-cycle-architecture.md` | все источники из §9 документа | Ресерч; код не взят |
+
+Проверено по документации, код не взят: FMOD Studio Scripting API (локальная документация FMOD Studio 2.03.14), `fmodstudiocl` (Advanced Topics). В `vendor/` также изучены, но не использованы: sirruf/music-gen-skill, GarrettPetersen/indie-game-marketing-skills, tjboudreaux/cc-plugin-unity-gamedev (волны B–C).
 
 Справочник Ink в narrative-ink-skills пересказывает документацию inkle «Writing with ink» (https://github.com/inkle/ink, MIT © inkle Ltd).
 
@@ -176,3 +184,86 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## arjun988/blender-skills — https://github.com/arjun988/blender-skills
+
+```
+MIT License
+
+Copyright (c) 2026 blender-skills contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## CoplayDev/unity-mcp — https://github.com/CoplayDev/unity-mcp
+
+```
+MIT License
+
+Copyright (c) 2025 CoplayDev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## Nice-Wolf-Studio/unity-claude-skills — https://github.com/Nice-Wolf-Studio/unity-claude-skills
+
+```
+MIT License
+
+Copyright (c) 2026 Nice-Wolf-Studio
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## gamedev-skills/awesome-gamedev-agent-skills — https://github.com/gamedev-skills/awesome-gamedev-agent-skills
+
+Apache License 2.0. Полный текст — `licenses/Apache-2.0.txt`, NOTICE источника — `licenses/NOTICE-awesome-gamedev-agent-skills.txt`.
+Copyright 2026 Abhishek Barali and the awesome-gamedev-agent-skills contributors. Использовано: сверка чеклиста техник game feel (`disciplines/game-feel`); текст `juice-method.md` написан заново, файлы не копировались и не изменялись.
