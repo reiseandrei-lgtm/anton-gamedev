@@ -1,0 +1,17 @@
+{
+  "_comment": "Пример cue для midi_write.py. Скопируй в design/audio/music/<cue>.json игры. Программы — General MIDI (0-based): 89 Pad 2 (warm), 9 Glockenspiel, 14 Tubular Bells.",
+  "cue": "run_main",
+  "bpm": 90,
+  "meter": "4/4",
+  "bars": 4,
+  "key": "D major",
+  "tracks": [
+    {"name": "pad", "program": 89, "channel": 0, "volume": 96, "repeat_bars": 4,
+     "notes": [[0, 4, 50, 64], [0, 4, 57, 60], [0, 4, 62, 58],
+               [4, 4, 47, 64], [4, 4, 54, 60], [4, 4, 62, 58],
+               [8, 4, 43, 64], [8, 4, 55, 60], [8, 4, 62, 58],
+               [12, 4, 45, 64], [12, 4, 52, 60], [12, 4, 61, 58]]},
+    {"name": "bells", "program": 9, "channel": 1, "volume": 80, "repeat_bars": 1,
+     "notes": [[0, 0.5, 74, 70], [1.5, 0.5, 78, 60], [2.5, 0.5, 81, 64], [3.5, 0.5, 78, 50]]}
+  ]
+}
