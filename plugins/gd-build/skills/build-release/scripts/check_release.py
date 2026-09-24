@@ -12,7 +12,7 @@
   RL4 workflow ссылается на секреты вне ожидаемых UNITY_LICENSE / UNITY_EMAIL / UNITY_PASSWORD / STEAM_* (WARN)
   RL5 development-сборка в Build Profile или в workflow (FAIL)
   RL6 VDF SteamPipe без AppID / DepotID (FAIL)
-Выход 1, если есть FAIL.
+Выход 1, если есть FAIL; 2 — не Unity-проект или проект не внутри --repo.
 """
 import argparse
 import fnmatch
@@ -88,6 +88,9 @@ def main():
         print(f"Не Unity-проект: {proj}")
         return 2
     repo = Path(a.repo).resolve() if a.repo else next((d for d in [proj, *proj.parents] if (d / ".git").exists()), proj)
+    if repo != proj and repo not in proj.parents:
+        print(f"Проект {proj} не внутри --repo {repo}")
+        return 2
     fails, warns = [], []
 
     # RL1 версия

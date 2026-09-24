@@ -13,7 +13,7 @@
   AF3 частота / битность ≠ библии (по умолчанию 48 кГц, 16 бит) (FAIL; у Status ph — WARN)
   AF4 громкость вне Integrated библии ± --lufs-tol или пик выше True peak библии (FAIL; ph — WARN).
       True peak — через ffmpeg (ebur128), если найден; иначе sample peak с пометкой «sample»
-  AF5 внешний источник (cc0, made, license ≠ own) без License или URL (FAIL)
+  AF5 внешний источник (cc0, external, license ≠ own) без License или URL (FAIL); made / synth + own — свой файл
   AF6 `ph_` в имени файла со статусом final / made (FAIL)
 Выход 1, если есть FAIL.
 """
@@ -62,7 +62,7 @@ def bible_targets(path):
 
 def find_ffmpeg(explicit):
     if explicit:
-        return explicit
+        return explicit if Path(explicit).is_file() or shutil.which(explicit) else None
     hit = shutil.which("ffmpeg")
     if hit:
         return hit
@@ -122,7 +122,7 @@ def main():
         lic = r.get("license", "").strip()
         if "ph_" in Path(rel).name and status in ("final", "made"):
             fails.append(f"AF6 {rel}: `ph_` в имени при статусе {status}")
-        if (src in ("cc0", "made", "external") or (lic and lic.lower() not in ("own", "свой") and lic not in EMPTY)) \
+        if (src in ("cc0", "external") or (lic and lic.lower() not in ("own", "свой") and lic not in EMPTY)) \
                 and src != "synth" and (lic in EMPTY or r.get("url", "").strip() in EMPTY):
             fails.append(f"AF5 {rel}: источник «{src}» без License или URL")
         path = root / rel

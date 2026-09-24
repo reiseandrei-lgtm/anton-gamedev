@@ -17,10 +17,11 @@ owner: Anton
 | Волна A (gd 0.5.0, gd-build 0.2.0) | ✅ смёржено, тег `v0.5.0` |
 | Волна B (gd 0.6.0, gd-build 0.3.0) | ✅ смёржено, тег `v0.6.0` (PR #6): `perf-check`, `build-release`, `model-build`, `anim-build`, `sfx-design`, `music-build`, агент `art-director` |
 | Волна C (gd 0.7.0, gd-build 0.4.0) | ✅ смёржено, тег `v0.7.0` (PR #7): `level-design`, `release-plan`, `loc-build`, `analytics-build`. `netcode-build` (C5) не делался |
-| Укрепление B и C (gd 0.7.1, gd-build 0.4.1) | ✅ ветка `test/hardening-B-C` (не запушена, ждёт «да» на PR): +26 тестов (63 всего), фикстуры `examples/one-tap-slice/fixtures/`, 3 бага исправлены (`gen_analytics.py` писал неполный файл при ошибке; `check_audio_files.py` и `check_music.py` падали на float-WAV) |
+| Укрепление B и C (gd 0.7.1, gd-build 0.4.1) | ✅ смёржено, тег `v0.7.1` (PR #8): +26 тестов (63 всего), фикстуры `examples/one-tap-slice/fixtures/`, 3 бага исправлены (`gen_analytics.py` писал неполный файл при ошибке; `check_audio_files.py` и `check_music.py` падали на float-WAV) |
+| Решения по «Открытому» B и C (gd 0.7.2, gd-build 0.4.2) | ✅ ветка `fix/open-items-B-C` (ждёт «да» на PR) |
 
 ## Первые шаги новой сессии
-1. PR `test/hardening-B-C`: после «да» — push, PR, мёрж, тег `v0.7.1`.
+1. PR `fix/open-items-B-C`: после «да» — push, PR, мёрж, тег `v0.7.2`.
 2. Live-прогон `loc-build` — отложен по решению пользователя (пакет уже стоит): коллекция `UI`, импорт CSV, привязки `LocalizedString`, Pseudo-Locale, скриншоты; сверить имена колонок CSV-расширения с `loc-method.md`.
 3. По желанию: вставить вызовы аналитики в one-tap-slice (`/gd-build:analytics wire`), EditMode-тест бэкенда, JSONL в play mode.
 4. Живые прогоны волны B: серия профайлера `perf-check`, сборка игрока `build-release`, импорт стемов и SFX в FMOD.
@@ -35,15 +36,16 @@ owner: Anton
 - Установлено: `com.unity.localization` 1.5.8 в one-tap-slice (коммит `5c6c0fe` в репозитории проекта). Live-прогон `loc-build` на нём не делался — отложен по решению пользователя.
 - Промпт волны C — `research/2026-09-wave-C-prompt.md` (выполнен); прошлый — `research/2026-09-next-session-prompt.md`.
 
-## Открытое после укрепления B и C (2026-09-24)
-Замечено при написании тестов, не исправлялось: это правила или сообщения скриптов, а не падения. Нужно решение.
-- AF5 (`check_audio_files.py`) считает источник `made` внешним: свой файл с `License: own` без URL получает FAIL. В `architecture.md` §4 `made` — собственный ассет, одобренный человеком. Что делать: убрать `made` из внешних или требовать URL/путь исходника.
-- LV3 (`check_level.py`): если ключ лежит на связи `optional`, а гейт — на критическом пути, скрипт пишет «goal недостижим». Достижимость считается только по связям `critical`. Соглашение сейчас такое: ветку за ключом помечать `critical`, но в `level-method.md` этого нет. Вариант: дописать это в метод или улучшить сообщение.
-- PF4 (`compare_perf.py`): в докстринге обещана проверка «platform не упоминает устройство», в коде — только `editor|редактор`. Строки бюджета с платформой «то же» PF4 пропускает.
-- `check_audio_files.py` пишет в шапке «true peak: ffmpeg», даже если `--ffmpeg` указывает на несуществующий файл: пик тогда считается как sample peak. На вердикт это не влияет.
-- Правило PII (M5 / AN3) срабатывает на любой `…_name`, в том числе `level_name` и `skin_name`, — возможны ложные FAIL. Правка — сразу в двух плагинах (P9 `LINE_COPIES`).
-- `check_release.py`: если `--repo` не предок проекта, `relative_to` выбросит `ValueError`. Видно по коду, тестом не проверялось.
-- Тестами не покрыты: `synth_sfx.py`, `render_cue.py`, `midi_write.py`, `blender_blockout.py`; true peak через ffmpeg (в тестах он специально выключен); `check_glb.py` на GLB из Blender с бинарным буфером; режим live в `preflight.py --for model|sfx|music` — зависит от машины, тест проверяет только, что режим согласован со списком «Не хватает».
+## Решено после укрепления B и C (2026-09-24, 0.7.2)
+- AF5: `made` — свой файл (как в `architecture.md` §4). Внешними считаются `cc0`, `external` и лицензия, отличная от own; URL нужен только им.
+- LV3: если цель достижима только через `optional`, скрипт пишет, какие именно связи мешают, и просит пометить их `critical`. Соглашение дописано в `level-method.md`. Уровень FAIL не изменился.
+- PF4: докстринг приведён к коду (проверяется только editor/редактор). Эвристика «platform не упоминает устройство» отклонена: слишком много ложных срабатываний.
+- `check_audio_files.py`: если `--ffmpeg` указывает на несуществующий файл, шапка пишет «нет ffmpeg — sample peak».
+- `check_release.py`: если проект не внутри `--repo`, скрипт выходит с кодом 2 и понятным сообщением вместо `ValueError`.
+- Правило PII (M5 / AN3) оставлено строгим: `…_name` — FAIL. Ложное срабатывание обходится переименованием (`level_id`); пропущенные персональные данные обойти нельзя.
+
+## Открытое
+- Тестами не покрыты: `synth_sfx.py`, `render_cue.py`, `midi_write.py`, `blender_blockout.py`; true peak через ffmpeg; `check_glb.py` на GLB из Blender с бинарным буфером; режим live в `preflight.py --for model|sfx|music` (зависит от машины).
 
 ## Открытое после волны C
 - Карточка C4 задавала порядок вех «демо → страница → фест → релиз»; в `check_release_plan.py` — page → demo → fest → release (на Steam демо привязано к странице основной игры). Если нужен другой порядок — поменять `ORDER`.

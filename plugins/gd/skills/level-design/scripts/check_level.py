@@ -185,7 +185,13 @@ def main():
                 fails.append(f"LV3 {g['id']}: ключ в {g['at']} достижим только через свой гейт ({link}) — soft lock")
         crit_links = {k: v for k, v in links.items() if k in crit}
         if goal not in reachable(start, crit_links or links, gates):
-            fails.append(f"LV3: goal {goal} недостижим от {start} по критическому пути")
+            if crit_links and goal in reachable(start, links, gates):
+                opt = [k for k in links if k not in crit]
+                need = [k for k in opt if goal not in reachable(start, {i: v for i, v in links.items() if i != k}, gates)]
+                fails.append(f"LV3: goal {goal} достижим только через optional-связи ({', '.join(need or opt)}) — "
+                             f"путь к ключу или цели пометь critical")
+            else:
+                fails.append(f"LV3: goal {goal} недостижим от {start} по критическому пути")
 
     # Encounters
     encounters = table(secs, "encounters")
