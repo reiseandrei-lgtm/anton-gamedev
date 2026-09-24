@@ -1,0 +1,8 @@
+Key,Shared Comments,English(en),Russian(ru)
+ui.again,max:6 · кнопка,Again,Ещё раз снова
+ui.score_fmt,max:20 · счёт,Score {0},Счёт {1}
+ui.empty,max:10,,Пусто
+ui.dup,max:10,Dup,Дубль
+ui.dup,max:10,Dup,Дубль
+ui.pause,max:7 · кнопка паузы,Pause,Пауза
+ui.unused,max:10,Unused,

@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Label name="restart-record" text="ui.record" />
+    <ui:Button name="restart-again" text="ui.again" />
+    <ui:Label name="hud-score" text="0" />
+</ui:UXML>

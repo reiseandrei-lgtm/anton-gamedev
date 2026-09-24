@@ -18,9 +18,12 @@ import wave
 
 
 def read_wav(path):
-    with wave.open(str(path), "rb") as w:
-        ch, bits, sr, n = w.getnchannels(), w.getsampwidth() * 8, w.getframerate(), w.getnframes()
-        raw = w.readframes(n)
+    try:
+        with wave.open(str(path), "rb") as w:
+            ch, bits, sr, n = w.getnchannels(), w.getsampwidth() * 8, w.getframerate(), w.getnframes()
+            raw = w.readframes(n)
+    except wave.Error as e:
+        raise ValueError(f"{e} — нужен PCM 16/24 бит, переведи через sox или ffmpeg") from None
     width = bits // 8
     count = len(raw) // width
     if width == 2:
@@ -119,11 +122,17 @@ def main():
     if len(sys.argv) < 2:
         print(__doc__)
         return 2
+    rc = 0
     for p in sys.argv[1:]:
-        m = measure(p)
+        try:
+            m = measure(p)
+        except (ValueError, EOFError, OSError) as e:
+            print(f"FAIL {p}: не читается как PCM WAV ({e})")
+            rc = 1
+            continue
         print(f"{p}: {m['lufs']:.1f} LUFS{' (short)' if m['short'] else ''} · sample peak {m['peak_db']:.1f} dBFS · "
               f"{m['duration']:.3f} s · {m['sr']} Hz {m['bits']} bit {m['channels']} ch")
-    return 0
+    return rc
 
 
 if __name__ == "__main__":

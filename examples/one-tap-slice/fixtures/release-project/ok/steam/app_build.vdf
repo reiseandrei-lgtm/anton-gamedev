@@ -1,0 +1,10 @@
+"AppBuild"
+{
+	"AppID" "480"
+	"Desc" "fixture"
+	"ContentRoot" "../Build/"
+	"Depots"
+	{
+		"481" "depot_build.vdf"
+	}
+}

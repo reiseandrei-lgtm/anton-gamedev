@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.1] — 2026-09-24 · gd 0.7.1, gd-build 0.4.1 — укрепление волн B и C: тесты и 3 бага
+
+В `gd` кода не меняли: версия поднята ради тега (тег — по версии `gd`), тесты добавлены для её скриптов `check_level.py` и `check_release_plan.py`.
+
+### Fixed — gd-build
+- `gen_analytics.py`: при неразобранном параметре в `events.md` скрипт возвращал 1, но всё равно записывал `AnalyticsEvents.cs` без этого параметра поверх рабочего. Теперь при ошибке разбора файлы не пишутся. Найдено тестом `test_gen_analytics_bad_param_writes_nothing`.
+- `check_audio_files.py` падал с трейсбеком на WAV с float-сэмплами: исключение `wave.Error` не ловилось, до диагностики AF3 «не читается как PCM WAV» дело не доходило. `loudness.read_wav` теперь превращает `wave.Error` в `ValueError` с подсказкой (sox / ffmpeg). CLI `loudness.py` на таком файле печатает `FAIL … не читается как PCM WAV` и выходит с кодом 1. Найдено тестами `test_audio_files_bad` и `test_loudness_float_wav`.
+- `check_music.py` падал с трейсбеком на стеме с float-сэмплами. Теперь он выдаёт `MU3 <cue>: <стем> не читается`. Найдено тестом `test_music_float_stem`.
+
+### Tooling
+- `tools/test_scripts.py`: +26 тестов, всего 63; классы `WaveC` и `WaveB`. На каждый скрипт есть позитивная и негативная фикстура, негативная ловит все коды проверки:
+  - волна C: `check_level.py` (LV1–LV5, отдельно soft lock), `check_release_plan.py` (RP1–RP4), `check_loc.py` (LC1–LC5, строки Ink с `#id` и без), `gen_analytics.py` (два запуска дают одинаковые байты; enum, ключевое слово C#, `--no-backend`), `check_analytics_calls.py` (AN1–AN4);
+  - волна B: `compare_perf.py` (PF1–PF4), `check_release.py` (RL1–RL6), `check_glb.py` (GL1–GL9, не-GLB), `loudness.py` (эталон BS.1770: моно-синус 997 Гц на −20 dBFS даёт −23.0 LUFS; короткий файл, тишина), `check_audio_files.py` (AF1–AF6), `check_music.py` (MU1–MU6), `preflight.py --for` (loc с пакетом и без, model / sfx / music без Unity, anim).
+- `examples/one-tap-slice/fixtures/`: `levels/`, `release/`, `loc/`, `analytics/`, `perf/`, `release-project/`, `models/`, `audio/`, `music/` (таблица — в `fixtures/README.md`). WAV и GLB собирают хелперы теста во временной папке.
+
 ## [0.7.0] — 2026-09-24 · gd 0.7.0, gd-build 0.4.0 — волна C: уровни, выпуск, локализация, аналитика
 
 Архитектура — `research/2026-09-production-cycle-architecture.md` §3, волна C (C1–C4). `netcode-build` (C5) не делался — ждёт решения (f).
