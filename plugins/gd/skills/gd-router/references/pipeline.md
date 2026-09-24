@@ -3,7 +3,10 @@
 ```
 искра → концепт → системы → GDD → ревью → баланс → скоуп → хендофф
   → подготовка сборки → сборка [gd-build] → QA [gd-build] → плейтест → решение (↺ по адресатам)
-параллельно: нарратив · континуити · арт · звук (→ FMOD [gd-build]) · UX · метрики · game feel
+  ─advance→ продакшн: хендофф майлстоуна → на систему feature-build → code-reviewer → qa-run [gd-build]
+  → полировка и перф [gd-build] → релиз → после релиза (↺ метрики ниже порога → решение)
+параллельно: нарратив · континуити · арт (→ модели, анимация, импорт [gd-build]) · звук (→ SFX, музыка, FMOD [gd-build])
+  · UX (→ UI [gd-build]) · метрики · game feel (→ джус [gd-build]) · уровни
 ```
 
 Все пути — относительно корня игрового репозитория. `design/` — общий мост между Claude Code и Cowork.
@@ -24,7 +27,13 @@
 | 9 | Сборка слайса | `slice-build` (`/gd-build:slice`, плагин `gd-build`, только Claude Code) | 7 + 8 | `build/<slice>.log.md` + Unity-проект | Каждый MUST `ED*` — ✅ с доказательством или ⛔ с причиной; компиляция доказана; режим `live` (в режиме `plan` стадия только подготовлена, не закрыта) |
 | 10 | QA | `qa-run` (`/gd-build:test`) | билд, test-plan | `qa/runs/YYYY-MM-DD-<slice>.md`, `qa/bugs/BUG-NNN.md` | Вердикт PASS: smoke пройден, 0 тестов ≠ зелёный, нет открытых S1 / S2 |
 | 11 | Плейтест | `playtest` (`/gd:playtest plan` → сессии → `analyze` агентом `playtest-analyst`) | билд без S1 / S2, гипотеза хендоффа | `playtest/YYYY-MM-DD-<slice>.plan.md`, `.report.md` | Порог записан до сессий; вердикт `confirmed / refuted / inconclusive` по порогу; у каждой находки P0 / P1 есть адресат |
-| 12 | Решение | `gd-router` | report плейтеста, `qa/runs`, `game-feel` (build) | `decisions-log.md` | Записано одно из: `iterate` (→ адресаты находок) · `pivot` (→ 1) · `kill` (→ 7, другой слайс) · `advance` (следующий слайс / вертикаль), с причиной |
+| 12 | Решение | `gd-router` | report плейтеста, `qa/runs`, `game-feel` (build), `release/postlaunch.md` | `decisions-log.md` | Записано одно из: `iterate` (→ адресаты находок) · `pivot` (→ 1) · `kill` (→ 7, другой слайс) · `advance` (следующий слайс / вертикаль / продакшн → 13), с причиной |
+| 13 | Продакшн (цикл по системам майлстоуна) | `gd-handoff` (milestone) → на систему `feature-build` → агент `code-reviewer` → `qa-run` [gd-build]; параллельно `asset-integrate`, `juice-build`, `ui-build`, `fmod-sync` [gd-build], `level-design` | `advance` в `decisions-log.md`, `scope.md`, approved GDD | `handoff/<milestone>.md` (`type: milestone`), `build/<system>.log.md`, `reviews/*-code-<system>.md`, `qa/runs/*` | **Alpha**: у каждой системы майлстоуна каждое R / F / E в логе — ✅ или ⛔ с решением в `decisions-log.md` (`check_build_log.py` без FAIL); ревью кода не FAIL; qa PASS. **Beta**: + контент по `scope.md`, `check_import.py` без `ph_` у `mvp` |
+| 14 | Полировка и перф | `perf-check`, `qa-run visual/soak`, `juice-build` [gd-build]; `ux-onboarding` (a11y), `audio-direction` (микс) | Beta | `qa/perf/<date>.md`, `qa/visual/` | Перф-бюджеты PASS на целевом устройстве после 10 мин; soak без роста памяти; визуальные отличия приняты 🟨 или исправлены; a11y без `gap`; микс принят 🟨; `check_coverage.py --stage polish` без FAIL |
+| 15 | Релиз | `release-plan` (store, launch), `build-release` [gd-build] | стадия 14 | `release/store.md`, `release/launch.md`, `release/builds.md`, RC-сборка | Чеклист launch закрыт; RC собран из тега; 0 открытых S1 / S2; тексты для игроков — от человека; **Release нажимает человек** |
+| 16 | После релиза | `release-plan` (postlaunch), `feature-build` + `build-release` (патчи) | релиз | `release/postlaunch.md`, `qa/bugs/*` | Метрика из `analytics/funnels.md` ниже порога → стадия 12; S1 → hotfix: `feature-build` → `qa-run` → `build-release` |
+
+Стадии 13–16 используют скиллы, которые выходят волнами: `feature-build`, `code-reviewer`, `juice-build`, `ui-build`, `asset-integrate` — `gd-build` 0.2; `perf-check`, `build-release`, `model-build`, `anim-build`, `sfx-design`, `music-build` — 0.3; `level-design`, `release-plan` (`gd`) и `loc-build` — позже. Если скилла нет в установленной версии, роутер называет шаг и даёт ручной чеклист, стадию не пропускает.
 
 ## Параллельные треки
 
@@ -42,6 +51,8 @@
 | Звук | `audio-direction` (`/gd:audio`), агент `audio-director`; перенос — `fmod-sync` (`/gd-build:fmod`) | `bible` — после `pillars.md`; `events` — после GDD слайса | `audio/audio-bible.md`, `audio/event-map.md`, `audio/build/` |
 | UX и онбординг | `ux-onboarding` (`/gd:ux`) | После GDD core loop; до хендоффа onboarding-слайса | `ux/ftue.md`, `ux/hud.md`, `ux/accessibility.md` |
 | Метрики | `metrics-plan` (`/gd:metrics`) | После хендоффа (есть гипотеза) и `ux/ftue.md` | `analytics/events.md`, `analytics/funnels.md` |
+| Реализация отклика и UI | `[gd-build]` `juice-build`, `ui-build` | После GDD с целями Game Feel и `ux/hud.md`; стадии 9–14 | `build/<system>.log.md` (раздел Juice), `build/ui.log.md` |
+| Импорт ассетов | `[gd-build]` `asset-integrate` | Когда у строк asset-list есть файлы | ассеты в Unity-проекте, отчёт `check_import.py` |
 | Решения | любой скилл | При каждом принятом решении | `decisions-log.md` (дата, решение, почему, альтернативы) |
 
 ## Возвраты назад
@@ -55,6 +66,15 @@
 - Баг оказался дырой дизайна (edge case не описан) → `gdd-author --quick` → `qa-plan` пересчитывает покрытие.
 - `slice-build` уткнулся в неоднозначность хендоффа → стоп, вопрос в `handoff/<slice>.md` → Open Questions; решает дизайнер (`gd-handoff`).
 - Сборка вышла за перф-бюджет → `tech-design` (ADR: что режем) или `scope-check`.
+- Неоднозначность в GDD при реализации (`feature-build`) → `gdd-author --quick`; реализация не решает за дизайнера.
+- `code-reviewer` вынес FAIL → `feature-build` той же системы.
+- Тайминг отклика не совпал с целью → `juice-build` / `anim-build` (реализация) или `game-feel` (цель нереалистична).
+- Элемент UI не помещается в зону → `ux-onboarding`.
+- Модель сверх бюджета → `model-build` (LOD) или `tech-design` (бюджет, ADR).
+- Звук «не тот» после прослушивания → `sfx-design` / `music-build` или `audio-direction`.
+- `perf-check` FAIL → ADR в `tech-design`, `asset-integrate` (сжатие, атласы) или `scope-check`.
+- Отличие на скриншоте (`qa-run visual`) → баг в `qa/bugs/` или новый эталон — решает человек.
+- Метрики после релиза ниже порога → стадия 12.
 
 ## Эвристики определения стадии
 
@@ -69,3 +89,13 @@
 - Есть `playtest/*.report.md` без строки в `decisions-log.md` новее отчёта → стадия 12.
 - `pillars.md` в `review`+, а `art/art-bible.md` и `audio/audio-bible.md` в `template` → предложить треки параллельно (блокер только перед стадией 9, если в слайсе есть арт или звук).
 - Нет ID в GDD (`R1`, `K1`, `FB1`) на стадии 8 → сначала `gdd-author` для простановки ID.
+- Последнее решение в `decisions-log.md` — `advance`, нет `handoff/*.md` с `type: milestone` → стадия 13, `gd-handoff` (milestone).
+- Есть milestone-хендофф, у системы из него нет `build/<system>.log.md` → стадия 13, `/gd-build:feature <system>`.
+- `build/<system>.log.md` новее последнего `reviews/*-code-<system>.md` → `/gd-build:review <system>` (агент `code-reviewer`).
+- Ревью кода не FAIL, последний `qa/runs/*` старше лога системы → `/gd-build:test`.
+- Все системы майлстоуна закрыты, нет `qa/perf/*` новее последнего лога → стадия 14.
+- Стадия 14 закрыта, нет `release/launch.md` → стадия 15; есть `release/postlaunch.md` с метрикой ниже порога без решения → стадия 12.
+
+## Шаги человека (🟨)
+
+Скиллы их не делают и не пропускают: решения о столпах, вырезании, pivot / kill · логины и лицензии (Unity Hub, fmod.com, Steamworks, секреты CI) · пустой проект FMOD Studio · референсы · прослушивание и микс на устройстве · ощущение управления · живые плейтесты · hero-ассеты (главный персонаж, ключевой арт, главная тема) · утверждение статуса `made` и визуальных эталонов · тексты для игроков (магазин, трейлер, посты) · финальный Release.

@@ -2,11 +2,14 @@
 """Трассировка покрытия: GDD и хендофф → тест-план (Python stdlib).
 
 Использование:
-  python3 check_coverage.py design/qa/test-plan-<slice>.md --gdd design/gdd/<system>.md [...] [--handoff design/handoff/<slice>.md]
+  python3 check_coverage.py design/qa/test-plan-<slice>.md [ещё планы…] --gdd design/gdd/<system>.md [...] [--handoff design/handoff/<slice>.md [<milestone>.md]]
+         [--budgets design/tech/budgets.md] [--stage build|polish]
 
 Проверки: Q1 правило/формула/edge case без теста · Q2 ED без теста · Q3 ссылка на несуществующий ID ·
-Q4 дубль или неверный формат ID теста · Q5 неизвестный Type · Q6 Auto=yes не у editmode/playmode ·
-Q7 DD без playtest-кейса (WARN) · Q8 smoke пуст или > 10 шагов.
+Q4 дубль или неверный формат ID теста · Q5 неизвестный Type · Q6 Auto=yes не у editmode/playmode/visual/perf ·
+Q7 DD без playtest-кейса (WARN) · Q8 smoke пуст или > 10 шагов ·
+Q9 визуальный Feedback (колонка Visual в GDD) покрыт только manual без «manual: <причина>» — FAIL; без visual-кейса — WARN ·
+Q10 строка tech/budgets.md без perf-кейса (WARN; FAIL при --stage polish).
 Формат — references/qa-method.md §1. Выход с кодом 1, если есть FAIL.
 """
 import argparse
@@ -18,20 +21,25 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "gd-router" / "scri
 import gdd_ids  # noqa: E402
 
 TEST_ID = re.compile(r"^T-[a-z0-9_\-]+-\d{2,3}$")
-TYPES = {"editmode", "playmode", "manual", "playtest"}
+TYPES = {"editmode", "playmode", "visual", "perf", "manual", "playtest"}
+AUTO_TYPES = {"editmode", "playmode", "visual", "perf"}
+REF_RE = re.compile(r"[a-z0-9_\-]+#[A-Z]{1,3}\d+|\b" + gdd_ids.HANDOFF_ID + r"\b")
+EMPTY = {"", "—", "-", "–", "нет", "none"}
 COVER_PREFIXES = ("R", "F", "E")  # K и FB покрываются косвенно; их проверяют tech-design и audio-direction
 
 
 def main():
     gdd_ids.utf8_stdout()
     ap = argparse.ArgumentParser()
-    ap.add_argument("plan")
+    ap.add_argument("plan", nargs="+", help="тест-план(ы): план майлстоуна дополняет планы слайсов")
     ap.add_argument("--gdd", nargs="+", required=True)
-    ap.add_argument("--handoff", default=None)
+    ap.add_argument("--handoff", nargs="*", default=[])
+    ap.add_argument("--budgets", default=None)
+    ap.add_argument("--stage", choices=["build", "polish"], default="build")
     a = ap.parse_args()
 
     fails, warns = [], []
-    targets, known = {}, set()
+    targets, known, visual_fb = {}, set(), {}
     for g in a.gdd:
         system, ids, w = gdd_ids.gdd_ids(g)
         warns += w
@@ -40,14 +48,25 @@ def main():
             known.add(ref)
             if i.startswith(COVER_PREFIXES) and not i.startswith("FB"):
                 targets[ref] = desc
-    hand = gdd_ids.handoff_ids(a.handoff) if a.handoff else {}
+        feedback = gdd_ids.find_section(gdd_ids.sections(gdd_ids.read(g)), "feedback") or []
+        for row in gdd_ids.table_rows(feedback):
+            rid = row.get("id", "").strip("`* ")
+            if re.fullmatch(r"FB\d+", rid) and row.get("visual", "").strip().lower() not in EMPTY:
+                visual_fb[f"{system}#{rid}"] = row["visual"]
+    budgets = gdd_ids.budget_ids(a.budgets) if a.budgets else {}
+    known |= {f"budgets#{b}" for b in budgets}
+    hand = {}
+    for h in a.handoff:
+        hand.update(gdd_ids.handoff_ids(h))
     known |= set(hand)
 
-    text = gdd_ids.read(a.plan)
-    cases = []
-    for table in gdd_ids.all_tables(text.splitlines()):
-        if table and "id" in table[0] and "covers" in table[0]:
-            cases += [r for r in table if r.get("id", "").strip("` ") and "<" not in r["id"]]
+    cases, text = [], ""
+    for plan in a.plan:
+        ptext = gdd_ids.read(plan)
+        text = text or ptext   # smoke проверяется по первому плану
+        for table in gdd_ids.all_tables(ptext.splitlines()):
+            if table and "id" in table[0] and "covers" in table[0]:
+                cases += [r for r in table if r.get("id", "").strip("` ") and "<" not in r["id"]]
     covered, seen = {}, set()
     for c in cases:
         tid = c["id"].strip("` ")
@@ -60,16 +79,18 @@ def main():
         if typ not in TYPES:
             fails.append(f"Q5 {tid}: Type «{typ}», допустимо: {', '.join(sorted(TYPES))}")
         auto = c.get("auto", "").strip().lower()
-        if auto == "yes" and typ not in {"editmode", "playmode"}:
+        if auto == "yes" and typ not in AUTO_TYPES:
             fails.append(f"Q6 {tid}: Auto=yes, но Type={typ}")
-        if typ in {"editmode", "playmode"} and auto not in {"yes", "no"}:
+        if typ in AUTO_TYPES and auto not in {"yes", "no"}:
             warns.append(f"Q6 {tid}: не указано Auto (yes/no)")
-        refs = re.findall(r"[a-z0-9_\-]+#[A-Z]{1,3}\d+|\b(?:ED|DD)\d+\b", c.get("covers", ""))
+        refs = REF_RE.findall(c.get("covers", ""))
+        if typ == "manual" and "manual:" in " ".join(c.values()).lower():
+            typ = "manual-justified"
         if not refs:
             fails.append(f"Q3 {tid}: пустое Covers")
         for ref in refs:
             if ref not in known:
-                fails.append(f"Q3 {tid}: ссылка {ref} не найдена в GDD/хендоффе")
+                fails.append(f"Q3 {tid}: ссылка {ref} не найдена в GDD/хендоффе/бюджетах")
             covered.setdefault(ref, []).append((tid, typ))
 
     for ref, desc in targets.items():
@@ -81,6 +102,17 @@ def main():
     for did in sorted(i for i in hand if i.startswith("DD")):
         if not any(t == "playtest" for _, t in covered.get(did, [])):
             warns.append(f"Q7 {did} без playtest-кейса: {hand[did][:60]}")
+
+    for ref, visual in visual_fb.items():
+        types = {t for _, t in covered.get(ref, [])}
+        if "manual" in types and not types & {"visual", "playmode", "manual-justified"}:
+            fails.append(f"Q9 {ref}: визуальный отклик «{visual[:40]}» проверяется только вручную — "
+                         "нужен visual-кейс (скриншот + эталон) или «manual: <причина>»")
+        elif not types & {"visual", "playmode", "manual-justified"}:
+            warns.append(f"Q9 {ref}: визуальный отклик без visual-кейса")
+    for bid, metric in budgets.items():
+        if not any(t == "perf" for _, t in covered.get(f"budgets#{bid}", [])):
+            (fails if a.stage == "polish" else warns).append(f"Q10 budgets#{bid} «{metric}» без perf-кейса")
 
     smoke = gdd_ids.find_section(gdd_ids.sections(text), "smoke") or []
     steps = [s for s in smoke if re.match(r"^\s*(\d+[.)]|[-*])\s+\S", s) and "…" not in s]
