@@ -17,6 +17,9 @@
 | Глобальный параметр | `gameParameter.isGlobal = true` | да |
 | Метки перечисления | `parameterType.UserEnumeration` + `enumerationLabels` | да |
 | Параметр → событие | `event.addGameParameter(preset)`; проверка — `event.getParameterPresets()` (id = `preset.parameter.id`) | да |
+| Банк по имени | `create("Bank")`, `.name`, `.folder = workspace.masterBankFolder`; Master — `Bank.isMasterBank` | да (банк `Music` создан и собран) |
+| Файл звука | `project.importAudioFile(absPath)` (копируется в `Assets/` проекта FMOD); повторно — `masterAssetFolder.getAsset(name)` | да |
+| Звук на событие | `event.masterTrack.addSound(event.timeline, "SingleSound", 0, audioFile.length)`, `.audioFile = af`; вариации — `"MultiSound"` + `SingleSound.owner = multi` | да (Spark: MultiSound из 2 файлов) |
 | Идемпотентность | повторный запуск: папок, событий, шин, снапшотов, параметров, подключений, банков +0 | да |
 | Меню GUI | `studio.menu.addMenuItem({name: "gd\Sync event map", execute})` | регистрация — да; запуск из меню GUI — **не проверено** (проверен тот же код через `.cli.js`) |
 

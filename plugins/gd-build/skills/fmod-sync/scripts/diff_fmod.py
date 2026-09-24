@@ -7,7 +7,7 @@
 GUIDs.txt — стандартный экспорт FMOD Studio (File → Export GUIDs), строки вида
   {01234567-89ab-cdef-0123-456789abcdef} event:/SFX/Player/Jump
 В GUIDs.txt попадают только события, назначенные в банк: событие вне банка = D1 (в игре его не загрузить).
-Проверки: D1 событие/снапшот/шина/параметр из карты нет в FMOD (FAIL) · D2 событие есть в FMOD, но нет в карте (WARN —
+Проверки: D1 событие/снапшот/шина/параметр/банк из карты нет в FMOD (FAIL) · D2 событие есть в FMOD, но нет в карте (WARN —
 добавлено вручную, внести в event-map.md или удалить).
 Выход с кодом 1, если есть D1.
 """
@@ -43,9 +43,10 @@ def main():
     want = {i["path"] for i in items}
     want |= {i["bus"] for i in items if i.get("bus")}
     want |= {"parameter:/" + p["name"] for i in items for p in i.get("params", [])}
+    want |= {"bank:/" + i["bank"] for i in items if i.get("bank")}
     missing = sorted(want - fmod)
     extra = sorted(p for p in fmod - want if p.startswith(("event:/", "snapshot:/")))
-    print(f"Карта: {len(want)} путей (события, снапшоты, шины, параметры) · FMOD: {len(fmod)} · совпало: {len(want & fmod)}")
+    print(f"Карта: {len(want)} путей (события, снапшоты, шины, параметры, банки) · FMOD: {len(fmod)} · совпало: {len(want & fmod)}")
     for m in missing:
         print(f"FAIL D1 {m}: есть в карте, нет в FMOD (или событие не в банке) — запусти Sync event map")
     for e in extra:
