@@ -1,5 +1,5 @@
 ---
-status: draft   # template | draft | review | approved
+status: approved   # template | draft | review | approved
 updated: 2026-09-24
 owner: Anton
 ---
@@ -273,7 +273,9 @@ owner: Anton
 | `loc-build` ↔ `ink-slice` | «локализация» | дизайн строк и выборов → `ink-slice`; таблицы в Unity → `loc-build` |
 | `code-reviewer` ↔ системный `code-review` / `/review` | «ревью кода» | агент вызывается только из `feature-build` и `/gd-build:review`; у агента нет автотриггера |
 
-## 7. Решения, которые нужны от тебя
+## 7. Решения
+
+**Принято 2026-09-24 (Anton): все пункты a–k — по рекомендациям ниже.** UI Toolkit, GLB, MIDI + FluidSynth, CI и `netcode-build` позже, версии по плану, PR фазы 1 смёржен до волны A, Unity-проект игры в `<game>/unity/`, Stable Audio Open не подключаем, `analytics-build` — локальный JSONL-лог.
 
 | # | Вопрос | Варианты | Рекомендация (ГИПОТЕЗА) и почему |
 |---|---|---|---|
