@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.7.0] — 2026-09-24 · gd 0.7.0, gd-build 0.4.0 — волна C: уровни, выпуск, локализация, аналитика
+
+Архитектура — `research/2026-09-production-cycle-architecture.md` §3, волна C (C1–C4). `netcode-build` (C5) не делался — ждёт решения (f).
+
+### Added — gd
+- `level-design` + `/gd:level`: метрики уровня только ссылками на knobs GDD, критический путь, встречи `EN…`, кривая напряжения 0–3, гейты; `check_level.py` (LV1–LV5: зазор / высота вне метрики, два пика без отдыха, гейт без ключа и soft lock, встреча с несуществующей системой или ID, длина вне цели). Шаблон `templates/design/levels/_template.md`.
+- `release-plan` + `/gd:release-plan`: режимы `store` (аудит в порядке покупателя, теги с доказательствами), `launch` (вехи page → demo → fest → release, чеклист по отделам, go / no-go по файлам), `postlaunch` (метрики с порогом и адресатом, hotfix, откат). Тексты и арт для игроков пишет только человек. `check_release_plan.py` (RP1–RP4). Шаблоны `templates/design/release/`.
+- `gd-router` / `pipeline.md`: треки «Уровни», «Локализация», «Аналитика в коде», эвристики и возвраты для новых проверок.
+
+### Added — gd-build
+- `loc-build` + `/gd-build:loc`: таблицы `design/loc/<Table>.csv` в формате CSV-расширения Unity Localization, `max:N` из UX, `mt` для машинного перевода, псевдо-удлинение `--pseudo`; без пакета `com.unity.localization` — режим plan. `check_loc.py` (LC1–LC5). Шаблон `templates/design/loc/UI.csv`.
+- `analytics-build` + `/gd-build:analytics`: `gen_analytics.py` — `AnalyticsEvents.cs` (имена и типизированные методы) и `AnalyticsLog.cs` (локальный JSONL, `Consent` по умолчанию false, в сеть ничего не уходит); `check_analytics_calls.py` (AN1–AN4).
+- `preflight.py --for loc|analytics`: без пакета Localization рекомендуемый режим — plan.
+
+### Changed
+- Порядок вех в RP2 — page → demo → fest → release (в карточке C4 было «демо → страница»): на Steam демо привязано к странице основной игры, фест требует страницу и демо. Демо на itch.io до страницы — веха `other`.
+- `README.md`: команды и скиллы волн B и C.
+
+### Tooling
+- `check_plugins.py` P9: построчная сверка скопированного правила PII (`check_events.py` → `check_analytics_calls.py`, `LINE_COPIES`).
+- `tools/trigger_cases.md`: +19 пар (68 запросов), в том числе развилки из §6: level-design ↔ gdd-author ↔ gd-systems-map, release-plan ↔ scope-check, metrics-plan ↔ analytics-build, loc-build ↔ ink-slice.
+
+### Verified (один запуск каждого скрипта на данных `examples/one-tap-slice`, артефакты во временной папке)
+- `check_level.py` — PASS на авторском участке «opening» (11 узлов, 10 связей, 2 встречи, 1:10 при цели 1–1.5 мин).
+- `check_release_plan.py` — FAIL 1: RP1 нашёл пункт чеклиста без владельца (черновик плана запуска).
+- `check_loc.py` — PASS: 2 ключа hud.md, en / ru, псевдо +35 % влезает в `max:10`; просканированы 1 UXML и 15 C# живого проекта.
+- `gen_analytics.py` — 5 событий, 13 параметров; сгенерированный C# компилируется Roslyn из поставки Unity 6000.3.24f1 против `UnityEngine.CoreModule` и `netstandard` 2.1 без ошибок и предупреждений.
+- `check_analytics_calls.py` — FAIL 5: AN1 на все события (вызовы в Unity-проект не вставлялись).
+- `preflight.py --for loc` на one-tap-slice — «не хватает пакета Localization», режим plan.
+
+### Not verified
+- Тесты в `tools/test_scripts.py` для новых скриптов не писались (решение пользователя).
+- LV3 (гейты и soft lock), LV2 / LV4 / LV5 на нарушениях, LC3 / LC4 / LC5 на нарушениях, строки Ink, AN2 / AN3 / AN4 — в данных примера срабатываний не было.
+- Live-режим `loc-build` (пакет Localization не установлен), имена колонок CSV-расширения пакета, импорт в String Table Collection, привязки `LocalizedString` в UXML.
+- Вызовы аналитики в игре, EditMode-тесты бэкенда, запись JSONL в play mode.
+
 ## [0.6.0] — 2026-09-24 · gd 0.6.0, gd-build 0.3.0 — волна B: контент и выпуск
 
 Архитектура — `research/2026-09-production-cycle-architecture.md` §3, волна B (B1 — инструменты уже были, B2 — звук). Инструменты поставлены на машине разработки: ffmpeg 9.0.1, SoX 14.4.2, FluidSynth 2.6.1, FluidR3_GM, Blender MCP 2.0.4 (телеметрия выключена).

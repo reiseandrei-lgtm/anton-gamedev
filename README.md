@@ -35,6 +35,8 @@
 | `/gd:qa-plan <slice> [--review]` | Тест-план из GDD и хендоффа с трассировкой покрытия; ревью агентом qa-lead |
 | `/gd:playtest [plan\|analyze] <slice>` | Протокол плейтеста с порогом; независимый анализ заметок агентом playtest-analyst |
 | `/gd:metrics [<slice>\|check]` | Вопросы → KPI → события → воронки |
+| `/gd:level <level> [check]` | Уровень: метрики из knobs, критический путь, встречи, темп, гейты; проверка достижимости и темпа |
+| `/gd:release-plan [store\|launch\|postlaunch\|check]` | Страница магазина (аудит), вехи и чеклист запуска, метрики после релиза; тексты для игроков — только человек |
 
 **Команды `gd-build`** (`/gd-build:<имя>`, только Claude Code)
 
@@ -47,13 +49,16 @@
 | `/gd-build:ui [hud\|restart\|…]` | HUD и экраны на UI Toolkit по `ux/hud.md`: роли палитры, ключи локализации, скриншоты в 2–3 разрешениях |
 | `/gd-build:assets [check\|import\|replace]` | Импорт ассетов по asset-list, замена плейсхолдеров, бюджеты и лицензии |
 | `/gd-build:test [suite\|smoke\|input\|visual\|soak\|bug]` | EditMode / PlayMode через MCP или headless, smoke, сверка скриншотов с эталонами, долгий прогон на утечки, баг-репорты; 0 тестов = FAIL |
+| `/gd-build:perf`, `/gd-build:release`, `/gd-build:model`, `/gd-build:anim`, `/gd-build:sfx`, `/gd-build:music` | Замер против бюджетов, релизная сборка, модели и анимация в Blender, синтез SFX, музыкальные петли (волна B, см. `CHANGELOG.md`) |
+| `/gd-build:loc [scan\|tables\|check]` | Таблицы Unity Localization из ключей UI и Ink, лимиты длины, псевдо-удлинение; без пакета — режим plan |
+| `/gd-build:analytics [gen\|wire\|check]` | `AnalyticsEvents.cs` из events.md, локальный JSONL-лог с согласием, проверка вызовов |
 | `/gd-build:fmod [sync\|diff\|unity\|hook]` | Карта событий → FMOD Studio (банки, файлы звука; headless через `fmodstudiocl`) + `FmodEvents.cs`, сверка по GUIDs, проверка вызовов в коде |
 
-**Скиллы `gd`** (срабатывают автоматически по описанию): `gd-router`, `gd-concept`, `gd-systems-map`, `gdd-author`, `gdd-review`, `game-feel`, `balance-check`, `scope-check`, `gd-handoff`, `narrative-structure`, `character-voice`, `ink-slice`, `narrative-continuity`, `art-direction`, `audio-direction`, `ux-onboarding`, `tech-design`, `qa-plan`, `playtest`, `metrics-plan`.
+**Скиллы `gd`** (срабатывают автоматически по описанию): `gd-router`, `gd-concept`, `gd-systems-map`, `gdd-author`, `gdd-review`, `game-feel`, `balance-check`, `scope-check`, `gd-handoff`, `narrative-structure`, `character-voice`, `ink-slice`, `narrative-continuity`, `art-direction`, `audio-direction`, `ux-onboarding`, `tech-design`, `qa-plan`, `playtest`, `metrics-plan`, `level-design`, `release-plan`.
 
-**Скиллы `gd-build`**: `slice-build`, `feature-build`, `juice-build`, `ui-build`, `asset-integrate`, `qa-run`, `fmod-sync`. **Агент `gd-build`**: `code-reviewer`.
+**Скиллы `gd-build`**: `slice-build`, `feature-build`, `juice-build`, `ui-build`, `asset-integrate`, `qa-run`, `fmod-sync`, `perf-check`, `build-release`, `model-build`, `anim-build`, `sfx-design`, `music-build`, `loc-build`, `analytics-build`. **Агент `gd-build`**: `code-reviewer`.
 
-У каждого нового скилла есть детерминированная проверка в `scripts/` (Python stdlib): палитра, ассеты, карта событий, knobs → конфиги, покрытие тестами (в том числе visual и perf), события аналитики, коды плейтеста, результаты NUnit, сверка с FMOD, лог сборки, тайминги отклика, UI против hud.md, импорт ассетов, diff PNG, soak.
+У каждого нового скилла есть детерминированная проверка в `scripts/` (Python stdlib): палитра, ассеты, карта событий, knobs → конфиги, покрытие тестами (в том числе visual и perf), события аналитики, коды плейтеста, результаты NUnit, сверка с FMOD, лог сборки, тайминги отклика, UI против hud.md, импорт ассетов, diff PNG, soak, перф, релиз, GLB, звук, музыка, уровни, план выпуска, локализация, вызовы аналитики.
 
 **Проектные скиллы**: `syncario-gamedesigner` — геймдизайн Syncario (канон, столпы, north star, якорь «Сифа», voice/social/метрики). Для своего проекта главнее общих скиллов.
 
