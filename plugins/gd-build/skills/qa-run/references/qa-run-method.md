@@ -79,3 +79,33 @@ covers: <system>#R1, T-<system>-01
 частота (всегда / 1 из N), платформа
 ```
 Воспроизводимый автоматически баг — сначала падающий тест с T-ID, потом ссылка на него в `covers`.
+
+## 7. Soak: design/qa/perf/<date>-soak.md
+```markdown
+---
+status: draft
+updated: YYYY-MM-DD
+platform: editor | <устройство>
+build: <commit>
+scene: <сцена>
+duration: 600          # секунд
+input: idle | scripted (что делает скрипт ввода)
+---
+# Soak — <slice>
+## Samples
+| t (s) | frame ms | memory MB | exceptions |
+|---|---|---|---|
+| 0 | 4.1 | 212 | 0 |
+## Verdict
+вывод check_soak.py дословно
+```
+Замер: `manage_profiler` `get_frame_timing` (кадр, мс) и `get_counters` категории Memory (Total Used Memory, Material Count, Game Object Count) каждые 30 с; исключения — `read_console` `types: [error, exception]`. Редактор ≠ устройство: в отчёте платформа, выводы о бюджетах — только с устройства (`perf-check`).
+
+**Скрипт ввода обязан доказать, что играл**: колонка `progress (…)` — действия, которые подтвердила сама игра (например, состояние `Airborne` после прыжка). Проба, упавшая с ошибкой, в MCP возвращается строкой, а не исключением: без колонки progress soak может 6 минут «играть» в замершую игру (SK6).
+
+## 8. Visual: эталоны design/qa/visual/
+- `qa/visual/<T-ID>.png` — эталон, утверждённый человеком; `qa/visual/_pending/` — кандидаты; `qa/visual/README.md` — таблица `Case · Scene · Camera · Resolution · Seed · Tolerance · Approved (дата, кто)`.
+- Детерминизм: фиксированный seed генерации (seam вроде `Reseed(seed)`), дождаться, пока камера догонит цель, пауза (`timeScale = 0`) перед снимком. Без seed разные забеги дают разные кадры — это не баг, а негодный кейс. Проверка: два снимка подряд с одним seed → `diff_png` 0 %.
+- Разрешение цели без смены Game view: кадр игры — рендер камеры в `RenderTexture(w, h)` через `execute_code` (`cam.targetTexture = rt; cam.Render(); ReadPixels; EncodeToPNG`); UI Toolkit — `PanelSettings.targetTexture = RenderTexture(w, h)`, подождать кадр, прочитать, вернуть `null`. `render_ui` в play mode размер игнорирует (`slice-build/references/mcp-actions.md`).
+- Меняющиеся области (таймер, счёт, частицы) — `--mask x,y,w,h`.
+- `diff_png.py`: VD1 размер · VD2 доля отличий > допуска · VD3 макс. разница канала · VD4 нет эталона. Diff-PNG: отличия красным поверх серого снимка — посмотри на него.

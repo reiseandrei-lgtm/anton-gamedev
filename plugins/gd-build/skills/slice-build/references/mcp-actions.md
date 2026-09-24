@@ -16,8 +16,9 @@
 | Скриншот | `manage_camera` `screenshot`, `capture_source: game_view`, `output_folder` ✅ | `screenshot-game-view` | — |
 | Пункт меню | `execute_menu_item` (`File/Exit` — закрыть редактор перед headless) ✅ | `editor-menu-*` | — |
 | Пакеты | `manage_packages` | `package-add`, `package-list` | правка `Packages/manifest.json` ✅ |
-| Профайлер | `manage_profiler` | `profiler-*` | Profiler вручную |
-| UI, сборка, импорт моделей | `manage_ui`, `manage_build`, `import_model`, `import_model_file` — есть в v10.2.0, вживую не проверены | — | — |
+| UI Toolkit | `manage_ui` (`create_panel_settings` c `settings`, `attach_ui_document`) ✅; `render_ui` — в play mode двухшаговый (первый вызов ставит в очередь, второй отдаёт файл), размер берёт из Game view, `width`/`height` и имя файла игнорирует | — | — |
+| Профайлер | `manage_profiler` `get_frame_timing`, `get_counters` (`category: Memory` — Total Used Memory, Material Count, Game Object Count) ✅ | `profiler-*` | Profiler вручную |
+| Сборка, импорт моделей | `manage_build`, `import_model`, `import_model_file` — есть в v10.2.0, вживую не проверены | — | — |
 
 **Запрещено** (платно): Coplay `generate_image`, `generate_audio`, `generate_model` и группа `asset_gen`; официальный Unity MCP через AI Assistant (нужна подписка Unity AI).
 
@@ -29,5 +30,7 @@
 3. Мост в редакторе стартует не сам: мастер настройки → Configure (пишет `.mcp.json`/конфиг Claude Code проекта), затем **Window → MCP for Unity → Start Session**. Проба: сервер `GET http://127.0.0.1:8080/api/instances` показывает проект.
 4. MCP-сервер, добавленный в Claude Code посреди сессии, появится в инструментах только в новой сессии. В текущей сессии работает CLI того же сервера по HTTP: `uvx --from mcpforunityserver==10.2.0 unity-mcp --format json raw <tool> '<json-параметры>'` (имена параметров — camelCase, например `outputFolder`). Это тот же MCP, не обход.
 5. После каждого domain reload мост переподключается несколько секунд — жди пробы, прежде чем слать следующую команду.
+6. Кириллица в сообщениях и выводе тестов, пришедших через CLI на Windows, приходит как «?». Дословный текст — в NUnit XML headless-прогона; в `TestContext.WriteLine` замеров пиши ASCII.
+7. `manage_scriptable_object create` отвечает success и тогда, когда класс лежит в файле с другим именем: ассет без скрипта. После создания проверь `m_Script` в `.asset` и загрузку в тесте.
 
 Инструкции меняются: сверяйся с README репозитория, не с этим файлом.
