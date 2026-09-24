@@ -1,0 +1,30 @@
+{
+  "_comment": "Пример рецептов synth_sfx.py. Слои: транзиент (короткий шум/щелчок), тело (тон со свипом), хвост (фильтрованный шум). Скопируй в design/audio/sfx-recipes.json игры и правь там.",
+  "jump": {
+    "dur": 0.32,
+    "layers": [
+      {"wave": "noise", "dur": 0.03, "decay": 90, "highpass": 1500, "gain": 0.35},
+      {"wave": "triangle", "f0": 260, "f1": 820, "dur": 0.28, "attack": 0.004, "decay": 7, "gain": 1.0},
+      {"wave": "sine", "f0": 520, "f1": 1640, "dur": 0.2, "attack": 0.004, "decay": 12, "gain": 0.25}
+    ],
+    "vary": {"cents": 60, "gain_db": 1.0, "start_ms": 0}
+  },
+  "land": {
+    "dur": 0.35,
+    "layers": [
+      {"wave": "noise", "dur": 0.06, "decay": 55, "lowpass": 3000, "gain": 0.6},
+      {"wave": "sine", "f0": 150, "f1": 50, "dur": 0.2, "attack": 0.002, "decay": 20, "gain": 1.0},
+      {"wave": "noise", "start": 0.02, "dur": 0.3, "decay": 12, "lowpass": 700, "gain": 0.25}
+    ],
+    "vary": {"cents": 120, "gain_db": 1.5, "start_ms": 6}
+  },
+  "spark_chime": {
+    "dur": 0.9,
+    "layers": [
+      {"wave": "sine", "f0": 1318.5, "dur": 0.9, "attack": 0.002, "decay": 4, "gain": 0.8},
+      {"wave": "sine", "f0": 1975.5, "start": 0.06, "dur": 0.8, "attack": 0.002, "decay": 5, "gain": 0.5},
+      {"wave": "sine", "f0": 3951, "dur": 0.4, "attack": 0.001, "decay": 14, "gain": 0.15}
+    ],
+    "vary": {"cents": 30, "gain_db": 1.0, "start_ms": 4}
+  }
+}
