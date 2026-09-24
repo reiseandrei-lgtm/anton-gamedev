@@ -10,5 +10,5 @@ owner:
 <!-- Нейминг: audio-direction/references/fmod-conventions.md. Перенос в FMOD: gd-build /gd-build:fmod -->
 
 ## Events
-| Event | Source | Type | Params | Space | Bus | Priority | Variations | Status |
-|---|---|---|---|---|---|---|---|---|
+| Event | Source | Type | Params | Space | Bus | Bank | Priority | Variations | Status |
+|---|---|---|---|---|---|---|---|---|---|

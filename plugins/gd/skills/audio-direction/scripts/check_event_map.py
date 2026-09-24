@@ -7,7 +7,7 @@
 Проверки:
   E1 нейминг пути (event:/ bus:/ snapshot:/) · E2 дубль · E3 нет источника / источник не найден в GDD ·
   E4 Feedback-строка GDD с аудио без события · E5 параметр без диапазона или не по неймингу ·
-  E6 тип / шина / пространство · E7 VO-ID нет в .ink · E8 приоритет события ≠ приоритету Feedback в GDD (WARN).
+  E6 тип / шина / банк / пространство · E7 VO-ID нет в .ink · E8 приоритет события ≠ приоритету Feedback в GDD (WARN).
 Формат — references/fmod-conventions.md. Выход с кодом 1, если есть FAIL.
 """
 import argparse
@@ -134,6 +134,9 @@ def main():
             pr = r.get("priority", "").strip()
             if pr not in PRIORITIES:
                 fails.append(f"E6 {ev}: Priority «{pr}» — 1…5")
+            bank = r.get("bank", "").strip("` ")
+            if bank not in EMPTY and not re.fullmatch(r"[A-Z][A-Za-z0-9]*", bank):
+                fails.append(f"E6 {ev}: Bank «{bank}» — PascalCase (или пусто = Master)")
             if typ in {"music", "amb"} and space == "3D":
                 warns.append(f"E6 {ev}: {typ} в 3D — обычно 2D")
 
