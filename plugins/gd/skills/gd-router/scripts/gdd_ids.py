@@ -5,7 +5,9 @@
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "gd-router" / "scripts"))
     import gdd_ids
 
-Стабильные ID в GDD (см. gdd-author/references/gdd-template.md):
+Стабильные ID в GDD (см. gdd-author/references/gdd-template.md); хендофф — ED/DD (handoff_ids);
+бюджеты — B1… в tech/budgets.md (budget_ids).
+Стабильные ID в GDD:
   Core Rules  R1…  ·  Formulas F1…  ·  Edge Cases E1…  ·  Tuning Knobs K1…  ·  Feedback FB1…
 Ссылка на ID из других документов: `<system>#<ID>`, где system — имя файла GDD без .md.
 Старые GDD без ID: элементы нумеруются по порядку, в warnings — предупреждение.
@@ -164,14 +166,31 @@ def gdd_ids(path):
     return system, ids, warnings
 
 
+HANDOFF_ID = r"(?:ED|DD)(?:-[a-z0-9_]+-)?\d+"   # ED1 (слайс) или ED-<system>-1 (майлстоун)
+
+
 def handoff_ids(path):
-    """ID критериев хендоффа: ED1…, DD1… из строк чеклиста."""
+    """ID критериев хендоффа: ED1…, DD1… (слайс) или ED-<system>-N, DD-<system>-N (майлстоун)."""
     ids = {}
     for line in read(path).splitlines():
-        m = re.match(r"^\s*[-*]\s*\[[ xX]\]\s*\**`?((?:ED|DD)\d+)`?\**\s*[.:—–-]?\s*(.*)", line)
+        m = re.match(r"^\s*[-*]\s*\[[ xX]\]\s*\**`?(" + HANDOFF_ID + r")`?\**\s*[.:—–-]?\s*(.*)", line)
         if m:
             ids[m.group(1)] = m.group(2).strip()
     return ids
+
+
+def budget_ids(path):
+    """Строки tech/budgets.md: {B1: метрика}. Без колонки ID — нумерация по порядку (B1…)."""
+    out = {}
+    for table in all_tables(read(path).splitlines()):
+        if not table or not any(k in table[0] for k in ("метрика", "metric")):
+            continue
+        for i, row in enumerate(table, 1):
+            if _is_placeholder(row):
+                continue
+            bid = row.get("id", "").strip("`* ") or f"B{i}"
+            out[bid] = row.get("метрика") or row.get("metric") or ""
+    return out
 
 
 def refs(text):

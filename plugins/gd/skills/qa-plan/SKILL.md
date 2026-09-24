@@ -1,7 +1,7 @@
 ---
 name: qa-plan
 description: >-
-  Тест-план слайса из GDD и хендоффа: каждое Core Rule, Edge Case и формула → тест-кейсы с ID; тип (EditMode — логика, PlayMode — интеграция и ввод, manual — визуал и звук, playtest — ощущение); smoke-набор билда; шкала severity и шаблон баг-репорта; трассировка покрытия скриптом. Пишет design/qa/test-plan-<slice>.md.
+  Тест-план слайса из GDD и хендоффа: каждое Core Rule, Edge Case и формула → тест-кейсы с ID; тип (EditMode — логика, PlayMode — интеграция и ввод, visual — кадр против эталона, perf — строка бюджета, manual — движение и звук, playtest — ощущение); smoke-набор билда; шкала severity и шаблон баг-репорта; трассировка покрытия скриптом. Пишет design/qa/test-plan-<slice>.md.
   Триггеры RU: «тест-план», «что тестировать», «покрытие тестами», «smoke-тесты», «тест-кейсы из GDD», «шаблон баг-репорта».
   Triggers EN: "test plan", "what should we test", "test coverage", "smoke test list", "test cases from GDD", "bug report template".
   Не для запуска тестов (gd-build: qa-run), не для плейтеста с людьми (playtest), не для ревью качества дизайна (gdd-review).
@@ -17,13 +17,13 @@ GDD систем слайса (со стабильными ID R / F / E / K / FB
 ## Алгоритм (шаблоны, классы, severity — `references/qa-method.md`)
 1. Собери ID: правила, формулы, edge cases слайса, ED хендоффа. Если в GDD нет ID — скажи и предложи проставить (`gdd-author`); без ID трассировка хрупкая.
 2. На каждый ID — ≥ 1 тест-кейс. Формула — граничные значения (min, max, клампы) + одно типичное. Edge case — ровно его сценарий. Правило с состоянием — переход туда и обратно, плюс запрещённый переход.
-3. Тип: `editmode` (чистая логика, формулы) · `playmode` (сцена, физика, ввод, таймеры) · `manual` (визуал, звук, UI) · `playtest` (DD: ощущение и понимание — передаётся в `playtest`).
+3. Тип: `editmode` (чистая логика, формулы) · `playmode` (сцена, физика, ввод, таймеры) · `visual` (кадр, который можно снять и сравнить с эталоном) · `perf` (строка `tech/budgets.md`) · `manual` (движение во времени, звук — с «manual: причина») · `playtest` (DD: ощущение и понимание — передаётся в `playtest`).
 4. Негатив: на каждое правило ввода — один недопустимый ввод, который должен быть отвергнут.
 5. Smoke-набор: ≤ 10 шагов критического пути слайса, прогоняется на каждом билде.
 6. Приоритет тестов: P1 — ломает гипотезу хендоффа; P2 — ломает ED; P3 — остальное.
 
 ## Проверка
-`python3 scripts/check_coverage.py design/qa/test-plan-<slice>.md --gdd design/gdd/<system>.md ... [--handoff design/handoff/<slice>.md]`: Q1 правило / формула / edge case без теста · Q2 ED без теста · Q3 тест ссылается на несуществующий ID · Q4 дубль ID теста или неверный формат `T-<sys>-NN` · Q5 неизвестный тип · Q6 автоматизируемый тест без EditMode / PlayMode · Q7 DD без playtest-кейса (WARN) · Q8 smoke > 10 шагов или пуст. На Windows — `python`.
+`python3 scripts/check_coverage.py design/qa/test-plan-<slice>.md --gdd design/gdd/<system>.md ... [--handoff design/handoff/<slice>.md] [--budgets design/tech/budgets.md] [--stage polish]`: Q1 правило / формула / edge case без теста · Q2 ED без теста · Q3 тест ссылается на несуществующий ID · Q4 дубль ID теста или неверный формат `T-<sys>-NN` · Q5 неизвестный тип · Q6 автоматизируемый тест без EditMode / PlayMode · Q7 DD без playtest-кейса (WARN) · Q8 smoke > 10 шагов или пуст · Q9 визуальный Feedback только в manual без причины · Q10 строка бюджета без perf-кейса (FAIL на стадии полировки). На Windows — `python`.
 
 ## Ревью
 Агент `qa-lead` (`/gd:qa-plan <slice> --review`): видит только план, GDD слайса и хендофф. Ищет непокрытые переходы, негативные сценарии и тесты, которые ничего не ловят.
