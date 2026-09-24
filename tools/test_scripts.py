@@ -574,6 +574,15 @@ class WaveC(unittest.TestCase):
         self.assertIn("LV3: goal N3 недостижим", out)
         self.assertEqual(len(fails(out)), 2, out)   # только LV3: метрики, темп и встречи в порядке
 
+    def test_level_key_on_optional_link(self):
+        """Ключ за optional-связью при гейте на critical: FAIL с подсказкой пометить ветку critical."""
+        text = (FX / "levels/opening.md").read_text(encoding="utf-8").replace(
+            "| L3 | N2 | N3 | hop | 2.8 | 0 | critical | ↔ |", "| L3 | N2 | N3 | hop | 2.8 | 0 | optional | ↔ |")
+        p = tmp(text)
+        code, out = run(GD / "level-design/scripts/check_level.py", p, "--gdd", D / "gdd", "--systems", D / "systems-map.md")
+        self.assertEqual(code, 1)
+        self.assertIn("LV3: goal N5 достижим только через optional-связи (L3)", out)
+
     def test_release_plan_ok(self):
         code, out = run(GD / "release-plan/scripts/check_release_plan.py", FX / "release/ok",
                         "--events", D / "analytics/events.md")
@@ -719,6 +728,10 @@ class WaveB(unittest.TestCase):
                          "RL6 app_build.vdf: нет AppID", "RL6 app_build.vdf: нет DepotID"):
                 self.assertIn(rule, out)
             self.assertNotIn("UNITY_LICENSE", out)
+            code, out = run(GB / "build-release/scripts/check_release.py", proj, "--repo", FX / "levels")
+            self.assertEqual(code, 2)
+            self.assertNotIn("Traceback", out)
+            self.assertIn("не внутри --repo", out)
             self.assertEqual(run(GB / "build-release/scripts/check_release.py", d)[0], 2)   # не Unity-проект
 
     def test_glb_ok(self):
@@ -795,6 +808,12 @@ class WaveB(unittest.TestCase):
             self.assertEqual(code, 0, out)
             self.assertIn("Итог: PASS", out)
             self.assertIn("sfx_jump_01.wav: -16.0 LUFS (short)", out)
+            self.assertIn("true peak: нет ffmpeg", out)   # --ffmpeg на несуществующий файл — sample peak
+            files = tmp((FX / "audio/ok/files.md").read_text(encoding="utf-8").replace(
+                "| synth | own | — | gen_sfx.py |", "| made | own | — | Anton |", 1))
+            code, out = run(GB / "sfx-design/scripts/check_audio_files.py", files, "--map", FX / "audio/event-map.md",
+                            "--bible", FX / "audio/audio-bible.md", "--root", d, "--ffmpeg", Path(d, "no-ffmpeg"))
+            self.assertEqual(code, 0, out)   # made + own — свой файл, URL не нужен
 
     def test_audio_files_bad(self):
         with tempfile.TemporaryDirectory() as d:
