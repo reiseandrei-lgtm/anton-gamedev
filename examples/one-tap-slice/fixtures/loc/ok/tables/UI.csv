@@ -1,0 +1,4 @@
+Key,Shared Comments,English(en),Russian(ru),Russian(ru) Comments
+ui.again,max:10 · кнопка «ещё» на экране рестарта,Again,Ещё,
+ui.record,max:12 · подпись над числом рекорда,Best,Рекорд,mt
+ui.score_fmt,max:16 · счёт в HUD,Score {0},Счёт {0},

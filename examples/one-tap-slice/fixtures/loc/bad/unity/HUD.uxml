@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Label name="title" text="Game Over" />
+    <ui:Button name="restart-again" text="ui.again" />
+</ui:UXML>

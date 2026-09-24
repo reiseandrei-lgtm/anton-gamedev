@@ -1,0 +1,7 @@
+%YAML 1.1
+--- !u!114 &11400000
+MonoBehaviour:
+  m_Name: Release
+  m_EditorClassIdentifier: UnityEditor.Build.Profile.BuildProfile
+  m_BuildTarget: 19
+  m_Development: 1

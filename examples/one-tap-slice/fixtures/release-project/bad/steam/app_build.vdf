@@ -1,0 +1,5 @@
+"AppBuild"
+{
+	"Desc" "fixture"
+	"ContentRoot" "../Build/"
+}

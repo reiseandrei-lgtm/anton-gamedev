@@ -108,7 +108,11 @@ def main():
             if not p.is_file():
                 fails.append(f"MU3 {cue}: стема {s} нет на диске")
                 continue
-            sr, bits, ch, chans = loudness.read_wav(p)
+            try:
+                sr, bits, ch, chans = loudness.read_wav(p)
+            except (ValueError, EOFError, OSError) as ex:
+                fails.append(f"MU3 {cue}: {s} не читается ({ex})")
+                continue
             meas.append((s, sr, len(chans[0])))
             if sr != a.sr:
                 fails.append(f"MU3 {cue}: {s} {sr} Hz ≠ {a.sr}")
