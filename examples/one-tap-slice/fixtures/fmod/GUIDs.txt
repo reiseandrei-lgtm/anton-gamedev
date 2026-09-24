@@ -13,3 +13,6 @@
 {c5d6e7f8-0112-2334-4556-6778899aabbc} event:/Music/Run/Main
 {d6e7f801-1223-3445-5667-78899aabbccd} snapshot:/Dead
 {e7f80112-2334-4556-6778-899aabbccdde} bank:/Master
+{f0e1d2c3-b4a5-9687-7869-5a4b3c2d1e0f} parameter:/charge
+{e1d2c3b4-a596-8778-695a-4b3c2d1e0f10} parameter:/tier
+{d2c3b4a5-9687-7869-5a4b-3c2d1e0f1021} parameter:/g_intensity

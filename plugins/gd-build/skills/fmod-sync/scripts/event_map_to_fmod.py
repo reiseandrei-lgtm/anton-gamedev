@@ -8,6 +8,8 @@
   event-map.json              — нормализованная карта (для diff_fmod.py и MCP)
   gd_sync_event_map.js        — скрипт для FMOD Studio: положить в папку Scripts проекта FMOD,
                                 Scripts → Reload, затем Scripts → gd → Sync event map.
+  gd_sync_event_map.cli.js    — то же без меню, для headless: fmodstudiocl -script <файл> <project>.fspro
+                                (синхронизирует, сохраняет проект, экспортирует GUIDs.txt).
                                 Идемпотентен: существующее не пересоздаёт, только добавляет недостающее.
   FmodEvents.cs               — static class с путями событий и снапшотов и именами параметров.
 Формат таблицы — gd: audio-direction/references/fmod-conventions.md (колонки Event, Source, Type, Params, Space, Bus, …).
@@ -105,9 +107,11 @@ def load(path):
 JS_TEMPLATE = r"""// Сгенерировано gd-build fmod-sync (event_map_to_fmod.py) из design/audio/event-map.md. Не править руками.
 // Установка: положить в папку Scripts проекта FMOD Studio → Scripts → Reload → Scripts → gd → Sync event map.
 // Идемпотентно: существующие папки, события, шины, снапшоты и параметры не пересоздаются.
-// Проверено по документации FMOD Studio Scripting API (create, lookup, Event.addGameParameter,
-// workspace.addGameParameter, mixer.masterBus). Маршрутизация события в шину — через mixerInput.output
-// в try/catch: если ваша версия FMOD не поддерживает, скрипт сообщит, и шину нужно назначить вручную.
+// Запущено на FMOD Studio 2.03.14 (fmodstudiocl -script): папки, события, шины (mixerInput.output),
+// снапшоты, параметры и метки перечисления создаются; повторный запуск ничего не дублирует.
+// Параметры в FMOD 2.03 — всегда ParameterPreset: один preset на имя, подключается к каждому событию
+// (иначе второе событие получит «charge (2)» и setParameterByName("charge") на нём не сработает).
+// Если шаг не удался, скрипт пишет строку «ВРУЧНУЮ» в консоль.
 var GD_MAP = __DATA__;
 
 function gdLog(msg) { console.log("[gd] " + msg); }
@@ -165,18 +169,43 @@ function gdParamDef(p) {
     return def;
 }
 
-function gdHasParam(ev, name) {
-    var list = ev.parameters || [];
-    for (var i = 0; i < list.length; i++) {
-        var pr = list[i].preset || list[i];
-        if (pr && pr.name === name) return true;
+function gdEnsurePreset(p, stats) {
+    var preset = studio.project.lookup("parameter:/" + p.name);
+    if (!preset) {
+        var gp = studio.project.workspace.addGameParameter(gdParamDef(p));
+        if (p.global) gp.isGlobal = true;
+        preset = gp.presetOwner || studio.project.lookup("parameter:/" + p.name);
+        stats.presets++;
+    } else if (preset.parameter.isGlobal !== p.global) {
+        stats.manual.push("parameter:/" + p.name + ": в FMOD isGlobal=" + preset.parameter.isGlobal + ", в карте " + p.global);
     }
+    return preset;
+}
+
+// Событие без банка не попадает ни в сборку, ни в GUIDs.txt — в игре его не загрузить.
+// В карте нет колонки Bank: по умолчанию мастер-банк (разбиение по банкам — решение аудио-дирекции).
+function gdMasterBank() {
+    var banks = studio.project.model.Bank.findInstances();
+    for (var i = 0; i < banks.length; i++) { if (banks[i].isMasterBank) return banks[i]; }
+    return null;
+}
+
+function gdEnsureInBank(ev, bank, stats) {
+    if (!bank) { stats.manual.push(ev.getPath() + ": в проекте нет мастер-банка — назначить банк вручную"); return; }
+    if (ev.banks && ev.banks.length) return;
+    ev.relationships.banks.add(bank);
+    stats.banked++;
+}
+
+function gdEventHasPreset(ev, preset) {
+    var list = ev.getParameterPresets();
+    for (var i = 0; i < list.length; i++) { if (list[i].id === preset.parameter.id) return true; }
     return false;
 }
 
 function gdSync() {
-    var stats = { folders: 0, events: 0, buses: 0, snapshots: 0, params: 0, presets: 0, manual: [] };
-    var presets = {};
+    var stats = { folders: 0, events: 0, buses: 0, snapshots: 0, params: 0, presets: 0, banked: 0, manual: [] };
+    var master = gdMasterBank();
     for (var i = 0; i < GD_MAP.length; i++) {
         var it = GD_MAP[i];
         if (it.kind === "snapshot") {
@@ -196,6 +225,8 @@ function gdSync() {
             ev.folder = gdEnsureFolder(segs, stats);
             stats.events++;
         }
+        try { gdEnsureInBank(ev, master, stats); }
+        catch (e) { stats.manual.push(it.path + ": назначить банк вручную (" + e + ")"); }
         if (it.bus) {
             var bus = gdEnsureBus(it.bus, stats);
             try { ev.mixerInput.output = bus; }
@@ -203,27 +234,28 @@ function gdSync() {
         }
         for (var j = 0; j < it.params.length; j++) {
             var p = it.params[j];
-            if (p.global) {
-                if (!presets[p.name]) {
-                    try { studio.project.workspace.addGameParameter(gdParamDef(p)); stats.presets++; }
-                    catch (e) { stats.manual.push("глобальный параметр " + p.name + ": создать вручную (" + e + ")"); }
-                    presets[p.name] = true;
-                }
-                stats.manual.push(it.path + ": подключить глобальный параметр " + p.name + " к событию вручную");
-            } else if (!gdHasParam(ev, p.name)) {
-                try { ev.addGameParameter(gdParamDef(p)); stats.params++; }
-                catch (e) { stats.manual.push(it.path + ": параметр " + p.name + " не создан (" + e + ")"); }
-            }
+            try {
+                var preset = gdEnsurePreset(p, stats);
+                if (!gdEventHasPreset(ev, preset)) { ev.addGameParameter(preset); stats.params++; }
+            } catch (e) { stats.manual.push(it.path + ": параметр " + p.name + " не подключён (" + e + ")"); }
         }
     }
     gdLog("папок +" + stats.folders + ", событий +" + stats.events + ", шин +" + stats.buses +
-          ", снапшотов +" + stats.snapshots + ", параметров +" + stats.params + ", глобальных +" + stats.presets);
+          ", снапшотов +" + stats.snapshots + ", параметров (preset) +" + stats.presets + ", подключений к событиям +" + stats.params +
+          ", в банк +" + stats.banked);
     for (var k = 0; k < stats.manual.length; k++) { gdLog("ВРУЧНУЮ: " + stats.manual[k]); }
     gdLog("Готово. Сохраните проект и экспортируйте GUIDs (File → Export GUIDs) для diff_fmod.py.");
 }
 
 studio.menu.addMenuItem({ name: "gd\\Sync event map", execute: gdSync });
 """
+
+MENU_LINE = 'studio.menu.addMenuItem({ name: "gd\\\\Sync event map", execute: gdSync });'
+CLI_TAIL = """// Headless: fmodstudiocl -script gd_sync_event_map.cli.js <project>.fspro
+gdSync();
+studio.project.save();
+studio.project.exportGUIDs();
+gdLog("Проект сохранён, GUIDs экспортированы: <project>/Build/GUIDs.txt.");"""
 
 
 def cs_ident(s):
@@ -271,12 +303,13 @@ def main():
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "event-map.json").write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8", newline="\n")
-    (out / "gd_sync_event_map.js").write_text(
-        JS_TEMPLATE.replace("__DATA__", json.dumps(items, ensure_ascii=False)), encoding="utf-8", newline="\n")
+    js = JS_TEMPLATE.replace("__DATA__", json.dumps(items, ensure_ascii=False))
+    (out / "gd_sync_event_map.js").write_text(js, encoding="utf-8", newline="\n")
+    (out / "gd_sync_event_map.cli.js").write_text(js.replace(MENU_LINE, CLI_TAIL), encoding="utf-8", newline="\n")
     (out / f"{a.cls}.cs").write_text(make_cs(items, a.namespace, a.cls), encoding="utf-8", newline="\n")
     ev = sum(1 for i in items if i["kind"] == "event")
     print(f"Событий: {ev} · снапшотов: {len(items) - ev} · параметров: {sum(len(i['params']) for i in items)}")
-    print(f"Записано: {out / 'event-map.json'}, {out / 'gd_sync_event_map.js'}, {out / (a.cls + '.cs')}")
+    print(f"Записано: {out / 'event-map.json'}, {out / 'gd_sync_event_map.js'} (+ .cli.js), {out / (a.cls + '.cs')}")
     for e in errors:
         print(f"FAIL {e}")
     return 1 if errors else 0

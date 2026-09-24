@@ -40,7 +40,7 @@ S1 блокер · S2 ломает гипотезу/ED · S3 заметно, е�
 - **Type**: `editmode` · `playmode` · `manual` · `playtest`.
 - **Auto**: `yes` — только для editmode / playmode.
 
-В коде тестов ID ставится так, чтобы `gd-build` сопоставил результат: `[Category("T-jump-01")]` или имя метода `T_jump_01_…`.
+В коде тестов ID ставится так, чтобы `gd-build` сопоставил результат: имя метода `T_jump_01_…` или `[NUnit.Framework.Property("TID", "T-jump-01")]` (полное имя: в Unity `Property` конфликтует с `UnityEngine.PropertyAttribute`). `[Category("T-jump-01")]` не годится: NUnit запрещает «-» в категориях, и тест падает, не начавшись.
 
 ## 2. Какой тип выбрать
 

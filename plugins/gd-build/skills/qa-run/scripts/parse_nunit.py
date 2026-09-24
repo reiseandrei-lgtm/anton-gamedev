@@ -4,7 +4,8 @@
 Использование:
   python3 parse_nunit.py TestResults/editmode-results.xml [TestResults/playmode-results.xml] [--plan design/qa/test-plan-<slice>.md]
 
-T-ID теста берётся из [Category("T-jump-01")] (свойство Category) или из имени метода `T_jump_01_…`.
+T-ID теста берётся из [NUnit.Framework.Property("TID", "T-jump-01")] или из имени метода `T_jump_01_…`.
+[Category("T-jump-01")] не годится: NUnit запрещает «-» в категориях, такой тест падает, не начавшись.
 Выход: 0 — всё зелёное; 2 — есть падения; 3 — прогон пуст (0 тестов) или XML не читается.
 """
 import argparse
@@ -48,7 +49,7 @@ def plan_tests(path):
 
 def tid_of(case):
     for prop in case.iter("property"):
-        if prop.get("name") == "Category" and TID_CAT.match(prop.get("value", "")):
+        if prop.get("name") in ("TID", "Category") and TID_CAT.match(prop.get("value", "")):
             return prop.get("value")
     m = TID_NAME.search(case.get("name", ""))
     if m:

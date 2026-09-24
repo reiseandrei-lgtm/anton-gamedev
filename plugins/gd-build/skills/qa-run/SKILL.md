@@ -20,7 +20,7 @@ description: >-
 ## Как запускать (детали — `references/qa-run-method.md`)
 1. **Редактор открыт и MCP отвечает** → тесты через MCP (абстрактные действия → инструменты: `../slice-build/references/mcp-actions.md`).
 2. **Редактор закрыт** → headless: `scripts/run-tests-headless.ps1 -ProjectPath <proj> -Platform Both` (Windows) или `bash scripts/run-tests-headless.sh --project-path <proj> --platform Both`. Exit: 0 зелёный · 2 есть падения · 3 прогон не завершился (компиляция, лицензия, открытый редактор, **0 тестов**).
-3. **Разбор**: `python3 scripts/parse_nunit.py <proj>/TestResults/*.xml --plan design/qa/test-plan-<slice>.md` (на Windows `python`) — итоги, падения с сообщениями, сопоставление с T-ID плана, автоматизируемые тесты плана, которых нет в прогоне.
+3. **Разбор**: `python3 scripts/parse_nunit.py <proj>/TestResults/*.xml --plan design/qa/test-plan-<slice>.md` (на Windows `python`) — итоги, падения с сообщениями, сопоставление с T-ID плана (имя метода `T_hop_01_…` или `[NUnit.Framework.Property("TID", "T-hop-01")]`; `Category` с «-» NUnit не принимает), автоматизируемые тесты плана, которых нет в прогоне.
 4. Ни MCP, ни Unity → режим plan: команды для запуска и чеклист; в отчёте «не запускалось».
 
 ## Выход

@@ -122,6 +122,8 @@ cp -r ~/.claude/plugins/marketplaces/anton-gamedev/templates/design ./design
 | FMOD Studio + FMOD for Unity | звук | бесплатно по Indie-лицензии в её пределах (условия — fmod.com) |
 | Официальный Unity Plugin (`/plugin marketplace add Unity-Technologies/unity-agent-plugin`, затем `/plugin install unity@unity-agent-plugin`) | справочник how-to по API Unity | бесплатно; его MCP через Unity AI требует подписки — не используется |
 
+Проверено вживую 2026-09-24 на Unity 6000.3.24f1, CoplayDev/unity-mcp 10.2.0 и FMOD Studio 2.03.14 (`examples/one-tap-slice/RESULTS.md`). У MCP-сервера и пакета телеметрия включена по умолчанию: запускай их с `DISABLE_TELEMETRY=true`. Карта событий переносится в FMOD и без GUI: `fmodstudiocl -script gd_sync_event_map.cli.js <проект>.fspro`.
+
 Без Unity MCP `gd-build` работает в режиме **plan**: план задач, чеклист, headless-прогон тестов при закрытом редакторе (`run-tests-headless.ps1/.sh`). Всё, что не проверено в редакторе, так и помечается.
 
 `gd` Unity-действий не делает: он пишет соглашения (нейминг событий FMOD, модули, config map, бюджеты), которые `gd-build` исполняет.
