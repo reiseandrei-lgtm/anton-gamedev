@@ -54,6 +54,7 @@
 | Уровни | `level-design` (`/gd:level`) | После GDD систем движения (knobs) и `ux/ftue.md`; для майлстоуна — до `feature-build` систем уровня | `levels/<level>.md` |
 | Реализация отклика и UI | `[gd-build]` `juice-build`, `ui-build` | После GDD с целями Game Feel и `ux/hud.md`; стадии 9–14 | `build/<system>.log.md` (раздел Juice), `build/ui.log.md` |
 | Импорт ассетов | `[gd-build]` `asset-integrate` | Когда у строк asset-list есть файлы | ассеты в Unity-проекте, отчёт `check_import.py` |
+| Локализация | `[gd-build]` `loc-build` (`/gd-build:loc`) | После `ui-build` (ключи в UXML) и Ink-слайсов (`#id:`); до `store` в `release-plan`, если языков больше одного | `loc/<Table>.csv`, `build/loc.log.md` |
 | Решения | любой скилл | При каждом принятом решении | `decisions-log.md` (дата, решение, почему, альтернативы) |
 
 ## Возвраты назад
@@ -71,6 +72,7 @@
 - `code-reviewer` вынес FAIL → `feature-build` той же системы.
 - Тайминг отклика не совпал с целью → `juice-build` / `anim-build` (реализация) или `game-feel` (цель нереалистична).
 - Элемент UI не помещается в зону → `ux-onboarding`.
+- `check_loc.py` LC3 (строка не влезает) → `ux-onboarding` (лимит, зона) или автор текста (короче); LC5 (литерал вместо ключа) → `ui-build` / `ink-slice`.
 - Модель сверх бюджета → `model-build` (LOD) или `tech-design` (бюджет, ADR).
 - Звук «не тот» после прослушивания → `sfx-design` / `music-build` или `audio-direction`.
 - `perf-check` FAIL → ADR в `tech-design`, `asset-integrate` (сжатие, атласы) или `scope-check`.

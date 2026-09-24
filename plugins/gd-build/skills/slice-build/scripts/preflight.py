@@ -2,7 +2,7 @@
 """Preflight перед сборкой: Unity-проект, редактор, пакеты, design/, внешние инструменты (Python stdlib).
 
 Использование:
-  python3 preflight.py [<unity-project>] [--design design] [--slice <slice>] [--for sfx|music|model|anim|fmod|release]
+  python3 preflight.py [<unity-project>] [--design design] [--slice <slice>] [--for sfx|music|model|anim|fmod|release|loc|analytics]
 
 Ничего не меняет. Печатает найденное и рекомендуемый режим:
   live — есть всё нужное для задачи (для Unity-задач связь всё равно проверить пробой MCP);
@@ -30,6 +30,8 @@ NEEDS = {                      # задача → (нужен Unity-проект
     "anim": (True, []),
     "fmod": (True, ["fmodstudiocl"]),
     "release": (True, []),
+    "loc": (True, []),
+    "analytics": (True, []),
 }
 INSTALL = {                    # подсказки; ставит человек после «да»
     "blender": "winget install BlenderFoundation.Blender (или Steam); путь можно задать в BLENDER_PATH",
@@ -290,6 +292,10 @@ def main():
             if handler == "0":
                 missing.append("Active Input Handling = Input Manager (Old): Input System не получает ввод — "
                                "Player Settings → Active Input Handling → Input System Package или Both, затем перезапуск редактора")
+    if manifest.is_file() and a.task == "loc" and "com.unity.localization" not in deps:
+        ok = False
+        missing.append("пакет Localization (com.unity.localization) — без него loc-build в режиме plan (CSV и проверка без Unity); "
+                       "ставится через Package Manager → Unity Registry после «да» человека")
     if has_mcp:
         lines.append("MCP: после установки пакета мост стартует не сам — Window → MCP for Unity → Start Session "
                      "(или авто-старт в настройках); проба — чтение консоли")
