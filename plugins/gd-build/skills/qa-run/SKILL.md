@@ -1,9 +1,9 @@
 ---
 name: qa-run
 description: >-
-  Прогон проверок Unity-проекта: EditMode и PlayMode тесты (через бесплатный Unity MCP или headless при закрытом редакторе), smoke-набор из тест-плана, проверка ввода через InputTestFixture, скриншоты, баг-репорты по шаблону. Прогон с нулём тестов = FAIL. Пишет design/qa/runs/<date>-<slice>.md и design/qa/bugs/BUG-NNN.md.
-  Триггеры RU: «прогони тесты», «smoke-тест билда», «проверь билд», «запусти EditMode», «запусти PlayMode», «заведи баг».
-  Triggers EN: "run the tests", "smoke test the build", "verify the build", "run PlayMode tests", "file a bug".
+  Прогон проверок Unity-проекта: EditMode и PlayMode тесты (через бесплатный Unity MCP или headless при закрытом редакторе), smoke-набор из тест-плана, проверка ввода через InputTestFixture, скриншоты, сравнение экранов с эталонами (visual), долгий прогон на утечки (soak), баг-репорты по шаблону. Прогон с нулём тестов = FAIL. Пишет design/qa/runs/<date>-<slice>.md и design/qa/bugs/BUG-NNN.md.
+  Триггеры RU: «прогони тесты», «smoke-тест билда», «проверь билд», «запусти EditMode», «запусти PlayMode», «заведи баг», «сравни скриншоты с эталоном», «долгий прогон».
+  Triggers EN: "run the tests", "smoke test the build", "verify the build", "run PlayMode tests", "file a bug", "compare screenshots to baseline", "soak test".
   Не для составления тест-плана (gd:qa-plan), не для плейтеста с людьми (gd:playtest), не для сборки слайса (slice-build).
 ---
 
@@ -15,6 +15,8 @@ description: >-
 - **suite** (по умолчанию) — все EditMode + PlayMode.
 - **smoke** — smoke-набор из `design/qa/test-plan-<slice>.md`: автоматические шаги — тестами, остальное — play mode + пробы + скриншоты через MCP; без MCP — чеклист для человека.
 - **input** — только PlayMode-тесты ввода (`InputTestFixture`).
+- **visual** — `visual`-кейсы тест-плана: разрешение, камера и seed из Given → скриншот через MCP → `python3 scripts/diff_png.py --baseline-dir design/qa/visual --shots-dir <снимки> --out <папка diff>`. Нет эталона → снимок в `qa/visual/_pending/` (VD4): эталоном его делает человек. Отличие → баг или новый эталон — решает человек.
+- **soak** — N минут play mode (по умолчанию 10; скрипт ввода или простой) с замером кадра и памяти каждые 30 с (`manage_profiler` `get_frame_timing` / `get_counters`) → `design/qa/perf/<date>-soak.md` → `python3 scripts/check_soak.py <отчёт>`: SK1 рост памяти · SK2 деградация кадра · SK3 исключения.
 - **bug** — баг-репорт `design/qa/bugs/BUG-NNN.md` по шаблону `references/qa-run-method.md` §6 (тот же, что в `gd:qa-plan`), сначала падающий тест, если баг воспроизводим автоматически.
 
 ## Как запускать (детали — `references/qa-run-method.md`)
