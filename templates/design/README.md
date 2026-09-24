@@ -21,6 +21,7 @@ owner:
 | `art/` | Арт-библия, список ассетов | `/gd:art` |
 | `audio/` | Аудио-библия, карта событий FMOD (с банками), `files.md` — файлы звука и лицензии (+ `build/` — сгенерированное) | `/gd:audio`, `/gd-build:fmod` |
 | `ux/` | FTUE, HUD, доступность | `/gd:ux` |
+| `release/` | Магазин (ассеты, теги, аудит), запуск (вехи, чеклист, go / no-go), после релиза (метрики, патчи); `builds.md` — сборки | `/gd:release-plan`, `/gd-build:release` |
 | `levels/<level>.md` | Метрики из knobs, критический путь, встречи, темп, гейты | `/gd:level` |
 | `tech/` | Архитектура, config map, бюджеты, ADR | `/gd:tech` |
 | `qa/` | Тест-планы (`test-plan-<slice>.md`), прогоны `runs/`, баги `bugs/`, эталоны скриншотов `visual/`, замеры `perf/` | `/gd:qa-plan`, `/gd-build:test` |

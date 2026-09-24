@@ -30,8 +30,8 @@
 | 12 | Решение | `gd-router` | report плейтеста, `qa/runs`, `game-feel` (build), `release/postlaunch.md` | `decisions-log.md` | Записано одно из: `iterate` (→ адресаты находок) · `pivot` (→ 1) · `kill` (→ 7, другой слайс) · `advance` (следующий слайс / вертикаль / продакшн → 13), с причиной |
 | 13 | Продакшн (цикл по системам майлстоуна) | `gd-handoff` (milestone) → на систему `feature-build` → агент `code-reviewer` → `qa-run` [gd-build]; параллельно `asset-integrate`, `juice-build`, `ui-build`, `fmod-sync` [gd-build], `level-design` | `advance` в `decisions-log.md`, `scope.md`, approved GDD | `handoff/<milestone>.md` (`type: milestone`), `build/<system>.log.md`, `reviews/*-code-<system>.md`, `qa/runs/*` | **Alpha**: у каждой системы майлстоуна каждое R / F / E в логе — ✅ или ⛔ с решением в `decisions-log.md` (`check_build_log.py` без FAIL); ревью кода не FAIL; qa PASS. **Beta**: + контент по `scope.md`, `check_import.py` без `ph_` у `mvp` |
 | 14 | Полировка и перф | `perf-check`, `qa-run visual/soak`, `juice-build` [gd-build]; `ux-onboarding` (a11y), `audio-direction` (микс) | Beta | `qa/perf/<date>.md`, `qa/visual/` | Перф-бюджеты PASS на целевом устройстве после 10 мин; soak без роста памяти; визуальные отличия приняты 🟨 или исправлены; a11y без `gap`; микс принят 🟨; `check_coverage.py --stage polish` без FAIL |
-| 15 | Релиз | `release-plan` (store, launch), `build-release` [gd-build] | стадия 14 | `release/store.md`, `release/launch.md`, `release/builds.md`, RC-сборка | Чеклист launch закрыт; RC собран из тега; 0 открытых S1 / S2; тексты для игроков — от человека; **Release нажимает человек** |
-| 16 | После релиза | `release-plan` (postlaunch), `feature-build` + `build-release` (патчи) | релиз | `release/postlaunch.md`, `qa/bugs/*` | Метрика из `analytics/funnels.md` ниже порога → стадия 12; S1 → hotfix: `feature-build` → `qa-run` → `build-release` |
+| 15 | Релиз | `release-plan` (store, launch · `/gd:release-plan`), `build-release` [gd-build] | стадия 14 | `release/store.md`, `release/launch.md`, `release/builds.md`, RC-сборка | Чеклист launch закрыт; RC собран из тега; 0 открытых S1 / S2; тексты для игроков — от человека; **Release нажимает человек** |
+| 16 | После релиза | `release-plan` (postlaunch · `/gd:release-plan postlaunch`), `feature-build` + `build-release` (патчи) | релиз | `release/postlaunch.md`, `qa/bugs/*` | Метрика из `analytics/funnels.md` ниже порога → стадия 12; S1 → hotfix: `feature-build` → `qa-run` → `build-release` |
 
 Стадии 13–16 используют скиллы, которые выходят волнами: `feature-build`, `code-reviewer`, `juice-build`, `ui-build`, `asset-integrate` — `gd-build` 0.2; `perf-check`, `build-release`, `model-build`, `anim-build`, `sfx-design`, `music-build` — 0.3; `level-design`, `release-plan` (`gd`) и `loc-build` — позже. Если скилла нет в установленной версии, роутер называет шаг и даёт ручной чеклист, стадию не пропускает.
 
@@ -76,6 +76,7 @@
 - `perf-check` FAIL → ADR в `tech-design`, `asset-integrate` (сжатие, атласы) или `scope-check`.
 - Отличие на скриншоте (`qa-run visual`) → баг в `qa/bugs/` или новый эталон — решает человек.
 - Метрики после релиза ниже порога → стадия 12.
+- `check_release_plan.py` RP3 (текст для игроков не от человека) → вернуть автору, скилл текст не переписывает; go / no-go = no-go → адресат пункта (`qa-run`, `perf-check`, `asset-integrate`, `build-release`).
 - `check_level.py` LV1 (зазор вне метрики) → `level-design` (правка уровня) или `gdd-author --quick` (метрика неверна); LV4 (нет системы или врага) → `gd-systems-map` / `gdd-author`.
 
 ## Эвристики определения стадии
@@ -97,7 +98,7 @@
 - `build/<system>.log.md` новее последнего `reviews/*-code-<system>.md` → `/gd-build:review <system>` (агент `code-reviewer`).
 - Ревью кода не FAIL, последний `qa/runs/*` старше лога системы → `/gd-build:test`.
 - Все системы майлстоуна закрыты, нет `qa/perf/*` новее последнего лога → стадия 14.
-- Стадия 14 закрыта, нет `release/launch.md` → стадия 15; есть `release/postlaunch.md` с метрикой ниже порога без решения → стадия 12.
+- Стадия 14 закрыта, нет `release/launch.md` → стадия 15 (`/gd:release-plan launch`; страницу магазина — `store` — можно раньше, с вертикального слайса); есть `release/postlaunch.md` с метрикой ниже порога без решения → стадия 12.
 
 ## Шаги человека (🟨)
 

@@ -58,3 +58,8 @@
 | level design for the first biome | level-design |
 | карта систем | gd-systems-map |
 | напиши gdd системы прыжка | gdd-author |
+| план релиза | release-plan |
+| чеклист запуска на декабрь | release-plan |
+| steam page audit | release-plan |
+| что после релиза делаем | release-plan |
+| что вырезать до релиза | scope-check |
