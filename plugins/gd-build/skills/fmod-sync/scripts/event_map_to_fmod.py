@@ -3,6 +3,7 @@
 
 Использование:
   python3 event_map_to_fmod.py design/audio/event-map.md --out build/fmod [--namespace Game.Audio] [--class FmodEvents]
+                               [--files design/audio/files.md [--audio-root <папка>]]
 
 Пишет в --out:
   event-map.json              — нормализованная карта (для diff_fmod.py и MCP)
@@ -12,7 +13,9 @@
                                 (синхронизирует, сохраняет проект, экспортирует GUIDs.txt).
                                 Идемпотентен: существующее не пересоздаёт, только добавляет недостающее.
   FmodEvents.cs               — static class с путями событий и снапшотов и именами параметров.
-Формат таблицы — gd: audio-direction/references/fmod-conventions.md (колонки Event, Source, Type, Params, Space, Bus, …).
+Формат таблицы — gd: audio-direction/references/fmod-conventions.md (колонки Event, Source, Type, Params, Space, Bus, Bank, …).
+--files design/audio/files.md: файлы звука по событиям (колонки File, Event) импортируются в FMOD и кладутся
+  на мастер-трек события (1 файл — SingleSound, несколько — MultiSound). Событие, где звук уже есть, не трогается.
 Выход с кодом 1, если в карте есть строки, которые нельзя перенести (путь не по схеме).
 """
 import argparse
@@ -38,7 +41,7 @@ def utf8_stdout():
             pass
 
 
-def table_rows(text):
+def table_rows(text, need=("event", "source")):
     rows, header = [], None
     for line in text.splitlines():
         s = line.strip()
@@ -51,7 +54,7 @@ def table_rows(text):
             continue
         if all(re.fullmatch(r":?-{2,}:?", c) for c in cells if c):
             continue
-        if "event" in header and "source" in header:
+        if all(k in header for k in need):
             rows.append(dict(zip(header, cells + [""] * len(header))))
     return rows
 
@@ -90,6 +93,12 @@ def load(path):
         params, perr = parse_params(r.get("params", ""))
         errors += [f"{ev}: параметр «{p}» не распознан — пропущен" for p in perr]
         bus = r.get("bus", "").strip("` ")
+        bank = r.get("bank", "").strip("` ")
+        if bank in EMPTY:
+            bank = "Master"
+        elif not re.fullmatch(r"[A-Z][A-Za-z0-9]*", bank):
+            errors.append(f"{ev}: Bank «{bank}» не PascalCase — взят Master")
+            bank = "Master"
         items.append({
             "path": ev,
             "kind": "snapshot" if ev.startswith("snapshot:/") else "event",
@@ -97,11 +106,31 @@ def load(path):
             "source": r.get("source", "").strip("` "),
             "space": r.get("space", "").strip().upper(),
             "bus": bus if BUS_RE.match(bus) else None,
+            "bank": None if ev.startswith("snapshot:/") else bank,
+            "files": [],
             "priority": r.get("priority", "").strip(),
             "params": params,
             "status": r.get("status", "").strip().lower(),
         })
     return items, errors
+
+
+def attach_files(items, files_md, audio_root):
+    """design/audio/files.md (колонки File, Event) → items[*]["files"] — абсолютные пути. Возвращает ошибки."""
+    errors, by_path = [], {i["path"]: i for i in items}
+    root = Path(audio_root) if audio_root else Path(files_md).parent
+    for r in table_rows(Path(files_md).read_text(encoding="utf-8"), need=("file", "event")):
+        f, ev = r.get("file", "").strip("` "), r.get("event", "").strip("` ")
+        if not f or "<" in f or ev in EMPTY:
+            continue
+        p = (root / f).resolve()
+        if ev not in by_path:
+            errors.append(f"{f}: событие {ev} нет в карте")
+        elif not p.is_file():
+            errors.append(f"{f}: файла нет ({p})")
+        else:
+            by_path[ev]["files"].append(p.as_posix())
+    return errors
 
 
 JS_TEMPLATE = r"""// Сгенерировано gd-build fmod-sync (event_map_to_fmod.py) из design/audio/event-map.md. Не править руками.
@@ -183,18 +212,59 @@ function gdEnsurePreset(p, stats) {
 }
 
 // Событие без банка не попадает ни в сборку, ни в GUIDs.txt — в игре его не загрузить.
-// В карте нет колонки Bank: по умолчанию мастер-банк (разбиение по банкам — решение аудио-дирекции).
-function gdMasterBank() {
+// Банк — колонка Bank карты (пусто = Master). Master — мастер-банк проекта (isMasterBank), остальные создаются.
+function gdEnsureBank(name, stats) {
     var banks = studio.project.model.Bank.findInstances();
-    for (var i = 0; i < banks.length; i++) { if (banks[i].isMasterBank) return banks[i]; }
-    return null;
+    for (var i = 0; i < banks.length; i++) {
+        if (name === "Master" ? banks[i].isMasterBank : banks[i].name === name) return banks[i];
+    }
+    if (name === "Master") return null;
+    var b = studio.project.create("Bank");
+    b.name = name;
+    b.folder = studio.project.workspace.masterBankFolder;
+    stats.banks++;
+    return b;
 }
 
 function gdEnsureInBank(ev, bank, stats) {
     if (!bank) { stats.manual.push(ev.getPath() + ": в проекте нет мастер-банка — назначить банк вручную"); return; }
-    if (ev.banks && ev.banks.length) return;
+    var cur = ev.banks || [];
+    for (var i = 0; i < cur.length; i++) { if (cur[i].id === bank.id) return; }
     ev.relationships.banks.add(bank);
     stats.banked++;
+}
+
+// Звук из design/audio/files.md: один файл — SingleSound, несколько — MultiSound (вариации).
+// Если на мастер-треке события уже есть инструмент, событие не трогаем: звук мог положить человек.
+function gdAudioFile(path) {
+    var name = path.replace(/\\/g, "/").split("/").pop();
+    var existing = studio.project.workspace.masterAssetFolder.getAsset(name);
+    return existing || studio.project.importAudioFile(path);
+}
+
+function gdEnsureSounds(ev, files, stats) {
+    if (!files || !files.length) return;
+    if (ev.masterTrack.modules.length) { stats.kept++; return; }
+    var afs = [];
+    for (var i = 0; i < files.length; i++) {
+        var af = gdAudioFile(files[i]);
+        if (af) afs.push(af); else stats.manual.push(ev.getPath() + ": файл не импортирован " + files[i]);
+    }
+    if (!afs.length) return;
+    var len = 0;
+    for (var j = 0; j < afs.length; j++) { len = Math.max(len, afs[j].length || 0); }
+    if (afs.length === 1) {
+        var s = ev.masterTrack.addSound(ev.timeline, "SingleSound", 0, len);
+        s.audioFile = afs[0];
+    } else {
+        var m = ev.masterTrack.addSound(ev.timeline, "MultiSound", 0, len);
+        for (var k = 0; k < afs.length; k++) {
+            var ss = studio.project.create("SingleSound");
+            ss.audioFile = afs[k];
+            ss.owner = m;
+        }
+    }
+    stats.sounds += afs.length;
 }
 
 function gdEventHasPreset(ev, preset) {
@@ -204,8 +274,8 @@ function gdEventHasPreset(ev, preset) {
 }
 
 function gdSync() {
-    var stats = { folders: 0, events: 0, buses: 0, snapshots: 0, params: 0, presets: 0, banked: 0, manual: [] };
-    var master = gdMasterBank();
+    var stats = { folders: 0, events: 0, buses: 0, snapshots: 0, params: 0, presets: 0, banks: 0, banked: 0,
+                  sounds: 0, kept: 0, manual: [] };
     for (var i = 0; i < GD_MAP.length; i++) {
         var it = GD_MAP[i];
         if (it.kind === "snapshot") {
@@ -225,8 +295,10 @@ function gdSync() {
             ev.folder = gdEnsureFolder(segs, stats);
             stats.events++;
         }
-        try { gdEnsureInBank(ev, master, stats); }
-        catch (e) { stats.manual.push(it.path + ": назначить банк вручную (" + e + ")"); }
+        try { gdEnsureInBank(ev, gdEnsureBank(it.bank || "Master", stats), stats); }
+        catch (e) { stats.manual.push(it.path + ": назначить банк " + it.bank + " вручную (" + e + ")"); }
+        try { gdEnsureSounds(ev, it.files, stats); }
+        catch (e) { stats.manual.push(it.path + ": звук не добавлен (" + e + ")"); }
         if (it.bus) {
             var bus = gdEnsureBus(it.bus, stats);
             try { ev.mixerInput.output = bus; }
@@ -242,7 +314,8 @@ function gdSync() {
     }
     gdLog("папок +" + stats.folders + ", событий +" + stats.events + ", шин +" + stats.buses +
           ", снапшотов +" + stats.snapshots + ", параметров (preset) +" + stats.presets + ", подключений к событиям +" + stats.params +
-          ", в банк +" + stats.banked);
+          ", банков +" + stats.banks + ", в банк +" + stats.banked + ", звуков +" + stats.sounds +
+          (stats.kept ? " (событий со своим звуком не тронуто: " + stats.kept + ")" : ""));
     for (var k = 0; k < stats.manual.length; k++) { gdLog("ВРУЧНУЮ: " + stats.manual[k]); }
     gdLog("Готово. Сохраните проект и экспортируйте GUIDs (File → Export GUIDs) для diff_fmod.py.");
 }
@@ -297,9 +370,13 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--namespace", default="Game.Audio")
     ap.add_argument("--class", dest="cls", default="FmodEvents")
+    ap.add_argument("--files", default=None, help="design/audio/files.md — импорт звуков в события")
+    ap.add_argument("--audio-root", default=None, help="корень путей колонки File (по умолчанию папка files.md)")
     a = ap.parse_args()
 
     items, errors = load(a.event_map)
+    if a.files:
+        errors += attach_files(items, a.files, a.audio_root)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "event-map.json").write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8", newline="\n")
@@ -308,7 +385,9 @@ def main():
     (out / "gd_sync_event_map.cli.js").write_text(js.replace(MENU_LINE, CLI_TAIL), encoding="utf-8", newline="\n")
     (out / f"{a.cls}.cs").write_text(make_cs(items, a.namespace, a.cls), encoding="utf-8", newline="\n")
     ev = sum(1 for i in items if i["kind"] == "event")
-    print(f"Событий: {ev} · снапшотов: {len(items) - ev} · параметров: {sum(len(i['params']) for i in items)}")
+    banks = sorted({i["bank"] for i in items if i.get("bank")})
+    print(f"Событий: {ev} · снапшотов: {len(items) - ev} · параметров: {sum(len(i['params']) for i in items)}"
+          f" · банков: {len(banks)} ({', '.join(banks)}) · файлов звука: {sum(len(i['files']) for i in items)}")
     print(f"Записано: {out / 'event-map.json'}, {out / 'gd_sync_event_map.js'} (+ .cli.js), {out / (a.cls + '.cs')}")
     for e in errors:
         print(f"FAIL {e}")
