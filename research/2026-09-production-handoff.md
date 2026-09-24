@@ -14,8 +14,9 @@ owner: Anton
 | 0 Окружение | ✅ |
 | 1 Живая проверка gd-build | ✅ смёржено, тег `v0.4.1` (PR #4) |
 | 2 Архитектура | ✅ утверждена |
-| Волна A (gd 0.5.0, gd-build 0.2.0) | ✅ код и живой прогон; ветка `feat/production-wave-A` (11 коммитов, **не запушена**). Итоги — `examples/one-tap-slice/RESULTS.md`, «Волна A» |
-| Волна B | не начата |
+| Волна A (gd 0.5.0, gd-build 0.2.0) | ✅ смёржено, тег `v0.5.0` |
+| Волна B1 | ✅ код на ветке `feat/production-wave-B` (7 коммитов, не запушена): `perf-check`, `build-release`, `model-build`, `anim-build`, `preflight.py --for`, агент `art-director`. Скрипты запускались один раз на данных примера; тесты в `tools/test_scripts.py` и живые прогоны в Unity по просьбе пользователя не делались |
+| Волна B2 | не начата (`sfx-design`, `music-build`; инструменты стоят) |
 | Волна C | не начата |
 
 ## Первые шаги новой сессии
@@ -28,7 +29,8 @@ owner: Anton
 - unity-mcp 10.2.0: сервер `DISABLE_TELEMETRY=true uvx --from mcpforunityserver==10.2.0 mcp-for-unity --transport http --http-host 127.0.0.1 --http-port 8080`; CLI `uvx -q --from mcpforunityserver==10.2.0 unity-mcp --format json raw <tool> '<json>'`. Мост стартует сам (`Assets/_Project/Editor/McpSessionBoot.cs`).
 - FMOD Studio 2.03.14 (`D:\FMOD\FMOD Studio 2.03.14`, `fmodstudiocl.exe`), проект `D:\FMOD\Projects\one-tap-slice` (свой git).
 - Blender 5.2.2 (winget, `D:\Blender\blender.exe`) и 5.2.1 (Steam). Android Build Support (SDK, NDK, OpenJDK) установлен.
-- Не установлено: Blender MCP, ffmpeg, sox, FluidSynth, SoundFont, FMOD for Unity; `git lfs install` не выполнен.
+- Установлено 2026-09-24: ffmpeg 9.0.1 (winget `Gyan.FFmpeg.Essentials`), SoX 14.4.2 (winget `ChrisBagwell.SoX`), FluidSynth 2.6.1 (`D:\Tools\FluidSynth\…\bin`, в PATH пользователя), FluidR3_GM.sf2 (`D:\Tools\SoundFonts`, `SOUNDFONT`), Blender MCP 2.0.4 (аддон `blender_mcp` в `%APPDATA%\Blender Foundation\Blender\5.2`, сервер `blender` в user-конфиге Claude Code с `DISABLE_TELEMETRY=true`; проверено: сокет 9876 отвечает, `claude mcp list` — Connected); `git lfs` настроен глобально.
+- Не установлено: FMOD for Unity (скачивание с fmod.com требует входа — шаг человека).
 - Промпт следующей сессии — `research/2026-09-next-session-prompt.md` (изменённый план: B1 / B2).
 
 ## Открытое после волны A
