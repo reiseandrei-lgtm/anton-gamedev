@@ -95,13 +95,14 @@ Grayscale: разница яркости (L\* в CIELAB) между парами
 
 ```markdown
 ## Assets
-| ID | Type | For | States / frames | Size | Source | License / URL | Priority | Status |
-|---|---|---|---|---|---|---|---|---|
-| spr_player_base_idle | spr | jump#FB1 | 4 fr @12fps | 128x128 | placeholder | — | slice | todo |
+| ID | Type | For | States / frames | Size | Budget | Source | License / URL | Priority | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| spr_player_base_idle | spr | jump#FB1 | 4 fr @12fps | 128x128 | ≤ 256 px | placeholder | — | slice | todo |
 ```
 
 - **ID**: `<type>_<entity>_<variant>_<state>`, `snake_case`, только `[a-z0-9_]`. Типы: `spr` спрайт · `tex` текстура · `mdl` модель · `anim` анимация · `ui` элемент UI · `icon` иконка · `vfx` эффект · `font` шрифт · `bg` фон · `tile` тайл.
 - **For**: откуда нужен ассет — `<system>#<ID>` из GDD (FB, состояние) или `ED`/`DD` хендоффа, или `ux:<screen>`.
+- **Budget** (необязательно): предел для импорта — `≤ 1024 px` (текстура, большая сторона), `≤ 800 tris` (модель), `≤ 64 KB`. Проверяет `gd-build: asset-integrate` (`check_import.py`) против файла. Колонка общая с `asset-integrate` и `model-build`.
 - **Source**: `placeholder` · `cc0` · `made` · `todo`. У `cc0` поле License / URL обязательно.
 - **Priority**: `slice` · `mvp` · `later`. **Status**: `todo` · `wip` · `done`.
 

@@ -10,5 +10,5 @@ owner:
 <!-- ID: <type>_<entity>_<variant>_<state>; Source: placeholder | cc0 | made | todo; Priority: slice | mvp | later -->
 
 ## Assets
-| ID | Type | For | States / frames | Size | Source | License / URL | Priority | Status |
-|---|---|---|---|---|---|---|---|---|
+| ID | Type | For | States / frames | Size | Budget | Source | License / URL | Priority | Status |
+|---|---|---|---|---|---|---|---|---|---|

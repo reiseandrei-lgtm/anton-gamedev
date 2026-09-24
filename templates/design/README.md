@@ -17,13 +17,13 @@ owner:
 | `narrative/` | Мир, персонажи, ветки, голоса, Ink-планы | `/gd:narrative`, `/gd:ink` |
 | `balance/<system>.md` | Таблицы чисел и расчёты | `/gd:balance` |
 | `scope.md` | Инвентарь, оценки, cut-list | `/gd:scope` |
-| `handoff/<slice>.md` | Пакеты хендоффа в реализацию (ED / DD с ID) | `gd-handoff` |
+| `handoff/<slice>.md`, `handoff/<milestone>.md` | Хендофф слайса (ED / DD) и майлстоуна Alpha / Beta (`ED-<system>-N`) | `gd-handoff` |
 | `art/` | Арт-библия, список ассетов | `/gd:art` |
-| `audio/` | Аудио-библия, карта событий FMOD (+ `build/` — сгенерированное) | `/gd:audio`, `/gd-build:fmod` |
+| `audio/` | Аудио-библия, карта событий FMOD (с банками), `files.md` — файлы звука и лицензии (+ `build/` — сгенерированное) | `/gd:audio`, `/gd-build:fmod` |
 | `ux/` | FTUE, HUD, доступность | `/gd:ux` |
 | `tech/` | Архитектура, config map, бюджеты, ADR | `/gd:tech` |
-| `qa/` | Тест-планы (`test-plan-<slice>.md`), прогоны `runs/`, баги `bugs/` | `/gd:qa-plan`, `/gd-build:test` |
-| `build/<slice>.log.md` | Лог сборки слайса: доказательства по ED | `/gd-build:slice` |
+| `qa/` | Тест-планы (`test-plan-<slice>.md`), прогоны `runs/`, баги `bugs/`, эталоны скриншотов `visual/`, замеры `perf/` | `/gd:qa-plan`, `/gd-build:test` |
+| `build/<slice>.log.md`, `build/<system>.log.md` | Логи сборки: доказательства по ED и R / F / E, замеры отклика (Juice) | `/gd-build:slice`, `/gd-build:feature`, `/gd-build:juice`, `/gd-build:ui` |
 | `playtest/` | Планы, заметки и отчёты плейтестов | `/gd:playtest` |
 | `analytics/` | Вопросы, KPI, события, воронки | `/gd:metrics` |
 | `reviews/` | Отчёты ревью и feel-пассов | `/gd:review` |

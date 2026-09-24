@@ -35,16 +35,17 @@
 
 ```markdown
 ## Events
-| Event | Source | Type | Params | Space | Bus | Priority | Variations | Status |
-|---|---|---|---|---|---|---|---|---|
-| event:/SFX/Player/Jump | jump#FB1 | oneshot | charge(0..1) | 2D | bus:/SFX | 1 | 3 | todo |
-| event:/Music/Level/Main | music:explore | music | g_intensity(0..1) | 2D | bus:/Music | 4 | — | todo |
-| snapshot:/Pause | state:pause | snapshot | — | — | — | — | — | todo |
+| Event | Source | Type | Params | Space | Bus | Bank | Priority | Variations | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| event:/SFX/Player/Jump | jump#FB1 | oneshot | charge(0..1) | 2D | bus:/SFX | Master | 1 | 3 | todo |
+| event:/Music/Level/Main | music:explore | music | g_intensity(0..1) | 2D | bus:/Music | Music | 4 | — | todo |
+| snapshot:/Pause | state:pause | snapshot | — | — | — | — | — | — | todo |
 ```
 
 - **Source**: `<system>#FB<n>` (строка Feedback GDD) · `<system>#<ID>` (другое правило) · `music:<state>` · `state:<name>` · `ui:<screen>` · `ink:<line_id>` · `amb:<zone>`.
 - **Type**: `oneshot` · `loop` · `music` · `amb` · `vo` · `stinger` · `snapshot`.
 - **Space**: `2D` · `3D` (3D — мир с позицией; UI, музыка — 2D).
+- **Bank**: банк FMOD, в который попадает событие (PascalCase; по умолчанию `Master`). Событие без банка не собирается и не загружается в игре. Деление на банки — по сценам или контенту (музыка отдельно, если её много). Пусто или колонки нет — `Master`.
 - **Priority**: 1 (всегда слышно, gameplay-critical) … 5 (фон). Используется для лимита голосов и ducking.
 - **Variations**: число вариантов внутри события (антиповтор) или `—`.
 - **Status**: `todo` · `placeholder` · `done`.
