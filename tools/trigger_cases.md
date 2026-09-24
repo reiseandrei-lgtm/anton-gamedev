@@ -67,3 +67,8 @@
 | нужна псевдолокализация | loc-build |
 | set up unity localization | loc-build |
 | слайс на ink для пролога | ink-slice |
+| подключи аналитику | analytics-build |
+| вставь события в код | analytics-build |
+| wire analytics events | analytics-build |
+| аналитика | metrics-plan |
+| какие события слать в аналитику | metrics-plan |

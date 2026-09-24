@@ -13,7 +13,7 @@
   P6 пересечение триггеров между скиллами (одинаковая фраза — FAIL, вложенная — WARN)
   P7 Python-скрипты компилируются
   P8 version только в plugin.json, не в marketplace.json
-  P9 копии общего кода между плагинами совпадают с оригиналом побайтно (COPIES)
+  P9 копии общего кода между плагинами совпадают с оригиналом побайтно (COPIES), скопированные строки-правила — построчно (LINE_COPIES)
   P10 имена платных инструментов (generate_*, create_rodin_job, Suno, ElevenLabs, Meshy, MusicGen…) — только в строке-запрете
   P11 tools/trigger_cases.md: типовой запрос уходит в ожидаемый скилл (самый длинный совпавший триггер)
 Выход с кодом 1, если есть FAIL.
@@ -28,6 +28,10 @@ ROOT = Path(__file__).resolve().parents[1]
 LINK = re.compile(r"`((?:\.\./[a-z0-9\-]+/|[a-z0-9\-]+/)?(?:references|scripts)/[A-Za-z0-9_.\-/]+)`")
 COPIES = [
     ("plugins/gd/skills/gd-router/scripts/gdd_ids.py", "plugins/gd-build/skills/slice-build/scripts/gdd_ids.py"),
+]
+LINE_COPIES = [   # (оригинал, копия, начало строки) — одинаковое правило в двух плагинах
+    ("plugins/gd/skills/metrics-plan/scripts/check_events.py",
+     "plugins/gd-build/skills/analytics-build/scripts/check_analytics_calls.py", "PII = "),
 ]
 PAID = re.compile(r"generate_(?:image|audio|model)|create_rodin_job|create_hunyuan_job|download_sketchfab_model|"
                   r"\bsuno\b|elevenlabs|\bmeshy\b|musicgen|hyper3d", re.I)
@@ -166,6 +170,14 @@ def main():
         o, c = ROOT / orig, ROOT / copy
         if not c.is_file() or o.read_bytes() != c.read_bytes():
             fails.append(f"P9 {copy}: не совпадает с {orig} — скопируй оригинал")
+    for orig, copy, prefix in LINE_COPIES:
+        lines = []
+        for f in (orig, copy):
+            p = ROOT / f
+            lines.append(next((ln for ln in p.read_text(encoding="utf-8").splitlines() if ln.startswith(prefix)), None)
+                         if p.is_file() else None)
+        if lines[0] is None or lines[0] != lines[1]:
+            fails.append(f"P9 {copy}: строка «{prefix.strip()}…» не совпадает с {orig}")
 
     for plugin in sorted((ROOT / "plugins").iterdir()):
         for f in sorted(plugin.rglob("*.md")):
