@@ -2,12 +2,15 @@
 """Разбор долгого прогона (soak): утечки памяти, деградация кадра, исключения (Python stdlib).
 
 Использование:
-  python3 check_soak.py design/qa/perf/<date>-soak.md [--mem-slope 1.0] [--frame-growth 10]
+  python3 check_soak.py design/qa/perf/<date>-soak.md [--baseline <контрольный прогон простоя>.md] [--mem-slope 1.0] [--frame-growth 10]
+
+В редакторе Total Used Memory включает сам редактор и MCP: память растёт и в простое. SK1 без --baseline надёжен только на
+сборке игрока; в редакторе — прогон простоя той же длины (без ввода) и --baseline: из наклона вычитается наклон простоя.
 
 Таблица `## Samples` в отчёте (формат — references/qa-run-method.md §7):
   | t (s) | frame ms | memory MB | exceptions | [materials | objects | …] | [progress (что растёт при игре)] |
 Проверки:
-  SK1 наклон памяти (линейная регрессия) > --mem-slope МБ/мин (FAIL)
+  SK1 наклон памяти (линейная регрессия, минус наклон --baseline) > --mem-slope МБ/мин (FAIL)
   SK2 средний кадр последней трети длиннее первой больше чем на --frame-growth % (FAIL)
   SK3 исключения в консоли за прогон (FAIL)
   SK4 прогон короче 5 минут или меньше 6 замеров — выводы слабые (WARN)
@@ -43,8 +46,15 @@ def main():
     ap.add_argument("--mem-slope", type=float, default=1.0, help="МБ в минуту")
     ap.add_argument("--frame-growth", type=float, default=10.0, help="%%")
     ap.add_argument("--count-slope", type=float, default=20.0, help="штук в минуту")
+    ap.add_argument("--baseline", default=None, help="отчёт прогона простоя (та же сцена, без ввода)")
     a = ap.parse_args()
 
+    base_slope = 0.0
+    if a.baseline:
+        bs = gdd_ids.find_section(gdd_ids.sections(gdd_ids.read(a.baseline)), "samples") or []
+        bp = [(num(r.get("t (s)")), num(r.get("memory mb"))) for r in gdd_ids.table_rows(bs)]
+        bp = [p for p in bp if p[0] is not None and p[1] is not None]
+        base_slope = slope([p[0] for p in bp], [p[1] for p in bp]) * 60 if len(bp) > 1 else 0.0
     samples = gdd_ids.find_section(gdd_ids.sections(gdd_ids.read(a.report)), "samples") or []
     t, frame, mem, exc, counts, progress = [], [], [], 0, {}, []
     base_cols = {"t", "frame ms", "memory mb", "exceptions"}
@@ -69,8 +79,10 @@ def main():
         warns.append(f"SK4 прогон {dur:.0f} с, замеров {len(t)} — меньше 5 минут / 6 замеров, выводы слабые")
     mpts = [(x, y) for x, y in zip(t, mem) if y is not None]
     ms = slope([p[0] for p in mpts], [p[1] for p in mpts]) * 60 if len(mpts) > 1 else 0.0
-    if ms > a.mem_slope:
-        fails.append(f"SK1 память растёт {ms:.2f} МБ/мин > {a.mem_slope} — вероятна утечка")
+    if ms - base_slope > a.mem_slope:
+        fails.append(f"SK1 память растёт {ms:.2f} МБ/мин (простой {base_slope:+.2f}) > {a.mem_slope} — вероятна утечка")
+    elif not a.baseline and "editor" in gdd_ids.read(a.report).lower():
+        warns.append("SK1 прогон в редакторе без --baseline: рост памяти включает редактор и MCP, вывод о памяти ненадёжен")
     fr = [x for x in frame if x is not None]
     third = max(1, len(fr) // 3)
     first, last = sum(fr[:third]) / third, sum(fr[-third:]) / third
@@ -94,7 +106,7 @@ def main():
                          "PlayerSettings.runInBackground), прогон неполный")
     elif not progress:
         warns.append("SK6 нет колонки progress — не видно, что скрипт ввода действительно играл")
-    print(f"Soak: {dur:.0f} с · замеров {len(t)} · память {ms:+.2f} МБ/мин · кадр {first:.2f} → {last:.2f} ms ({growth:+.1f}%) · исключений {exc}")
+    print(f"Soak: {dur:.0f} с · замеров {len(t)} · память {ms:+.2f} МБ/мин (простой {base_slope:+.2f}) · кадр {first:.2f} → {last:.2f} ms ({growth:+.1f}%) · исключений {exc}")
     for w in warns:
         print(f"WARN {w}")
     for f in fails:
