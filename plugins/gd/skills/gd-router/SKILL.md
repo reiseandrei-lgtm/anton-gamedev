@@ -56,5 +56,5 @@ description: >-
 | 12 Решение | роутер: запись в `decisions-log.md` → возврат по адресатам (`references/pipeline.md`, «Возвраты назад») |
 | 13 Продакшн | `gd-handoff` (milestone) → `[gd-build]` `/gd-build:feature`, `/gd-build:review` (агент `code-reviewer`), `/gd-build:test`; `/gd-build:juice`, `/gd-build:ui`, `/gd-build:assets`; уровни — `level-design` · `/gd:level` |
 | 14–16 Полировка, релиз, после релиза | `[gd-build]` `qa-run visual/soak`, перф, сборка; `release-plan` · `/gd:release-plan` (store, launch, postlaunch) |
-| Параллельно | `game-feel` (прототип/бумага), `ink-slice` · `/gd:ink`, `/gd:narrative`, `narrative-continuity` · `/gd:continuity`, `art-direction` · `/gd:art`, `audio-direction` · `/gd:audio` → `[gd-build]` `/gd-build:fmod`, `ux-onboarding` · `/gd:ux`, `metrics-plan` · `/gd:metrics` |
+| Параллельно | `game-feel` (прототип/бумага), `ink-slice` · `/gd:ink`, `/gd:narrative`, `narrative-continuity` · `/gd:continuity`, `art-direction` · `/gd:art`, `audio-direction` · `/gd:audio` → `[gd-build]` `/gd-build:fmod`, `ux-onboarding` · `/gd:ux`, `metrics-plan` · `/gd:metrics` → `[gd-build]` `/gd-build:analytics`; локализация — `[gd-build]` `/gd-build:loc` |
 | Проектные | `syncario-gamedesigner` — всё по Syncario (канон, столпы, north star, якорь «Сифа») |

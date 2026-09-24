@@ -51,6 +51,7 @@
 | Звук | `audio-direction` (`/gd:audio`), агент `audio-director`; перенос — `fmod-sync` (`/gd-build:fmod`) | `bible` — после `pillars.md`; `events` — после GDD слайса | `audio/audio-bible.md`, `audio/event-map.md`, `audio/build/` |
 | UX и онбординг | `ux-onboarding` (`/gd:ux`) | После GDD core loop; до хендоффа onboarding-слайса | `ux/ftue.md`, `ux/hud.md`, `ux/accessibility.md` |
 | Метрики | `metrics-plan` (`/gd:metrics`) | После хендоффа (есть гипотеза) и `ux/ftue.md` | `analytics/events.md`, `analytics/funnels.md` |
+| Аналитика в коде | `[gd-build]` `analytics-build` (`/gd-build:analytics`) | После `metrics-plan` (events.md в `review`+) и до плейтеста, где считаются KPI | `AnalyticsEvents.cs`, `AnalyticsLog.cs`, `build/analytics.log.md`, JSONL на устройстве |
 | Уровни | `level-design` (`/gd:level`) | После GDD систем движения (knobs) и `ux/ftue.md`; для майлстоуна — до `feature-build` систем уровня | `levels/<level>.md` |
 | Реализация отклика и UI | `[gd-build]` `juice-build`, `ui-build` | После GDD с целями Game Feel и `ux/hud.md`; стадии 9–14 | `build/<system>.log.md` (раздел Juice), `build/ui.log.md` |
 | Импорт ассетов | `[gd-build]` `asset-integrate` | Когда у строк asset-list есть файлы | ассеты в Unity-проекте, отчёт `check_import.py` |
@@ -72,6 +73,7 @@
 - `code-reviewer` вынес FAIL → `feature-build` той же системы.
 - Тайминг отклика не совпал с целью → `juice-build` / `anim-build` (реализация) или `game-feel` (цель нереалистична).
 - Элемент UI не помещается в зону → `ux-onboarding`.
+- `check_analytics_calls.py` AN3 (персональные данные) или нет события для KPI → `metrics-plan`; AN1 (событие без вызова) → `analytics-build`.
 - `check_loc.py` LC3 (строка не влезает) → `ux-onboarding` (лимит, зона) или автор текста (короче); LC5 (литерал вместо ключа) → `ui-build` / `ink-slice`.
 - Модель сверх бюджета → `model-build` (LOD) или `tech-design` (бюджет, ADR).
 - Звук «не тот» после прослушивания → `sfx-design` / `music-build` или `audio-direction`.
@@ -90,6 +92,7 @@
 - `handoff/*.md` в `review`+, но нет `qa/test-plan-<slice>.md` или `tech/architecture.md` в `template` → стадия 8.
 - Есть 8, нет `build/<slice>.log.md` → стадия 9 (`/gd-build:slice`; в Cowork — сказать, что шаг делается в Claude Code с `gd-build`, и дать чеклист).
 - `build/<slice>.log.md` новее последнего `qa/runs/*-<slice>.md` → стадия 10.
+- Есть `analytics/events.md` в `review`+, а в логах сборки нет `build/analytics.log.md` → `/gd-build:analytics` до плейтеста, если KPI считаются по событиям.
 - Последний `qa/runs` PASS, нет `playtest/*-<slice>.plan.md` → стадия 11 (`plan`); plan есть, report нет → стадия 11 (`analyze`, после сессий).
 - Есть `playtest/*.report.md` без строки в `decisions-log.md` новее отчёта → стадия 12.
 - `pillars.md` в `review`+, а `art/art-bible.md` и `audio/audio-bible.md` в `template` → предложить треки параллельно (блокер только перед стадией 9, если в слайсе есть арт или звук).
