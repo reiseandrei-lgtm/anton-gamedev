@@ -44,3 +44,37 @@ build: <git commit>
 - ✅ только с доказательством (тест, скриншот, лог). ⚠️ — сделано, но не проверено. ⛔ — не сделано, с причиной.
 - В режиме `plan` ни одного ✅: максимум ⚠️.
 - Скриншоты — в `design/build/<slice>/screenshots/`.
+
+## Лог системы: design/build/<system>.log.md (feature-build, juice-build, ui-build)
+
+ОБЩИЙ формат: пишут `feature-build`, `juice-build`, `ui-build`; читают `qa-run`, `gd-router`, `scripts/check_build_log.py`, `juice-build/scripts/check_juice.py`. Меняешь колонки — меняй во всех.
+
+```markdown
+---
+status: draft
+updated: YYYY-MM-DD
+system: <system>          # имя файла GDD; для UI — ui
+milestone: alpha          # или slice-имя
+mode: live                # live | plan
+unity: 6000.x.yf1
+mcp: CoplayDev/unity-mcp <версия> (tools | cli) | none
+build: <git commit Unity-проекта>
+---
+# Build log — <system>
+
+## Rules
+| ID | Статус | Доказательство | Задачи |
+|---|---|---|---|
+| R1 | ✅ | T-chain-01 зелёный (EditMode) | 1 |
+| E2 | ⛔ | не выполнено: в GDD не описано, что при … (вопрос в Open Questions GDD) | — |
+| ED-chain-1 | ✅ | EditMode 6/6, smoke: 20 фонарей без неизбежного промаха | 1–3 |
+
+## Juice            (juice-build)
+| FB | Событие | Цель (кадры) | Замер (кадры) | Допуск | Звук в том же кадре | Доказательство |
+|---|---|---|---|---|---|---|
+
+## Tasks / Deviations from GDD / Verify summary / Open issues — как у лога слайса
+```
+
+- `ID` — `R*`, `F*`, `E*` из GDD системы и `ED-<system>-*` из хендоффа майлстоуна. Каждый ID — отдельная строка.
+- Красный прогон до реализации записывается в Verify summary («T-chain-01…04: 0/4 до реализации»).
