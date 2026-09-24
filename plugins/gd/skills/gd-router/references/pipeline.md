@@ -51,6 +51,7 @@
 | Звук | `audio-direction` (`/gd:audio`), агент `audio-director`; перенос — `fmod-sync` (`/gd-build:fmod`) | `bible` — после `pillars.md`; `events` — после GDD слайса | `audio/audio-bible.md`, `audio/event-map.md`, `audio/build/` |
 | UX и онбординг | `ux-onboarding` (`/gd:ux`) | После GDD core loop; до хендоффа onboarding-слайса | `ux/ftue.md`, `ux/hud.md`, `ux/accessibility.md` |
 | Метрики | `metrics-plan` (`/gd:metrics`) | После хендоффа (есть гипотеза) и `ux/ftue.md` | `analytics/events.md`, `analytics/funnels.md` |
+| Уровни | `level-design` (`/gd:level`) | После GDD систем движения (knobs) и `ux/ftue.md`; для майлстоуна — до `feature-build` систем уровня | `levels/<level>.md` |
 | Реализация отклика и UI | `[gd-build]` `juice-build`, `ui-build` | После GDD с целями Game Feel и `ux/hud.md`; стадии 9–14 | `build/<system>.log.md` (раздел Juice), `build/ui.log.md` |
 | Импорт ассетов | `[gd-build]` `asset-integrate` | Когда у строк asset-list есть файлы | ассеты в Unity-проекте, отчёт `check_import.py` |
 | Решения | любой скилл | При каждом принятом решении | `decisions-log.md` (дата, решение, почему, альтернативы) |
@@ -75,6 +76,7 @@
 - `perf-check` FAIL → ADR в `tech-design`, `asset-integrate` (сжатие, атласы) или `scope-check`.
 - Отличие на скриншоте (`qa-run visual`) → баг в `qa/bugs/` или новый эталон — решает человек.
 - Метрики после релиза ниже порога → стадия 12.
+- `check_level.py` LV1 (зазор вне метрики) → `level-design` (правка уровня) или `gdd-author --quick` (метрика неверна); LV4 (нет системы или врага) → `gd-systems-map` / `gdd-author`.
 
 ## Эвристики определения стадии
 
@@ -91,6 +93,7 @@
 - Нет ID в GDD (`R1`, `K1`, `FB1`) на стадии 8 → сначала `gdd-author` для простановки ID.
 - Последнее решение в `decisions-log.md` — `advance`, нет `handoff/*.md` с `type: milestone` → стадия 13, `gd-handoff` (milestone).
 - Есть milestone-хендофф, у системы из него нет `build/<system>.log.md` → стадия 13, `/gd-build:feature <system>`.
+- В milestone-хендоффе или `scope.md` есть уровни или арены, а `levels/<level>.md` нет → `/gd:level <level>` до `feature-build` их систем.
 - `build/<system>.log.md` новее последнего `reviews/*-code-<system>.md` → `/gd-build:review <system>` (агент `code-reviewer`).
 - Ревью кода не FAIL, последний `qa/runs/*` старше лога системы → `/gd-build:test`.
 - Все системы майлстоуна закрыты, нет `qa/perf/*` новее последнего лога → стадия 14.

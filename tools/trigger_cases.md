@@ -53,3 +53,8 @@
 | сделай музыку для забега | music-build |
 | отрендери стемы | music-build |
 | compose music for the menu | music-build |
+| дизайн уровня | level-design |
+| волны врагов для арены | level-design |
+| level design for the first biome | level-design |
+| карта систем | gd-systems-map |
+| напиши gdd системы прыжка | gdd-author |
