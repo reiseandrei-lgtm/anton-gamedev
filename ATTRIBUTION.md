@@ -49,9 +49,13 @@ SKILL.md всех скиллов написаны заново (на русск�
 | `gd-build/skills/sfx-design/references/sfx-method.md`, `scripts/synth_sfx.py`, `scripts/loudness.py` | unity-kit `unity-audio` (честность проверки); CCGS `team-audio`, агент `sound-designer` (слои); ITU-R BS.1770-4 и формулы K-фильтра libebur128 / pyloudnorm (MIT) | Идеи и формулы; код свой (`gen_sfx.py` из unity-kit не менялся, v2 написан заново) |
 | `gd-build/skills/music-build/references/music-method.md`, `scripts/*` | sirruf/music-gen-skill (MIT) — маршрут MIDI → FluidSynth → WAV | Идея маршрута; `render.sh` не копировался, `mido` заменён записью SMF на stdlib. FluidSynth (LGPL-2.1) — внешняя программа; FluidR3_GM (MIT, Frank Wen) — внешний файл, в репозиторий не входит |
 | `gd-build/skills/anim-build/references/anim-method.md` | blender-skills `rigging`, `animation`; Nice-Wolf-Studio `unity-animation`; tjboudreaux `tools-unity-animation` (MIT) | Идеи и чеклисты; текст свой |
+| `gd/skills/level-design/references/level-method.md` | awesome-gamedev-agent-skills `disciplines/level-design` (Apache-2.0); Nice-Wolf-Studio/unity-claude-skills (MIT: контракты встреч, чекпоинты); CCGS `level-design-document` template | Идеи (метрики → блокаут, пилообразная сложность, гейты); формат, проверки и `check_level.py` свои |
+| `gd/skills/release-plan/references/release-method.md` | GarrettPetersen/indie-game-marketing-skills (MIT) — `plan-indie-game-marketing`, `audit-steam-store-page`, `optimize-steam-tags`, `review-game-trailer`; CCGS `launch-checklist`, `release-checklist`, `day-one-patch`, `hotfix` | Идеи (правило human-authorship, порядок аудита, вехи, отделы чеклиста, путь hotfix); текст и `check_release_plan.py` свои |
+| `gd-build/skills/loc-build/references/loc-method.md` | CCGS `localize` (режимы scan / extract / validate) | Идея; формат CSV — по расширению CSV пакета Unity Localization (пакет не копировался), `check_loc.py` свой |
+| `gd-build/skills/analytics-build/*` | свой; принципы — `gd/skills/metrics-plan` | — |
 | `research/2026-09-production-cycle-architecture.md` | все источники из §9 документа | Ресерч; код не взят |
 
-Проверено по документации, код не взят: FMOD Studio Scripting API (локальная документация FMOD Studio 2.03.14), `fmodstudiocl` (Advanced Topics). В `vendor/` также изучены, но пока не использованы: GarrettPetersen/indie-game-marketing-skills (волна C). ahujasid/mcp-for-blender (MIT + Terms of Use) — ставится как внешний инструмент (аддон + MCP-сервер), код не копировался; запрещённые инструменты перечислены в `model-build`.
+Проверено по документации, код не взят: FMOD Studio Scripting API (локальная документация FMOD Studio 2.03.14), `fmodstudiocl` (Advanced Topics). ahujasid/mcp-for-blender (MIT + Terms of Use) — ставится как внешний инструмент (аддон + MCP-сервер), код не копировался; запрещённые инструменты перечислены в `model-build`.
 
 Справочник Ink в narrative-ink-skills пересказывает документацию inkle «Writing with ink» (https://github.com/inkle/ink, MIT © inkle Ltd).
 
@@ -272,4 +276,4 @@ SOFTWARE.
 ## gamedev-skills/awesome-gamedev-agent-skills — https://github.com/gamedev-skills/awesome-gamedev-agent-skills
 
 Apache License 2.0. Полный текст — `licenses/Apache-2.0.txt`, NOTICE источника — `licenses/NOTICE-awesome-gamedev-agent-skills.txt`.
-Copyright 2026 Abhishek Barali and the awesome-gamedev-agent-skills contributors. Использовано: сверка чеклиста техник game feel (`disciplines/game-feel`); текст `juice-method.md` написан заново, файлы не копировались и не изменялись.
+Copyright 2026 Abhishek Barali and the awesome-gamedev-agent-skills contributors. Использовано: сверка чеклиста техник game feel (`disciplines/game-feel`) и приёмов дизайна уровней (`disciplines/level-design`); тексты `juice-method.md` и `level-method.md` написаны заново, файлы не копировались и не изменялись.

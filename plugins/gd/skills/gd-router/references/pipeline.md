@@ -33,7 +33,7 @@
 | 15 | Релиз | `release-plan` (store, launch · `/gd:release-plan`), `build-release` [gd-build] | стадия 14 | `release/store.md`, `release/launch.md`, `release/builds.md`, RC-сборка | Чеклист launch закрыт; RC собран из тега; 0 открытых S1 / S2; тексты для игроков — от человека; **Release нажимает человек** |
 | 16 | После релиза | `release-plan` (postlaunch · `/gd:release-plan postlaunch`), `feature-build` + `build-release` (патчи) | релиз | `release/postlaunch.md`, `qa/bugs/*` | Метрика из `analytics/funnels.md` ниже порога → стадия 12; S1 → hotfix: `feature-build` → `qa-run` → `build-release` |
 
-Стадии 13–16 используют скиллы, которые выходят волнами: `feature-build`, `code-reviewer`, `juice-build`, `ui-build`, `asset-integrate` — `gd-build` 0.2; `perf-check`, `build-release`, `model-build`, `anim-build`, `sfx-design`, `music-build` — 0.3; `level-design`, `release-plan` (`gd`) и `loc-build` — позже. Если скилла нет в установленной версии, роутер называет шаг и даёт ручной чеклист, стадию не пропускает.
+Стадии 13–16 используют скиллы, которые выходят волнами: `feature-build`, `code-reviewer`, `juice-build`, `ui-build`, `asset-integrate` — `gd-build` 0.2; `perf-check`, `build-release`, `model-build`, `anim-build`, `sfx-design`, `music-build` — 0.3; `loc-build`, `analytics-build` — 0.4; `level-design`, `release-plan` — `gd` 0.7. Если скилла нет в установленной версии, роутер называет шаг и даёт ручной чеклист, стадию не пропускает.
 
 ## Параллельные треки
 
