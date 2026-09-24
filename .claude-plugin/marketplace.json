@@ -4,7 +4,7 @@
   "owner": {
     "name": "Anton"
   },
-  "description": "Личный маркетплейс геймдева: дизайн и нарратив (gd) и сборка, тесты, FMOD в Unity (gd-build). Полный цикл от искры до плейтеста, только бесплатные инструменты.",
+  "description": "Личный маркетплейс геймдева: дизайн и нарратив (gd) и сборка, контент, тесты и релиз в Unity (gd-build). Полный цикл от искры до плейтеста, только бесплатные инструменты.",
   "plugins": [
     {
       "name": "gd",
@@ -26,9 +26,9 @@
     },
     {
       "name": "gd-build",
-      "displayName": "GD Build — Unity slice, tests, FMOD",
+      "displayName": "GD Build — Unity, Blender, audio, tests, release",
       "source": "./plugins/gd-build",
-      "description": "Только Claude Code: сборка Unity-слайса из хендоффа через бесплатный Unity MCP с verify loop, прогон тестов и smoke, синхронизация карты событий FMOD. Без MCP — план и чеклист.",
+      "description": "Только Claude Code: слайс и системы майлстоуна в Unity через бесплатный Unity MCP с verify loop, ревью кода, отклик, UI, импорт ассетов, тесты, перф, релизная сборка; модели и анимация в Blender, SFX и музыка (FluidSynth), синхронизация FMOD. Без инструментов — план и чеклист.",
       "category": "development",
       "tags": [
         "gamedev",

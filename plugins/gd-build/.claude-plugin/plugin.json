@@ -1,18 +1,23 @@
 {
   "name": "gd-build",
-  "displayName": "GD Build — Unity slice, tests, FMOD",
-  "version": "0.2.0",
-  "description": "Continues the gd pipeline in Claude Code: build a playable Unity 6 slice and milestone systems via a free Unity MCP with a verify loop, independent code review, juice measured in frames, UI Toolkit screens from the HUD spec, asset import against the asset list, EditMode/PlayMode/smoke/visual-diff/soak tests, and FMOD sync with banks and audio import (headless via fmodstudiocl). Degrades to plan + checklist without MCP. Free tools only.",
+  "displayName": "GD Build — Unity, Blender, audio, tests, release",
+  "version": "0.3.0",
+  "description": "Continues the gd pipeline in Claude Code: build a playable Unity 6 slice and milestone systems via a free Unity MCP with a verify loop, independent code review, juice measured in frames, UI Toolkit screens, asset import, EditMode/PlayMode/smoke/visual-diff/soak tests, performance checks against budgets, release builds (GameCI, LFS, SteamPipe), 3D models and animation via headless Blender or a free Blender MCP, SFX synthesis and music loops (MIDI + FluidSynth) with BS.1770 loudness checks, and FMOD sync. Degrades to plan + checklist without tools. Free tools only.",
   "author": {
     "name": "Anton"
   },
   "license": "MIT",
   "keywords": [
+    "blender",
+    "build",
     "code-review",
     "fmod",
     "gamedev",
     "juice",
     "mcp",
+    "music",
+    "performance",
+    "sfx",
     "prototype",
     "testing",
     "ui-toolkit",

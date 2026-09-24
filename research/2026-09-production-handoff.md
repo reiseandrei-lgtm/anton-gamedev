@@ -16,13 +16,13 @@ owner: Anton
 | 2 Архитектура | ✅ утверждена |
 | Волна A (gd 0.5.0, gd-build 0.2.0) | ✅ смёржено, тег `v0.5.0` |
 | Волна B1 | ✅ код на ветке `feat/production-wave-B` (7 коммитов, не запушена): `perf-check`, `build-release`, `model-build`, `anim-build`, `preflight.py --for`, агент `art-director`. Скрипты запускались один раз на данных примера; тесты в `tools/test_scripts.py` и живые прогоны в Unity по просьбе пользователя не делались |
-| Волна B2 | не начата (`sfx-design`, `music-build`; инструменты стоят) |
-| Волна C | не начата |
+| Волна B2 | ✅ код на той же ветке (не запушен): `sfx-design`, `music-build`; версии gd 0.6.0, gd-build 0.3.0, CHANGELOG. Скрипты запускались по разу (синтез, LUFS против ffmpeg, MIDI → FluidSynth → стемы → `check_music` PASS); тесты не писались |
+| Волна C | не начата — отдельной сессией |
 
 ## Первые шаги новой сессии
-1. Показать пользователю diff-сводку `git log main..feat/production-wave-A` и результаты проверок; PR, rebase-мёрж и тег `v0.5.0` — только после «да».
-2. Волна B — ветка `feat/production-wave-B` от `main` после мёржа A: `anim-build`, `model-build`, `sfx-design`, `music-build`, `perf-check`, `build-release`, `preflight.py` (Blender, ffmpeg, sox, FluidSynth, SoundFont, FMOD), агент `art-director` (турнтейблы). Карточки скиллов — архитектура §3, волна B. Версии: gd 0.6.0, gd-build 0.3.0.
-3. Для живого прогона волны B пользователь ставит ffmpeg, sox, FluidSynth + FluidR3_GM, Blender MCP (команды — отчёт фазы 0). Без них — режим plan и «не проверено».
+1. PR #6 (`feat/production-wave-B`, B1 + B2): после «да» — push коммитов B2, мёрж, тег `v0.6.0`.
+2. По желанию: тесты новых скриптов в `tools/test_scripts.py` (позитивная и негативная фикстура на каждый) и живые прогоны: серия профайлера `perf-check`, сборка игрока `build-release`, импорт стемов и SFX в FMOD.
+3. Волна C (`level-design`, `release-plan`, `loc-build`, `analytics-build`) — отдельной сессией.
 
 ## Окружение (проверено 2026-09-24)
 - Unity 6000.3.24f1 (`D:\Unity\Unity Hub`), лицензия Personal активна; проект `D:\Unity\Projects\one-tap-slice` (свой git, последний коммит `daf5e0b`). `PlayerSettings.runInBackground = 1`.
